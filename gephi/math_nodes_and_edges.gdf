@@ -1,0 +1,154 @@
+nodedef>name VARCHAR,label VARCHAR,width DOUBLE,x DOUBLE,y DOUBLE
+Arithmetic,Arithmetic,50,-190.99,0.0
+Algebra,Algebra,50,-165.4,95.49
+Geometry,Geometry,50,-95.49,165.4
+Trigonometry,Trigonometry,50,0.0,190.99
+Statistics and Probability,Statistics and Probability,50,95.49,165.4
+Pre-Calculus,Pre-Calculus,50,165.4,95.49
+Calculus,Calculus,50,190.99,0.0
+Advanced Calculus (Honors),Advanced Calculus (Honors),50,165.4,-95.49
+Discrete Mathematics (Honors),Discrete Mathematics (Honors),50,95.49,-165.4
+Linear Algebra (Honors),Linear Algebra (Honors),50,0.0,-190.99
+Advanced Statistics (Honors),Advanced Statistics (Honors),50,-95.49,-165.4
+Mathematical Proofs and Theory (Honors),Mathematical Proofs and Theory (Honors),50,-165.4,-95.49
+Arithmetic_Basic operations,Basic operations,30,-608.21,59.9
+Arithmetic_Fractions,Fractions,30,-599.41,119.23
+Arithmetic_Decimals,Decimals,30,-584.84,177.41
+Arithmetic_Percentages,Percentages,30,-564.63,233.88
+Arithmetic_Ratios and Proportions,Ratios and Proportions,30,-538.99,288.1
+Algebra_Algebraic Expressions,Algebraic Expressions,30,-508.16,339.54
+Algebra_Linear Equations,Linear Equations,30,-472.43,387.71
+Algebra_Inequalities,Inequalities,30,-432.15,432.15
+Algebra_Systems of Equations,Systems of Equations,30,-387.71,472.43
+Algebra_Quadratic Equations,Quadratic Equations,30,-339.54,508.16
+Algebra_Polynomials,Polynomials,30,-288.1,538.99
+Algebra_Functions,Functions,30,-233.88,564.63
+Geometry_Basic Geometric Shapes,Basic Geometric Shapes,30,-177.41,584.84
+Geometry_Congruence and Similarity,Congruence and Similarity,30,-119.23,599.41
+Geometry_Pythagorean Theorem,Pythagorean Theorem,30,-59.9,608.21
+Geometry_Circles,Circles,30,0.0,611.15
+Geometry_Area and Volume,Area and Volume,30,59.9,608.21
+Geometry_Coordinate Geometry,Coordinate Geometry,30,119.23,599.41
+Geometry_Trigonometry,Trigonometry,30,177.41,584.84
+Trigonometry_Trigonometric Ratios,Trigonometric Ratios,30,233.88,564.63
+Trigonometry_Graphs of Trigonometric Functions,Graphs of Trigonometric Functions,30,288.1,538.99
+Trigonometry_Trigonometric Identities,Trigonometric Identities,30,339.54,508.16
+Trigonometry_Applications,Applications,30,387.71,472.43
+Statistics and Probability_Descriptive Statistics,Descriptive Statistics,30,432.15,432.15
+Statistics and Probability_Probability Basics,Probability Basics,30,472.43,387.71
+Statistics and Probability_Combinations and Permutations,Combinations and Permutations,30,508.16,339.54
+Statistics and Probability_Random Variables and Distributions,Random Variables and Distributions,30,538.99,288.1
+Statistics and Probability_Inferential Statistics,Inferential Statistics,30,564.63,233.88
+Pre-Calculus_Advanced Algebra,Advanced Algebra,30,584.84,177.41
+Pre-Calculus_Complex Numbers,Complex Numbers,30,599.41,119.23
+Pre-Calculus_Exponential and Logarithmic Functions,Exponential and Logarithmic Functions,30,608.21,59.9
+Pre-Calculus_Advanced Trigonometry,Advanced Trigonometry,30,611.15,-0.0
+Pre-Calculus_Sequences and Series,Sequences and Series,30,608.21,-59.9
+Pre-Calculus_Matrices,Matrices,30,599.41,-119.23
+Calculus_Limits,Limits,30,584.84,-177.41
+Calculus_Derivatives,Derivatives,30,564.63,-233.88
+Calculus_Integration,Integration,30,538.99,-288.1
+Calculus_Differential Equations,Differential Equations,30,508.16,-339.54
+Calculus_Multivariable Calculus,Multivariable Calculus,30,472.43,-387.71
+Advanced Calculus (Honors)_Series and Sequences,Series and Sequences,30,432.15,-432.15
+Advanced Calculus (Honors)_Vector Calculus,Vector Calculus,30,387.71,-472.43
+Advanced Calculus (Honors)_Multivariable Calculus,Multivariable Calculus,30,339.54,-508.16
+Advanced Calculus (Honors)_Differential Equations,Differential Equations,30,288.1,-538.99
+Advanced Calculus (Honors)_Special Topics,Special Topics,30,233.88,-564.63
+Discrete Mathematics (Honors)_Logic and Proofs,Logic and Proofs,30,177.41,-584.84
+Discrete Mathematics (Honors)_Set Theory,Set Theory,30,119.23,-599.41
+Discrete Mathematics (Honors)_Combinatorics,Combinatorics,30,59.9,-608.21
+Discrete Mathematics (Honors)_Graph Theory,Graph Theory,30,-0.0,-611.15
+Discrete Mathematics (Honors)_Algorithms and Complexity,Algorithms and Complexity,30,-59.9,-608.21
+Linear Algebra (Honors)_Vector Spaces,Vector Spaces,30,-119.23,-599.41
+Linear Algebra (Honors)_Linear Transformations,Linear Transformations,30,-177.41,-584.84
+Linear Algebra (Honors)_Matrices,Matrices,30,-233.88,-564.63
+Linear Algebra (Honors)_Systems of Linear Equations,Systems of Linear Equations,30,-288.1,-538.99
+Linear Algebra (Honors)_Advanced Topics,Advanced Topics,30,-339.54,-508.16
+Advanced Statistics (Honors)_Regression Analysis,Regression Analysis,30,-387.71,-472.43
+Advanced Statistics (Honors)_ANOVA,ANOVA,30,-432.15,-432.15
+Advanced Statistics (Honors)_Nonparametric Tests,Nonparametric Tests,30,-472.43,-387.71
+Advanced Statistics (Honors)_Time Series Analysis,Time Series Analysis,30,-508.16,-339.54
+Advanced Statistics (Honors)_Bayesian Statistics,Bayesian Statistics,30,-538.99,-288.1
+Mathematical Proofs and Theory (Honors)_Introduction to Proofs,Introduction to Proofs,30,-564.63,-233.88
+Mathematical Proofs and Theory (Honors)_Number Theory,Number Theory,30,-584.84,-177.41
+Mathematical Proofs and Theory (Honors)_Group Theory,Group Theory,30,-599.41,-119.23
+Mathematical Proofs and Theory (Honors)_Real Analysis,Real Analysis,30,-608.21,-59.9
+Mathematical Proofs and Theory (Honors)_Topology,Topology,30,-611.15,0.0
+edgedef>node1 VARCHAR,node2 VARCHAR,directed BOOLEAN
+Arithmetic,Algebra,true
+Arithmetic,Arithmetic_Basic operations,true
+Arithmetic,Arithmetic_Fractions,true
+Arithmetic,Arithmetic_Decimals,true
+Arithmetic,Arithmetic_Percentages,true
+Arithmetic,Arithmetic_Ratios and Proportions,true
+Algebra,Geometry,true
+Algebra,Algebra_Algebraic Expressions,true
+Algebra,Algebra_Linear Equations,true
+Algebra,Algebra_Inequalities,true
+Algebra,Algebra_Systems of Equations,true
+Algebra,Algebra_Quadratic Equations,true
+Algebra,Algebra_Polynomials,true
+Algebra,Algebra_Functions,true
+Geometry,Trigonometry,true
+Geometry,Geometry_Basic Geometric Shapes,true
+Geometry,Geometry_Congruence and Similarity,true
+Geometry,Geometry_Pythagorean Theorem,true
+Geometry,Geometry_Circles,true
+Geometry,Geometry_Area and Volume,true
+Geometry,Geometry_Coordinate Geometry,true
+Geometry,Geometry_Trigonometry,true
+Trigonometry,Statistics and Probability,true
+Trigonometry,Trigonometry_Trigonometric Ratios,true
+Trigonometry,Trigonometry_Graphs of Trigonometric Functions,true
+Trigonometry,Trigonometry_Trigonometric Identities,true
+Trigonometry,Trigonometry_Applications,true
+Statistics and Probability,Pre-Calculus,true
+Statistics and Probability,Statistics and Probability_Descriptive Statistics,true
+Statistics and Probability,Statistics and Probability_Probability Basics,true
+Statistics and Probability,Statistics and Probability_Combinations and Permutations,true
+Statistics and Probability,Statistics and Probability_Random Variables and Distributions,true
+Statistics and Probability,Statistics and Probability_Inferential Statistics,true
+Pre-Calculus,Calculus,true
+Pre-Calculus,Pre-Calculus_Advanced Algebra,true
+Pre-Calculus,Pre-Calculus_Complex Numbers,true
+Pre-Calculus,Pre-Calculus_Exponential and Logarithmic Functions,true
+Pre-Calculus,Pre-Calculus_Advanced Trigonometry,true
+Pre-Calculus,Pre-Calculus_Sequences and Series,true
+Pre-Calculus,Pre-Calculus_Matrices,true
+Calculus,Advanced Calculus (Honors),true
+Calculus,Calculus_Limits,true
+Calculus,Calculus_Derivatives,true
+Calculus,Calculus_Integration,true
+Calculus,Calculus_Differential Equations,true
+Calculus,Calculus_Multivariable Calculus,true
+Advanced Calculus (Honors),Discrete Mathematics (Honors),true
+Advanced Calculus (Honors),Advanced Calculus (Honors)_Series and Sequences,true
+Advanced Calculus (Honors),Advanced Calculus (Honors)_Vector Calculus,true
+Advanced Calculus (Honors),Advanced Calculus (Honors)_Multivariable Calculus,true
+Advanced Calculus (Honors),Advanced Calculus (Honors)_Differential Equations,true
+Advanced Calculus (Honors),Advanced Calculus (Honors)_Special Topics,true
+Discrete Mathematics (Honors),Linear Algebra (Honors),true
+Discrete Mathematics (Honors),Discrete Mathematics (Honors)_Logic and Proofs,true
+Discrete Mathematics (Honors),Discrete Mathematics (Honors)_Set Theory,true
+Discrete Mathematics (Honors),Discrete Mathematics (Honors)_Combinatorics,true
+Discrete Mathematics (Honors),Discrete Mathematics (Honors)_Graph Theory,true
+Discrete Mathematics (Honors),Discrete Mathematics (Honors)_Algorithms and Complexity,true
+Linear Algebra (Honors),Advanced Statistics (Honors),true
+Linear Algebra (Honors),Linear Algebra (Honors)_Vector Spaces,true
+Linear Algebra (Honors),Linear Algebra (Honors)_Linear Transformations,true
+Linear Algebra (Honors),Linear Algebra (Honors)_Matrices,true
+Linear Algebra (Honors),Linear Algebra (Honors)_Systems of Linear Equations,true
+Linear Algebra (Honors),Linear Algebra (Honors)_Advanced Topics,true
+Advanced Statistics (Honors),Mathematical Proofs and Theory (Honors),true
+Advanced Statistics (Honors),Advanced Statistics (Honors)_Regression Analysis,true
+Advanced Statistics (Honors),Advanced Statistics (Honors)_ANOVA,true
+Advanced Statistics (Honors),Advanced Statistics (Honors)_Nonparametric Tests,true
+Advanced Statistics (Honors),Advanced Statistics (Honors)_Time Series Analysis,true
+Advanced Statistics (Honors),Advanced Statistics (Honors)_Bayesian Statistics,true
+Mathematical Proofs and Theory (Honors),Arithmetic,true
+Mathematical Proofs and Theory (Honors),Mathematical Proofs and Theory (Honors)_Introduction to Proofs,true
+Mathematical Proofs and Theory (Honors),Mathematical Proofs and Theory (Honors)_Number Theory,true
+Mathematical Proofs and Theory (Honors),Mathematical Proofs and Theory (Honors)_Group Theory,true
+Mathematical Proofs and Theory (Honors),Mathematical Proofs and Theory (Honors)_Real Analysis,true
+Mathematical Proofs and Theory (Honors),Mathematical Proofs and Theory (Honors)_Topology,true
