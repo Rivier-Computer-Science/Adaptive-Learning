@@ -250,245 +250,233 @@ Topological spaces_subsub,Topological spaces,15,-619.44,-67.37,"255,255,255"
 Continuity2_subsub,Continuity2,15,-621.47,-44.96,"255,255,255"
 Compactness_subsub,Compactness,15,-622.69,-22.5,"255,255,255"
 edgedef>node1 VARCHAR,node2 VARCHAR,directed BOOLEAN
-Arithmetic_main,Algebra_main,true
 Arithmetic_main,Basic Operations_sub,true
 Basic Operations_sub,Addition_subsub,true
-Addition_subsub,Subtraction_subsub,true
-Subtraction_subsub,Multiplication_subsub,true
-Multiplication_subsub,Division_subsub,true
+Basic Operations_sub,Subtraction_subsub,true
+Basic Operations_sub,Multiplication_subsub,true
+Basic Operations_sub,Division_subsub,true
 Arithmetic_main,Fractions_sub,true
 Fractions_sub,Understanding_subsub,true
-Understanding_subsub,Simplifying1_subsub,true
-Simplifying1_subsub,Operations1_subsub,true
+Fractions_sub,Simplifying1_subsub,true
+Fractions_sub,Operations1_subsub,true
 Arithmetic_main,Decimals_sub,true
 Decimals_sub,Conversion_subsub,true
-Conversion_subsub,Operations2_subsub,true
+Decimals_sub,Operations2_subsub,true
 Arithmetic_main,Percentages_sub,true
 Percentages_sub,Calculating percentages_subsub,true
-Calculating percentages_subsub,Percentage increase/decrease_subsub,true
-Percentage increase/decrease_subsub,Real-world applications_subsub,true
+Percentages_sub,Percentage increase/decrease_subsub,true
+Percentages_sub,Real-world applications_subsub,true
 Arithmetic_main,Ratios and Proportions_sub,true
 Ratios and Proportions_sub,Understanding ratios_subsub,true
-Understanding ratios_subsub,Solving proportion problems_subsub,true
-Solving proportion problems_subsub,Direct and inverse variation_subsub,true
-Algebra_main,Geometry_main,true
+Ratios and Proportions_sub,Solving proportion problems_subsub,true
+Ratios and Proportions_sub,Direct and inverse variation_subsub,true
 Algebra_main,Algebraic Expressions_sub,true
 Algebraic Expressions_sub,Simplifying2_subsub,true
-Simplifying2_subsub,Evaluating expressions_subsub,true
-Evaluating expressions_subsub,Combining like terms_subsub,true
+Algebraic Expressions_sub,Evaluating expressions_subsub,true
+Algebraic Expressions_sub,Combining like terms_subsub,true
 Algebra_main,Linear Equations_sub,true
 Linear Equations_sub,Solving one-variable_subsub,true
-Solving one-variable_subsub,Multi-variable equations_subsub,true
-Multi-variable equations_subsub,Word problems_subsub,true
+Linear Equations_sub,Multi-variable equations_subsub,true
+Linear Equations_sub,Word problems_subsub,true
 Algebra_main,Inequalities_sub,true
 Inequalities_sub,Solving_subsub,true
-Solving_subsub,Graphing on a number line_subsub,true
-Graphing on a number line_subsub,Compound inequalities_subsub,true
+Inequalities_sub,Graphing on a number line_subsub,true
+Inequalities_sub,Compound inequalities_subsub,true
 Algebra_main,Systems of Equations_sub,true
 Systems of Equations_sub,Methods of solving_subsub,true
-Methods of solving_subsub,Applications1_subsub,true
+Systems of Equations_sub,Applications1_subsub,true
 Algebra_main,Quadratic Equations_sub,true
 Quadratic Equations_sub,Factoring_subsub,true
-Factoring_subsub,Quadratic formula_subsub,true
-Quadratic formula_subsub,Completing the square_subsub,true
-Completing the square_subsub,Graphing parabolas_subsub,true
+Quadratic Equations_sub,Quadratic formula_subsub,true
+Quadratic Equations_sub,Completing the square_subsub,true
+Quadratic Equations_sub,Graphing parabolas_subsub,true
 Algebra_main,Polynomials_sub,true
 Polynomials_sub,Adding_subsub,true
-Adding_subsub,Subtracting_subsub,true
-Subtracting_subsub,Multiplying_subsub,true
-Multiplying_subsub,Dividing_subsub,true
-Dividing_subsub,Polynomial long division_subsub,true
+Polynomials_sub,Subtracting_subsub,true
+Polynomials_sub,Multiplying_subsub,true
+Polynomials_sub,Dividing_subsub,true
+Polynomials_sub,Polynomial long division_subsub,true
 Algebra_main,Functions_sub,true
 Functions_sub,Understanding function notation_subsub,true
-Understanding function notation_subsub,Domain and range_subsub,true
-Domain and range_subsub,Inverse functions_subsub,true
-Geometry_main,Trigonometry_main,true
+Functions_sub,Domain and range_subsub,true
+Functions_sub,Inverse functions_subsub,true
 Geometry_main,Basic Geometric Shapes_sub,true
 Basic Geometric Shapes_sub,Properties of triangles_subsub,true
-Properties of triangles_subsub,Quadrilaterals_subsub,true
-Quadrilaterals_subsub,Polygons_subsub,true
+Basic Geometric Shapes_sub,Quadrilaterals_subsub,true
+Basic Geometric Shapes_sub,Polygons_subsub,true
 Geometry_main,Congruence and Similarity_sub,true
 Congruence and Similarity_sub,Criteria for triangles_subsub,true
-Criteria for triangles_subsub,Proving figures congruent or similar_subsub,true
+Congruence and Similarity_sub,Proving figures congruent or similar_subsub,true
 Geometry_main,Pythagorean Theorem_sub,true
 Pythagorean Theorem_sub,Derivation_subsub,true
-Derivation_subsub,Applications in different contexts_subsub,true
+Pythagorean Theorem_sub,Applications in different contexts_subsub,true
 Geometry_main,Circles_sub,true
 Circles_sub,Properties1_subsub,true
-Properties1_subsub,Arc length_subsub,true
-Arc length_subsub,Sector area_subsub,true
-Sector area_subsub,Theorems involving tangents and chords_subsub,true
+Circles_sub,Arc length_subsub,true
+Circles_sub,Sector area_subsub,true
+Circles_sub,Theorems involving tangents and chords_subsub,true
 Geometry_main,Area and Volume_sub,true
 Area and Volume_sub,Formulas for various shapes_subsub,true
-Formulas for various shapes_subsub,Surface area and volume of 3D figures_subsub,true
+Area and Volume_sub,Surface area and volume of 3D figures_subsub,true
 Geometry_main,Coordinate Geometry_sub,true
 Coordinate Geometry_sub,Equation of a line_subsub,true
-Equation of a line_subsub,Distance formula_subsub,true
-Distance formula_subsub,Midpoint formula_subsub,true
+Coordinate Geometry_sub,Distance formula_subsub,true
+Coordinate Geometry_sub,Midpoint formula_subsub,true
 Geometry_main,Trigonometry_sub,true
 Trigonometry_sub,Introduction to sine_subsub,true
-Introduction to sine_subsub,Cosine_subsub,true
-Cosine_subsub,Tangent_subsub,true
-Tangent_subsub,Solving right triangles_subsub,true
-Trigonometry_main,Statistics and Probability_main,true
+Trigonometry_sub,Cosine_subsub,true
+Trigonometry_sub,Tangent_subsub,true
+Trigonometry_sub,Solving right triangles_subsub,true
 Trigonometry_main,Trigonometric Ratios_sub,true
 Trigonometric Ratios_sub,Definitions_subsub,true
-Definitions_subsub,Solving for unknown sides or angles in right triangles_subsub,true
+Trigonometric Ratios_sub,Solving for unknown sides or angles in right triangles_subsub,true
 Trigonometry_main,Graphs of Trigonometric Functions_sub,true
 Graphs of Trigonometric Functions_sub,Understanding amplitude_subsub,true
-Understanding amplitude_subsub,Period_subsub,true
-Period_subsub,Phase shift_subsub,true
+Graphs of Trigonometric Functions_sub,Period_subsub,true
+Graphs of Trigonometric Functions_sub,Phase shift_subsub,true
 Trigonometry_main,Trigonometric Identities_sub,true
 Trigonometric Identities_sub,Pythagorean_subsub,true
-Pythagorean_subsub,Sum and difference_subsub,true
-Sum and difference_subsub,Double-angle_subsub,true
-Double-angle_subsub,Half-angle formulas_subsub,true
+Trigonometric Identities_sub,Sum and difference_subsub,true
+Trigonometric Identities_sub,Double-angle_subsub,true
+Trigonometric Identities_sub,Half-angle formulas_subsub,true
 Trigonometry_main,Applications_sub,true
 Applications_sub,Real-world problems_subsub,true
-Real-world problems_subsub,Wave motion_subsub,true
-Wave motion_subsub,Circular motion_subsub,true
-Statistics and Probability_main,Pre-Calculus_main,true
+Applications_sub,Wave motion_subsub,true
+Applications_sub,Circular motion_subsub,true
 Statistics and Probability_main,Descriptive Statistics_sub,true
 Descriptive Statistics_sub,Measures of central tendency_subsub,true
-Measures of central tendency_subsub,Measures of dispersion_subsub,true
-Measures of dispersion_subsub,Box plots_subsub,true
+Descriptive Statistics_sub,Measures of dispersion_subsub,true
+Descriptive Statistics_sub,Box plots_subsub,true
 Statistics and Probability_main,Probability Basics_sub,true
 Probability Basics_sub,Sample space_subsub,true
-Sample space_subsub,Event probability_subsub,true
-Event probability_subsub,Compound events_subsub,true
-Compound events_subsub,Independent and dependent events_subsub,true
+Probability Basics_sub,Event probability_subsub,true
+Probability Basics_sub,Compound events_subsub,true
+Probability Basics_sub,Independent and dependent events_subsub,true
 Statistics and Probability_main,Combinations and Permutations_sub,true
 Combinations and Permutations_sub,Calculating factorial_subsub,true
-Calculating factorial_subsub,Arrangements_subsub,true
-Arrangements_subsub,Choosing elements from a set_subsub,true
+Combinations and Permutations_sub,Arrangements_subsub,true
+Combinations and Permutations_sub,Choosing elements from a set_subsub,true
 Statistics and Probability_main,Random Variables and Distributions_sub,true
 Random Variables and Distributions_sub,Understanding discrete and continuous random variables_subsub,true
-Understanding discrete and continuous random variables_subsub,Normal distribution_subsub,true
+Random Variables and Distributions_sub,Normal distribution_subsub,true
 Statistics and Probability_main,Inferential Statistics_sub,true
 Inferential Statistics_sub,Basic concepts of hypothesis testing_subsub,true
-Basic concepts of hypothesis testing_subsub,Confidence intervals_subsub,true
-Pre-Calculus_main,Calculus_main,true
+Inferential Statistics_sub,Confidence intervals_subsub,true
 Pre-Calculus_main,Advanced Algebra_sub,true
 Advanced Algebra_sub,Polynomial division_subsub,true
-Polynomial division_subsub,Synthetic division_subsub,true
-Synthetic division_subsub,Rational expressions_subsub,true
+Advanced Algebra_sub,Synthetic division_subsub,true
+Advanced Algebra_sub,Rational expressions_subsub,true
 Pre-Calculus_main,Complex Numbers_sub,true
 Complex Numbers_sub,Operations3_subsub,true
-Operations3_subsub,Polar form_subsub,true
-Polar form_subsub,De Moivre's Theorem_subsub,true
+Complex Numbers_sub,Polar form_subsub,true
+Complex Numbers_sub,De Moivre's Theorem_subsub,true
 Pre-Calculus_main,Exponential and Logarithmic Functions_sub,true
 Exponential and Logarithmic Functions_sub,Properties2_subsub,true
-Properties2_subsub,Solving exponential and logarithmic equations_subsub,true
+Exponential and Logarithmic Functions_sub,Solving exponential and logarithmic equations_subsub,true
 Pre-Calculus_main,Advanced Trigonometry_sub,true
 Advanced Trigonometry_sub,Solving general trigonometric equations_subsub,true
-Solving general trigonometric equations_subsub,Inverse trigonometric functions_subsub,true
+Advanced Trigonometry_sub,Inverse trigonometric functions_subsub,true
 Pre-Calculus_main,Sequences and Series_sub,true
 Sequences and Series_sub,Arithmetic and geometric sequences_subsub,true
-Arithmetic and geometric sequences_subsub,Sums_subsub,true
-Sums_subsub,Introduction to infinite series_subsub,true
+Sequences and Series_sub,Sums_subsub,true
+Sequences and Series_sub,Introduction to infinite series_subsub,true
 Pre-Calculus_main,PMatrices_sub,true
-Calculus_main,Advanced Calculus_main,true
 Calculus_main,Limits_sub,true
 Limits_sub,Concept of a limit_subsub,true
-Concept of a limit_subsub,Finding limits graphically and numerically_subsub,true
-Finding limits graphically and numerically_subsub,Limit laws_subsub,true
+Limits_sub,Finding limits graphically and numerically_subsub,true
+Limits_sub,Limit laws_subsub,true
 Calculus_main,Derivatives_sub,true
 Derivatives_sub,Definition_subsub,true
-Definition_subsub,Techniques of differentiation_subsub,true
-Techniques of differentiation_subsub,Applications to motion and optimization_subsub,true
+Derivatives_sub,Techniques of differentiation_subsub,true
+Derivatives_sub,Applications to motion and optimization_subsub,true
 Calculus_main,Integration_sub,true
 Integration_sub,Antiderivatives_subsub,true
-Antiderivatives_subsub,Definite integrals_subsub,true
-Definite integrals_subsub,The Fundamental Theorem of Calculus_subsub,true
-The Fundamental Theorem of Calculus_subsub,Area under a curve_subsub,true
+Integration_sub,Definite integrals_subsub,true
+Integration_sub,The Fundamental Theorem of Calculus_subsub,true
+Integration_sub,Area under a curve_subsub,true
 Calculus_main,CDifferential Equations_sub,true
 Calculus_main,CMultivariable Calculus_sub,true
-Advanced Calculus_main,Discrete Mathematics_main,true
 Advanced Calculus_main,Series and Sequences_sub,true
 Series and Sequences_sub,Taylor and Maclaurin series_subsub,true
-Taylor and Maclaurin series_subsub,Convergence tests_subsub,true
-Convergence tests_subsub,Applications2_subsub,true
+Series and Sequences_sub,Convergence tests_subsub,true
+Series and Sequences_sub,Applications2_subsub,true
 Advanced Calculus_main,Vector Calculus_sub,true
 Vector Calculus_sub,Vector functions_subsub,true
-Vector functions_subsub,Derivatives and integrals of vector functions_subsub,true
-Derivatives and integrals of vector functions_subsub,Line and surface integrals_subsub,true
+Vector Calculus_sub,Derivatives and integrals of vector functions_subsub,true
+Vector Calculus_sub,Line and surface integrals_subsub,true
 Advanced Calculus_main,AMultivariable Calculus_sub,true
 Advanced Calculus_main,ADifferential Equations_sub,true
 Advanced Calculus_main,Special Topics_sub,true
 Special Topics_sub,Green’s Theorem_subsub,true
-Green’s Theorem_subsub,Stokes' Theorem_subsub,true
-Stokes' Theorem_subsub,Divergence Theorem_subsub,true
-Discrete Mathematics_main,Linear Algebra_main,true
+Special Topics_sub,Stokes' Theorem_subsub,true
+Special Topics_sub,Divergence Theorem_subsub,true
 Discrete Mathematics_main,Logic and Proofs_sub,true
 Logic and Proofs_sub,Propositional logic_subsub,true
-Propositional logic_subsub,Predicate logic_subsub,true
-Predicate logic_subsub,Methods of proof_subsub,true
+Logic and Proofs_sub,Predicate logic_subsub,true
+Logic and Proofs_sub,Methods of proof_subsub,true
 Discrete Mathematics_main,Set Theory_sub,true
 Set Theory_sub,Basic concepts1_subsub,true
-Basic concepts1_subsub,Venn diagrams_subsub,true
-Venn diagrams_subsub,Operations on sets_subsub,true
+Set Theory_sub,Venn diagrams_subsub,true
+Set Theory_sub,Operations on sets_subsub,true
 Discrete Mathematics_main,Combinatorics_sub,true
 Combinatorics_sub,Advanced counting techniques_subsub,true
-Advanced counting techniques_subsub,Binomial theorem_subsub,true
-Binomial theorem_subsub,Generating functions_subsub,true
+Combinatorics_sub,Binomial theorem_subsub,true
+Combinatorics_sub,Generating functions_subsub,true
 Discrete Mathematics_main,Graph Theory_sub,true
 Graph Theory_sub,Graphs and their properties_subsub,true
-Graphs and their properties_subsub,Eulerian and Hamiltonian paths_subsub,true
-Eulerian and Hamiltonian paths_subsub,Graph coloring_subsub,true
+Graph Theory_sub,Eulerian and Hamiltonian paths_subsub,true
+Graph Theory_sub,Graph coloring_subsub,true
 Discrete Mathematics_main,Algorithms and Complexity_sub,true
 Algorithms and Complexity_sub,Algorithm design_subsub,true
-Algorithm design_subsub,Complexity classes_subsub,true
-Complexity classes_subsub,Big O notation_subsub,true
-Linear Algebra_main,Advanced Statistics_main,true
+Algorithms and Complexity_sub,Complexity classes_subsub,true
+Algorithms and Complexity_sub,Big O notation_subsub,true
 Linear Algebra_main,Vector Spaces_sub,true
 Vector Spaces_sub,Definitions and properties_subsub,true
-Definitions and properties_subsub,Subspaces_subsub,true
-Subspaces_subsub,Basis and dimension_subsub,true
+Vector Spaces_sub,Subspaces_subsub,true
+Vector Spaces_sub,Basis and dimension_subsub,true
 Linear Algebra_main,Linear Transformations_sub,true
 Linear Transformations_sub,Matrix representation_subsub,true
-Matrix representation_subsub,Geometric transformations_subsub,true
+Linear Transformations_sub,Geometric transformations_subsub,true
 Linear Algebra_main,LMatrices_sub,true
 Linear Algebra_main,Systems of Linear Equations_sub,true
 Systems of Linear Equations_sub,Solution methods_subsub,true
-Solution methods_subsub,Applications3_subsub,true
+Systems of Linear Equations_sub,Applications3_subsub,true
 Linear Algebra_main,Advanced Topics_sub,true
 Advanced Topics_sub,Orthogonality_subsub,true
-Orthogonality_subsub,Least squares_subsub,true
-Least squares_subsub,Singular value decomposition_subsub,true
-Advanced Statistics_main,Mathematical Proofs and Theory_main,true
+Advanced Topics_sub,Least squares_subsub,true
+Advanced Topics_sub,Singular value decomposition_subsub,true
 Advanced Statistics_main,Regression Analysis_sub,true
 Regression Analysis_sub,Simple and multiple linear regression_subsub,true
-Simple and multiple linear regression_subsub,Model fitting_subsub,true
+Regression Analysis_sub,Model fitting_subsub,true
 Advanced Statistics_main,ANOVA_sub,true
 ANOVA_sub,Single-factor and multi-factor ANOVA_subsub,true
 Advanced Statistics_main,Nonparametric Tests_sub,true
 Nonparametric Tests_sub,Chi-square tests_subsub,true
-Chi-square tests_subsub,Mann-Whitney U test_subsub,true
-Mann-Whitney U test_subsub,Kruskal-Wallis test_subsub,true
+Nonparametric Tests_sub,Mann-Whitney U test_subsub,true
+Nonparametric Tests_sub,Kruskal-Wallis test_subsub,true
 Advanced Statistics_main,Time Series Analysis_sub,true
 Time Series Analysis_sub,Components of time series_subsub,true
-Components of time series_subsub,ARIMA models_subsub,true
+Time Series Analysis_sub,ARIMA models_subsub,true
 Advanced Statistics_main,Bayesian Statistics_sub,true
 Bayesian Statistics_sub,Bayesian inference_subsub,true
-Bayesian inference_subsub,Bayes' theorem_subsub,true
-Mathematical Proofs and Theory_main,Arithmetic_main,true
+Bayesian Statistics_sub,Bayes' theorem_subsub,true
 Mathematical Proofs and Theory_main,Introduction to Proofs_sub,true
 Introduction to Proofs_sub,Logic and set theory based proofs_subsub,true
-Logic and set theory based proofs_subsub,Direct and indirect proofs_subsub,true
+Introduction to Proofs_sub,Direct and indirect proofs_subsub,true
 Mathematical Proofs and Theory_main,Number Theory_sub,true
 Number Theory_sub,Prime numbers_subsub,true
-Prime numbers_subsub,Modular arithmetic_subsub,true
-Modular arithmetic_subsub,Fermat's Little Theorem_subsub,true
+Number Theory_sub,Modular arithmetic_subsub,true
+Number Theory_sub,Fermat's Little Theorem_subsub,true
 Mathematical Proofs and Theory_main,Group Theory_sub,true
 Group Theory_sub,Basic properties of groups_subsub,true
-Basic properties of groups_subsub,Subgroups_subsub,true
-Subgroups_subsub,Cyclic groups_subsub,true
+Group Theory_sub,Subgroups_subsub,true
+Group Theory_sub,Cyclic groups_subsub,true
 Mathematical Proofs and Theory_main,Real Analysis_sub,true
 Real Analysis_sub,Sequences and series of real numbers_subsub,true
-Sequences and series of real numbers_subsub,Continuity1_subsub,true
-Continuity1_subsub,Differentiability_subsub,true
+Real Analysis_sub,Continuity1_subsub,true
+Real Analysis_sub,Differentiability_subsub,true
 Mathematical Proofs and Theory_main,Topology_sub,true
 Topology_sub,Basic concepts2_subsub,true
-Basic concepts2_subsub,Topological spaces_subsub,true
-Topological spaces_subsub,Continuity2_subsub,true
-Continuity2_subsub,Compactness_subsub,true
+Topology_sub,Topological spaces_subsub,true
+Topology_sub,Continuity2_subsub,true
+Topology_sub,Compactness_subsub,true
