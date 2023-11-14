@@ -87,39 +87,73 @@ def round_coordinates(coordinates):
     """
     return [(round(x, 2), round(y, 2)) for x, y in coordinates]
 
-def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, subtopic_coords, subsub_topic_coords,  
-                        individual_radius_main_topics, individual_radius_subtopics, individual_radius_subsub_topics, topic_colors):
-    """
-    Generate a Gephi GDF file content with nodes and directed edges, including RGB colors for each topic.
-    Each topic node is connected to its subsequent topic and its subtopics. The color of each main topic is copied to its subtopics.
 
-    :param topics_and_subtopics: Dictionary with main topics as keys and lists of subtopics as values.
-    :param main_topic_coords: Coordinates of main topics.
-    :param subtopic_coords: Coordinates of subtopics.
-    :param individual_radius_main_topics: Radius of each main topic.
-    :param individual_radius_subtopics: Radius of each subtopic.
-    :param topic_colors: Dictionary with main topics as keys and their RGB color strings as values.
-    :return: String representing the content of a GDF file.
-    """
+def resolve_duplicate_subtopic_names(topics_and_subtopics):
+    # Create a list of all subtopic names
+    all_subtopics = [subtopic for subtopics in topics_and_subtopics.values() for subtopic in subtopics]
+
+    # Identify duplicates
+    duplicates = {name for name in all_subtopics if all_subtopics.count(name) > 1}
+
+    # Resolve duplicates by appending characters from the main topic's name
+    resolved_subtopics = {}
+    for main_topic, subtopics in topics_and_subtopics.items():
+        resolved_subtopics[main_topic] = []
+        for subtopic in subtopics:
+            new_name = subtopic
+            while new_name in duplicates:
+                main_topic_name = main_topic
+                new_name = main_topic_name[0] + new_name  # Append first letter of main topic
+                main_topic_name = main_topic_name[1:]  # Reduce main topic name for the next iteration if needed
+                if main_topic_name == "":  # Restart appending if we run out of characters
+                    main_topic_name = main_topic
+            resolved_subtopics[main_topic].append(new_name)
+            duplicates.add(new_name)  # Update duplicates set with the new name
+
+    return resolved_subtopics
+
+def resolve_duplicate_subsub_topic_names(subsub_topics):
+    # Create a combined list of all subsub topic names
+    all_subsub_topics = [subsub for subsubs in subsub_topics.values() for subsub in subsubs]
+
+    # Identify duplicates and initialize counters
+    duplicates = {name: 0 for name in all_subsub_topics if all_subsub_topics.count(name) > 1}
+
+    # Resolve duplicates starting from subsub topics
+    resolved_subsub_topics = {}
+    for subtopic, subsubs in subsub_topics.items():
+        resolved_subsub_topics[subtopic] = []
+        for subsub in subsubs:
+            if subsub in duplicates:
+                duplicates[subsub] += 1  # Increment counter for this duplicate
+                new_name = subsub + str(duplicates[subsub])
+            else:
+                new_name = subsub
+            resolved_subsub_topics[subtopic].append(new_name)
+
+    return resolved_subsub_topics
+
+def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, subtopic_coords, subsub_topic_coords, individual_radius_main_topics, individual_radius_subtopics, individual_radius_subsub_topics, topic_colors):
     gdf_content = "nodedef>name VARCHAR,label VARCHAR,width DOUBLE,x DOUBLE,y DOUBLE,color VARCHAR\n"
 
     # Add nodes for main topics with coordinates, width, and color
     for i, (topic, subtopics) in enumerate(topics_and_subtopics.items()):
         x, y = main_topic_coords[i]
-        color = f'"{topic_colors.get(topic, "255,255,255")}"'  # Enclose color in quotes
-        gdf_content += f"{topic},{topic},{individual_radius_main_topics},{x},{y},{color}\n"
+        color = f"\"{topic_colors.get(topic, '255,255,255')}\""
+        gdf_content += f"{topic}_main,{topic},{individual_radius_main_topics},{x},{y},{color}\n"
 
         # Add nodes for each subtopic with their coordinates and parent topic's color
         for subtopic in subtopics:
             sub_x, sub_y = subtopic_coords.pop(0)
-            gdf_content += f"{topic}_{subtopic},{subtopic},{individual_radius_subtopics},{sub_x},{sub_y},{color}\n"
+            gdf_content += f"{subtopic}_sub,{subtopic},{individual_radius_subtopics},{sub_x},{sub_y},{color}\n"
 
     # Add nodes for each subsub topic with their coordinates and parent subtopic's color
     for subtopic, subsub_list in subsub_topics.items():
-        color = f"\"{topic_colors.get(subtopic.split('_')[0], '255,255,255')}\""
+        parent_topic = subtopic.split('_')[0]
+        subsub_color = f"\"{topic_colors.get(parent_topic, '255,255,255')}\""
         for subsub in subsub_list:
             subsub_x, subsub_y = subsub_topic_coords.pop(0)
-            gdf_content += f"{subtopic}_{subsub},{subsub},{individual_radius_subsub_topics},{subsub_x},{subsub_y},{color}\n"
+            gdf_content += f"{subsub}_subsub,{subsub},{individual_radius_subsub_topics},{subsub_x},{subsub_y},{subsub_color}\n"
 
     gdf_content += "edgedef>node1 VARCHAR,node2 VARCHAR,directed BOOLEAN\n"
 
@@ -127,21 +161,21 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, s
     topics = list(topics_and_subtopics.keys())
     for i, topic in enumerate(topics):
         next_topic = topics[(i + 1) % len(topics)]
-        gdf_content += f"{topic},{next_topic},true\n"
+        gdf_content += f"{topic}_main,{next_topic}_main,true\n"
 
         for subtopic in topics_and_subtopics[topic]:
-            gdf_content += f"{topic},{topic}_{subtopic},true\n"
+            gdf_content += f"{topic}_main,{subtopic}_sub,true\n"
 
-    # New directed edges for subtopics to subsub topics
-    for subtopic, subsub_list in subsub_topics.items():
-        if subsub_list:
-            # Edge from subtopic to first subsub topic
-            gdf_content += f"{subtopic},{subtopic}_{subsub_list[0]},true\n"
-            # Edges from each subsub topic to the next
-            for i in range(len(subsub_list) - 1):
-                gdf_content += f"{subtopic}_{subsub_list[i]},{subtopic}_{subsub_list[i+1]},true\n"
+            # Directed edges from subtopics to their first subsub topic, and between subsub topics
+            if subsub_topics.get(subtopic):
+                first_subsub = subsub_topics[subtopic][0]
+                gdf_content += f"{subtopic}_sub,{first_subsub}_subsub,true\n"
+                for j in range(len(subsub_topics[subtopic]) - 1):
+                    gdf_content += f"{subsub_topics[subtopic][j]}_subsub,{subsub_topics[subtopic][j+1]}_subsub,true\n"
 
     return gdf_content
+
+
 
 #######################################################
 # Main()
@@ -150,7 +184,9 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, s
 
 # Parameters for individual topic and subtopic radii
 topics_and_subtopics = mt.topics_and_subtopics
+topics_and_subtopics = resolve_duplicate_subtopic_names(topics_and_subtopics)
 subsub_topics = mt.subsub_topics
+subsub_topics = resolve_duplicate_subsub_topic_names(subsub_topics)
 individual_radius_main_topics = 50
 individual_radius_subtopics = 30
 individual_radius_subsub_topics = 15

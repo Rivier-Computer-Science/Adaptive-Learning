@@ -15,7 +15,7 @@ topic_colors = { # Green to Red
 
 topics_and_subtopics = {
     "Arithmetic": [
-        "Basic operations",
+        "Basic Operations",
         "Fractions",
         "Decimals",
         "Percentages",
