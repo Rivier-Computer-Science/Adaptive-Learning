@@ -75,6 +75,180 @@ Mathematical Proofs and Theory_Number Theory,Number Theory,30,-438.63,-133.06,"1
 Mathematical Proofs and Theory_Group Theory,Group Theory,30,-449.56,-89.42,"189,87,78"
 Mathematical Proofs and Theory_Real Analysis,Real Analysis,30,-456.16,-44.93,"189,87,78"
 Mathematical Proofs and Theory_Topology,Topology,30,-458.37,0.0,"189,87,78"
+Basic Operations_Addition,Addition,15,-623.09,0.0,"255,255,255"
+Basic Operations_Subtraction,Subtraction,15,-622.69,22.5,"255,255,255"
+Basic Operations_Multiplication,Multiplication,15,-621.47,44.96,"255,255,255"
+Basic Operations_Division,Division,15,-619.44,67.37,"255,255,255"
+Fractions_Understanding,Understanding,15,-616.6,89.69,"255,255,255"
+Fractions_Simplifying,Simplifying,15,-612.96,111.89,"255,255,255"
+Fractions_Operations,Operations,15,-608.52,133.95,"255,255,255"
+Decimals_Conversion,Conversion,15,-603.29,155.83,"255,255,255"
+Decimals_Operations,Operations,15,-597.27,177.51,"255,255,255"
+Percentages_Calculating percentages,Calculating percentages,15,-590.47,198.95,"255,255,255"
+Percentages_Percentage increase/decrease,Percentage increase/decrease,15,-582.91,220.14,"255,255,255"
+Percentages_Real-world applications,Real-world applications,15,-574.58,241.04,"255,255,255"
+Ratios and Proportions_Understanding ratios,Understanding ratios,15,-565.5,261.63,"255,255,255"
+Ratios and Proportions_Solving proportion problems,Solving proportion problems,15,-555.69,281.87,"255,255,255"
+Ratios and Proportions_Direct and inverse variation,Direct and inverse variation,15,-545.15,301.75,"255,255,255"
+Algebraic Expressions_Simplifying,Simplifying,15,-533.9,321.24,"255,255,255"
+Algebraic Expressions_Evaluating expressions,Evaluating expressions,15,-521.96,340.3,"255,255,255"
+Algebraic Expressions_Combining like terms,Combining like terms,15,-509.33,358.92,"255,255,255"
+Linear Equations_Solving one-variable,Solving one-variable,15,-496.04,377.08,"255,255,255"
+Linear Equations_Multi-variable equations,Multi-variable equations,15,-482.1,394.74,"255,255,255"
+Linear Equations_Word problems,Word problems,15,-467.54,411.89,"255,255,255"
+Inequalities_Solving,Solving,15,-452.36,428.5,"255,255,255"
+Inequalities_Graphing on a number line,Graphing on a number line,15,-436.6,444.55,"255,255,255"
+Inequalities_Compound inequalities,Compound inequalities,15,-420.26,460.02,"255,255,255"
+Systems of Equations_Methods of solving,Methods of solving,15,-403.38,474.9,"255,255,255"
+Systems of Equations_Applications,Applications,15,-385.97,489.15,"255,255,255"
+Quadratic Equations_Factoring,Factoring,15,-368.06,502.77,"255,255,255"
+Quadratic Equations_Quadratic formula,Quadratic formula,15,-349.67,515.73,"255,255,255"
+Quadratic Equations_Completing the square,Completing the square,15,-330.82,528.01,"255,255,255"
+Quadratic Equations_Graphing parabolas,Graphing parabolas,15,-311.55,539.61,"255,255,255"
+Polynomials_Adding,Adding,15,-291.86,550.51,"255,255,255"
+Polynomials_Subtracting,Subtracting,15,-271.8,560.69,"255,255,255"
+Polynomials_Multiplying,Multiplying,15,-251.38,570.13,"255,255,255"
+Polynomials_Dividing,Dividing,15,-230.63,578.84,"255,255,255"
+Polynomials_Polynomial long division,Polynomial long division,15,-209.58,586.79,"255,255,255"
+Functions_Understanding function notation,Understanding function notation,15,-188.26,593.97,"255,255,255"
+Functions_Domain and range,Domain and range,15,-166.69,600.38,"255,255,255"
+Functions_Inverse functions,Inverse functions,15,-144.91,606.01,"255,255,255"
+Basic Geometric Shapes_Properties of triangles,Properties of triangles,15,-122.94,610.84,"255,255,255"
+Basic Geometric Shapes_Quadrilaterals,Quadrilaterals,15,-100.81,614.88,"255,255,255"
+Basic Geometric Shapes_Polygons,Polygons,15,-78.54,618.12,"255,255,255"
+Congruence and Similarity_Criteria for triangles,Criteria for triangles,15,-56.17,620.55,"255,255,255"
+Congruence and Similarity_Proving figures congruent or similar,Proving figures congruent or similar,15,-33.73,622.18,"255,255,255"
+Pythagorean Theorem_Derivation,Derivation,15,-11.25,622.99,"255,255,255"
+Pythagorean Theorem_Applications in different contexts,Applications in different contexts,15,11.25,622.99,"255,255,255"
+Circles_Properties,Properties,15,33.73,622.18,"255,255,255"
+Circles_Arc length,Arc length,15,56.17,620.55,"255,255,255"
+Circles_Sector area,Sector area,15,78.54,618.12,"255,255,255"
+Circles_Theorems involving tangents and chords,Theorems involving tangents and chords,15,100.81,614.88,"255,255,255"
+Area and Volume_Formulas for various shapes,Formulas for various shapes,15,122.94,610.84,"255,255,255"
+Area and Volume_Surface area and volume of 3D figures,Surface area and volume of 3D figures,15,144.91,606.01,"255,255,255"
+Coordinate Geometry_Equation of a line,Equation of a line,15,166.69,600.38,"255,255,255"
+Coordinate Geometry_Distance formula,Distance formula,15,188.26,593.97,"255,255,255"
+Coordinate Geometry_Midpoint formula,Midpoint formula,15,209.58,586.79,"255,255,255"
+Trigonometry_Introduction to sine,Introduction to sine,15,230.63,578.84,"176,217,177"
+Trigonometry_Cosine,Cosine,15,251.38,570.13,"176,217,177"
+Trigonometry_Tangent,Tangent,15,271.8,560.69,"176,217,177"
+Trigonometry_Solving right triangles,Solving right triangles,15,291.86,550.51,"176,217,177"
+Trigonometric Ratios_Definitions,Definitions,15,311.55,539.61,"255,255,255"
+Trigonometric Ratios_Solving for unknown sides or angles in right triangles,Solving for unknown sides or angles in right triangles,15,330.82,528.01,"255,255,255"
+Graphs of Trigonometric Functions_Understanding amplitude,Understanding amplitude,15,349.67,515.73,"255,255,255"
+Graphs of Trigonometric Functions_Period,Period,15,368.06,502.77,"255,255,255"
+Graphs of Trigonometric Functions_Phase shift,Phase shift,15,385.97,489.15,"255,255,255"
+Trigonometric Identities_Pythagorean,Pythagorean,15,403.38,474.9,"255,255,255"
+Trigonometric Identities_Sum and difference,Sum and difference,15,420.26,460.02,"255,255,255"
+Trigonometric Identities_Double-angle,Double-angle,15,436.6,444.55,"255,255,255"
+Trigonometric Identities_Half-angle formulas,Half-angle formulas,15,452.36,428.5,"255,255,255"
+Applications_Real-world problems,Real-world problems,15,467.54,411.89,"255,255,255"
+Applications_Wave motion,Wave motion,15,482.1,394.74,"255,255,255"
+Applications_Circular motion,Circular motion,15,496.04,377.08,"255,255,255"
+Descriptive Statistics_Measures of central tendency,Measures of central tendency,15,509.33,358.92,"255,255,255"
+Descriptive Statistics_Measures of dispersion,Measures of dispersion,15,521.96,340.3,"255,255,255"
+Descriptive Statistics_Box plots,Box plots,15,533.9,321.24,"255,255,255"
+Probability Basics_Sample space,Sample space,15,545.15,301.75,"255,255,255"
+Probability Basics_Event probability,Event probability,15,555.69,281.87,"255,255,255"
+Probability Basics_Compound events,Compound events,15,565.5,261.63,"255,255,255"
+Probability Basics_Independent and dependent events,Independent and dependent events,15,574.58,241.04,"255,255,255"
+Combinations and Permutations_Calculating factorial,Calculating factorial,15,582.91,220.14,"255,255,255"
+Combinations and Permutations_Arrangements,Arrangements,15,590.47,198.95,"255,255,255"
+Combinations and Permutations_Choosing elements from a set,Choosing elements from a set,15,597.27,177.51,"255,255,255"
+Random Variables and Distributions_Understanding discrete and continuous random variables,Understanding discrete and continuous random variables,15,603.29,155.83,"255,255,255"
+Random Variables and Distributions_Normal distribution,Normal distribution,15,608.52,133.95,"255,255,255"
+Inferential Statistics_Basic concepts of hypothesis testing,Basic concepts of hypothesis testing,15,612.96,111.89,"255,255,255"
+Inferential Statistics_Confidence intervals,Confidence intervals,15,616.6,89.69,"255,255,255"
+Advanced Algebra_Polynomial division,Polynomial division,15,619.44,67.37,"255,255,255"
+Advanced Algebra_Synthetic division,Synthetic division,15,621.47,44.96,"255,255,255"
+Advanced Algebra_Rational expressions,Rational expressions,15,622.69,22.5,"255,255,255"
+Complex Numbers_Operations,Operations,15,623.09,0.0,"255,255,255"
+Complex Numbers_Polar form,Polar form,15,622.69,-22.5,"255,255,255"
+Complex Numbers_De Moivre's Theorem,De Moivre's Theorem,15,621.47,-44.96,"255,255,255"
+Exponential and Logarithmic Functions_Properties,Properties,15,619.44,-67.37,"255,255,255"
+Exponential and Logarithmic Functions_Solving exponential and logarithmic equations,Solving exponential and logarithmic equations,15,616.6,-89.69,"255,255,255"
+Advanced Trigonometry_Solving general trigonometric equations,Solving general trigonometric equations,15,612.96,-111.89,"255,255,255"
+Advanced Trigonometry_Inverse trigonometric functions,Inverse trigonometric functions,15,608.52,-133.95,"255,255,255"
+Sequences and Series_Arithmetic and geometric sequences,Arithmetic and geometric sequences,15,603.29,-155.83,"255,255,255"
+Sequences and Series_Sums,Sums,15,597.27,-177.51,"255,255,255"
+Sequences and Series_Introduction to infinite series,Introduction to infinite series,15,590.47,-198.95,"255,255,255"
+Matrices_Operations,Operations,15,582.91,-220.14,"255,255,255"
+Matrices_Determinants,Determinants,15,574.58,-241.04,"255,255,255"
+Matrices_Inverse of a matrix,Inverse of a matrix,15,565.5,-261.63,"255,255,255"
+Matrices_Applications in solving systems,Applications in solving systems,15,555.69,-281.87,"255,255,255"
+Limits_Concept of a limit,Concept of a limit,15,545.15,-301.75,"255,255,255"
+Limits_Finding limits graphically and numerically,Finding limits graphically and numerically,15,533.9,-321.24,"255,255,255"
+Limits_Limit laws,Limit laws,15,521.96,-340.3,"255,255,255"
+Derivatives_Definition,Definition,15,509.33,-358.92,"255,255,255"
+Derivatives_Techniques of differentiation,Techniques of differentiation,15,496.04,-377.08,"255,255,255"
+Derivatives_Applications to motion and optimization,Applications to motion and optimization,15,482.1,-394.74,"255,255,255"
+Integration_Antiderivatives,Antiderivatives,15,467.54,-411.89,"255,255,255"
+Integration_Definite integrals,Definite integrals,15,452.36,-428.5,"255,255,255"
+Integration_The Fundamental Theorem of Calculus,The Fundamental Theorem of Calculus,15,436.6,-444.55,"255,255,255"
+Integration_Area under a curve,Area under a curve,15,420.26,-460.02,"255,255,255"
+Differential Equations_Basic types and solutions,Basic types and solutions,15,403.38,-474.9,"255,255,255"
+Differential Equations_Applications to growth and decay problems,Applications to growth and decay problems,15,385.97,-489.15,"255,255,255"
+Multivariable Calculus_Partial derivatives,Partial derivatives,15,368.06,-502.77,"255,255,255"
+Multivariable Calculus_Double and triple integrals,Double and triple integrals,15,349.67,-515.73,"255,255,255"
+Series and Sequences_Taylor and Maclaurin series,Taylor and Maclaurin series,15,330.82,-528.01,"255,255,255"
+Series and Sequences_Convergence tests,Convergence tests,15,311.55,-539.61,"255,255,255"
+Series and Sequences_Applications,Applications,15,291.86,-550.51,"255,255,255"
+Vector Calculus_Vector functions,Vector functions,15,271.8,-560.69,"255,255,255"
+Vector Calculus_Derivatives and integrals of vector functions,Derivatives and integrals of vector functions,15,251.38,-570.13,"255,255,255"
+Vector Calculus_Line and surface integrals,Line and surface integrals,15,230.63,-578.84,"255,255,255"
+Special Topics_Green’s Theorem,Green’s Theorem,15,209.58,-586.79,"255,255,255"
+Special Topics_Stokes' Theorem,Stokes' Theorem,15,188.26,-593.97,"255,255,255"
+Special Topics_Divergence Theorem,Divergence Theorem,15,166.69,-600.38,"255,255,255"
+Logic and Proofs_Propositional logic,Propositional logic,15,144.91,-606.01,"255,255,255"
+Logic and Proofs_Predicate logic,Predicate logic,15,122.94,-610.84,"255,255,255"
+Logic and Proofs_Methods of proof,Methods of proof,15,100.81,-614.88,"255,255,255"
+Set Theory_Basic concepts,Basic concepts,15,78.54,-618.12,"255,255,255"
+Set Theory_Venn diagrams,Venn diagrams,15,56.17,-620.55,"255,255,255"
+Set Theory_Operations on sets,Operations on sets,15,33.73,-622.18,"255,255,255"
+Combinatorics_Advanced counting techniques,Advanced counting techniques,15,11.25,-622.99,"255,255,255"
+Combinatorics_Binomial theorem,Binomial theorem,15,-11.25,-622.99,"255,255,255"
+Combinatorics_Generating functions,Generating functions,15,-33.73,-622.18,"255,255,255"
+Graph Theory_Graphs and their properties,Graphs and their properties,15,-56.17,-620.55,"255,255,255"
+Graph Theory_Eulerian and Hamiltonian paths,Eulerian and Hamiltonian paths,15,-78.54,-618.12,"255,255,255"
+Graph Theory_Graph coloring,Graph coloring,15,-100.81,-614.88,"255,255,255"
+Algorithms and Complexity_Algorithm design,Algorithm design,15,-122.94,-610.84,"255,255,255"
+Algorithms and Complexity_Complexity classes,Complexity classes,15,-144.91,-606.01,"255,255,255"
+Algorithms and Complexity_Big O notation,Big O notation,15,-166.69,-600.38,"255,255,255"
+Vector Spaces_Definitions and properties,Definitions and properties,15,-188.26,-593.97,"255,255,255"
+Vector Spaces_Subspaces,Subspaces,15,-209.58,-586.79,"255,255,255"
+Vector Spaces_Basis and dimension,Basis and dimension,15,-230.63,-578.84,"255,255,255"
+Linear Transformations_Matrix representation,Matrix representation,15,-251.38,-570.13,"255,255,255"
+Linear Transformations_Geometric transformations,Geometric transformations,15,-271.8,-560.69,"255,255,255"
+Systems of Linear Equations_Solution methods,Solution methods,15,-291.86,-550.51,"255,255,255"
+Systems of Linear Equations_Applications,Applications,15,-311.55,-539.61,"255,255,255"
+Advanced Topics_Orthogonality,Orthogonality,15,-330.82,-528.01,"255,255,255"
+Advanced Topics_Least squares,Least squares,15,-349.67,-515.73,"255,255,255"
+Advanced Topics_Singular value decomposition,Singular value decomposition,15,-368.06,-502.77,"255,255,255"
+Regression Analysis_Simple and multiple linear regression,Simple and multiple linear regression,15,-385.97,-489.15,"255,255,255"
+Regression Analysis_Model fitting,Model fitting,15,-403.38,-474.9,"255,255,255"
+ANOVA_Single-factor and multi-factor ANOVA,Single-factor and multi-factor ANOVA,15,-420.26,-460.02,"255,255,255"
+Nonparametric Tests_Chi-square tests,Chi-square tests,15,-436.6,-444.55,"255,255,255"
+Nonparametric Tests_Mann-Whitney U test,Mann-Whitney U test,15,-452.36,-428.5,"255,255,255"
+Nonparametric Tests_Kruskal-Wallis test,Kruskal-Wallis test,15,-467.54,-411.89,"255,255,255"
+Time Series Analysis_Components of time series,Components of time series,15,-482.1,-394.74,"255,255,255"
+Time Series Analysis_ARIMA models,ARIMA models,15,-496.04,-377.08,"255,255,255"
+Bayesian Statistics_Bayesian inference,Bayesian inference,15,-509.33,-358.92,"255,255,255"
+Bayesian Statistics_Bayes' theorem,Bayes' theorem,15,-521.96,-340.3,"255,255,255"
+Introduction to Proofs_Logic and set theory based proofs,Logic and set theory based proofs,15,-533.9,-321.24,"255,255,255"
+Introduction to Proofs_Direct and indirect proofs,Direct and indirect proofs,15,-545.15,-301.75,"255,255,255"
+Number Theory_Prime numbers,Prime numbers,15,-555.69,-281.87,"255,255,255"
+Number Theory_Modular arithmetic,Modular arithmetic,15,-565.5,-261.63,"255,255,255"
+Number Theory_Fermat's Little Theorem,Fermat's Little Theorem,15,-574.58,-241.04,"255,255,255"
+Group Theory_Basic properties of groups,Basic properties of groups,15,-582.91,-220.14,"255,255,255"
+Group Theory_Subgroups,Subgroups,15,-590.47,-198.95,"255,255,255"
+Group Theory_Cyclic groups,Cyclic groups,15,-597.27,-177.51,"255,255,255"
+Real Analysis_Sequences and series of real numbers,Sequences and series of real numbers,15,-603.29,-155.83,"255,255,255"
+Real Analysis_Continuity,Continuity,15,-608.52,-133.95,"255,255,255"
+Real Analysis_Differentiability,Differentiability,15,-612.96,-111.89,"255,255,255"
+Topology_Basic concepts,Basic concepts,15,-616.6,-89.69,"255,255,255"
+Topology_Topological spaces,Topological spaces,15,-619.44,-67.37,"255,255,255"
+Topology_Continuity,Continuity,15,-621.47,-44.96,"255,255,255"
+Topology_Compactness,Compactness,15,-622.69,-22.5,"255,255,255"
 edgedef>node1 VARCHAR,node2 VARCHAR,directed BOOLEAN
 Arithmetic,Algebra,true
 Arithmetic,Arithmetic_Basic operations,true
@@ -152,3 +326,177 @@ Mathematical Proofs and Theory,Mathematical Proofs and Theory_Number Theory,true
 Mathematical Proofs and Theory,Mathematical Proofs and Theory_Group Theory,true
 Mathematical Proofs and Theory,Mathematical Proofs and Theory_Real Analysis,true
 Mathematical Proofs and Theory,Mathematical Proofs and Theory_Topology,true
+Basic Operations,Basic Operations_Addition,true
+Basic Operations_Addition,Basic Operations_Subtraction,true
+Basic Operations_Subtraction,Basic Operations_Multiplication,true
+Basic Operations_Multiplication,Basic Operations_Division,true
+Fractions,Fractions_Understanding,true
+Fractions_Understanding,Fractions_Simplifying,true
+Fractions_Simplifying,Fractions_Operations,true
+Decimals,Decimals_Conversion,true
+Decimals_Conversion,Decimals_Operations,true
+Percentages,Percentages_Calculating percentages,true
+Percentages_Calculating percentages,Percentages_Percentage increase/decrease,true
+Percentages_Percentage increase/decrease,Percentages_Real-world applications,true
+Ratios and Proportions,Ratios and Proportions_Understanding ratios,true
+Ratios and Proportions_Understanding ratios,Ratios and Proportions_Solving proportion problems,true
+Ratios and Proportions_Solving proportion problems,Ratios and Proportions_Direct and inverse variation,true
+Algebraic Expressions,Algebraic Expressions_Simplifying,true
+Algebraic Expressions_Simplifying,Algebraic Expressions_Evaluating expressions,true
+Algebraic Expressions_Evaluating expressions,Algebraic Expressions_Combining like terms,true
+Linear Equations,Linear Equations_Solving one-variable,true
+Linear Equations_Solving one-variable,Linear Equations_Multi-variable equations,true
+Linear Equations_Multi-variable equations,Linear Equations_Word problems,true
+Inequalities,Inequalities_Solving,true
+Inequalities_Solving,Inequalities_Graphing on a number line,true
+Inequalities_Graphing on a number line,Inequalities_Compound inequalities,true
+Systems of Equations,Systems of Equations_Methods of solving,true
+Systems of Equations_Methods of solving,Systems of Equations_Applications,true
+Quadratic Equations,Quadratic Equations_Factoring,true
+Quadratic Equations_Factoring,Quadratic Equations_Quadratic formula,true
+Quadratic Equations_Quadratic formula,Quadratic Equations_Completing the square,true
+Quadratic Equations_Completing the square,Quadratic Equations_Graphing parabolas,true
+Polynomials,Polynomials_Adding,true
+Polynomials_Adding,Polynomials_Subtracting,true
+Polynomials_Subtracting,Polynomials_Multiplying,true
+Polynomials_Multiplying,Polynomials_Dividing,true
+Polynomials_Dividing,Polynomials_Polynomial long division,true
+Functions,Functions_Understanding function notation,true
+Functions_Understanding function notation,Functions_Domain and range,true
+Functions_Domain and range,Functions_Inverse functions,true
+Basic Geometric Shapes,Basic Geometric Shapes_Properties of triangles,true
+Basic Geometric Shapes_Properties of triangles,Basic Geometric Shapes_Quadrilaterals,true
+Basic Geometric Shapes_Quadrilaterals,Basic Geometric Shapes_Polygons,true
+Congruence and Similarity,Congruence and Similarity_Criteria for triangles,true
+Congruence and Similarity_Criteria for triangles,Congruence and Similarity_Proving figures congruent or similar,true
+Pythagorean Theorem,Pythagorean Theorem_Derivation,true
+Pythagorean Theorem_Derivation,Pythagorean Theorem_Applications in different contexts,true
+Circles,Circles_Properties,true
+Circles_Properties,Circles_Arc length,true
+Circles_Arc length,Circles_Sector area,true
+Circles_Sector area,Circles_Theorems involving tangents and chords,true
+Area and Volume,Area and Volume_Formulas for various shapes,true
+Area and Volume_Formulas for various shapes,Area and Volume_Surface area and volume of 3D figures,true
+Coordinate Geometry,Coordinate Geometry_Equation of a line,true
+Coordinate Geometry_Equation of a line,Coordinate Geometry_Distance formula,true
+Coordinate Geometry_Distance formula,Coordinate Geometry_Midpoint formula,true
+Trigonometry,Trigonometry_Introduction to sine,true
+Trigonometry_Introduction to sine,Trigonometry_Cosine,true
+Trigonometry_Cosine,Trigonometry_Tangent,true
+Trigonometry_Tangent,Trigonometry_Solving right triangles,true
+Trigonometric Ratios,Trigonometric Ratios_Definitions,true
+Trigonometric Ratios_Definitions,Trigonometric Ratios_Solving for unknown sides or angles in right triangles,true
+Graphs of Trigonometric Functions,Graphs of Trigonometric Functions_Understanding amplitude,true
+Graphs of Trigonometric Functions_Understanding amplitude,Graphs of Trigonometric Functions_Period,true
+Graphs of Trigonometric Functions_Period,Graphs of Trigonometric Functions_Phase shift,true
+Trigonometric Identities,Trigonometric Identities_Pythagorean,true
+Trigonometric Identities_Pythagorean,Trigonometric Identities_Sum and difference,true
+Trigonometric Identities_Sum and difference,Trigonometric Identities_Double-angle,true
+Trigonometric Identities_Double-angle,Trigonometric Identities_Half-angle formulas,true
+Applications,Applications_Real-world problems,true
+Applications_Real-world problems,Applications_Wave motion,true
+Applications_Wave motion,Applications_Circular motion,true
+Descriptive Statistics,Descriptive Statistics_Measures of central tendency,true
+Descriptive Statistics_Measures of central tendency,Descriptive Statistics_Measures of dispersion,true
+Descriptive Statistics_Measures of dispersion,Descriptive Statistics_Box plots,true
+Probability Basics,Probability Basics_Sample space,true
+Probability Basics_Sample space,Probability Basics_Event probability,true
+Probability Basics_Event probability,Probability Basics_Compound events,true
+Probability Basics_Compound events,Probability Basics_Independent and dependent events,true
+Combinations and Permutations,Combinations and Permutations_Calculating factorial,true
+Combinations and Permutations_Calculating factorial,Combinations and Permutations_Arrangements,true
+Combinations and Permutations_Arrangements,Combinations and Permutations_Choosing elements from a set,true
+Random Variables and Distributions,Random Variables and Distributions_Understanding discrete and continuous random variables,true
+Random Variables and Distributions_Understanding discrete and continuous random variables,Random Variables and Distributions_Normal distribution,true
+Inferential Statistics,Inferential Statistics_Basic concepts of hypothesis testing,true
+Inferential Statistics_Basic concepts of hypothesis testing,Inferential Statistics_Confidence intervals,true
+Advanced Algebra,Advanced Algebra_Polynomial division,true
+Advanced Algebra_Polynomial division,Advanced Algebra_Synthetic division,true
+Advanced Algebra_Synthetic division,Advanced Algebra_Rational expressions,true
+Complex Numbers,Complex Numbers_Operations,true
+Complex Numbers_Operations,Complex Numbers_Polar form,true
+Complex Numbers_Polar form,Complex Numbers_De Moivre's Theorem,true
+Exponential and Logarithmic Functions,Exponential and Logarithmic Functions_Properties,true
+Exponential and Logarithmic Functions_Properties,Exponential and Logarithmic Functions_Solving exponential and logarithmic equations,true
+Advanced Trigonometry,Advanced Trigonometry_Solving general trigonometric equations,true
+Advanced Trigonometry_Solving general trigonometric equations,Advanced Trigonometry_Inverse trigonometric functions,true
+Sequences and Series,Sequences and Series_Arithmetic and geometric sequences,true
+Sequences and Series_Arithmetic and geometric sequences,Sequences and Series_Sums,true
+Sequences and Series_Sums,Sequences and Series_Introduction to infinite series,true
+Matrices,Matrices_Operations,true
+Matrices_Operations,Matrices_Determinants,true
+Matrices_Determinants,Matrices_Inverse of a matrix,true
+Matrices_Inverse of a matrix,Matrices_Applications in solving systems,true
+Limits,Limits_Concept of a limit,true
+Limits_Concept of a limit,Limits_Finding limits graphically and numerically,true
+Limits_Finding limits graphically and numerically,Limits_Limit laws,true
+Derivatives,Derivatives_Definition,true
+Derivatives_Definition,Derivatives_Techniques of differentiation,true
+Derivatives_Techniques of differentiation,Derivatives_Applications to motion and optimization,true
+Integration,Integration_Antiderivatives,true
+Integration_Antiderivatives,Integration_Definite integrals,true
+Integration_Definite integrals,Integration_The Fundamental Theorem of Calculus,true
+Integration_The Fundamental Theorem of Calculus,Integration_Area under a curve,true
+Differential Equations,Differential Equations_Basic types and solutions,true
+Differential Equations_Basic types and solutions,Differential Equations_Applications to growth and decay problems,true
+Multivariable Calculus,Multivariable Calculus_Partial derivatives,true
+Multivariable Calculus_Partial derivatives,Multivariable Calculus_Double and triple integrals,true
+Series and Sequences,Series and Sequences_Taylor and Maclaurin series,true
+Series and Sequences_Taylor and Maclaurin series,Series and Sequences_Convergence tests,true
+Series and Sequences_Convergence tests,Series and Sequences_Applications,true
+Vector Calculus,Vector Calculus_Vector functions,true
+Vector Calculus_Vector functions,Vector Calculus_Derivatives and integrals of vector functions,true
+Vector Calculus_Derivatives and integrals of vector functions,Vector Calculus_Line and surface integrals,true
+Special Topics,Special Topics_Green’s Theorem,true
+Special Topics_Green’s Theorem,Special Topics_Stokes' Theorem,true
+Special Topics_Stokes' Theorem,Special Topics_Divergence Theorem,true
+Logic and Proofs,Logic and Proofs_Propositional logic,true
+Logic and Proofs_Propositional logic,Logic and Proofs_Predicate logic,true
+Logic and Proofs_Predicate logic,Logic and Proofs_Methods of proof,true
+Set Theory,Set Theory_Basic concepts,true
+Set Theory_Basic concepts,Set Theory_Venn diagrams,true
+Set Theory_Venn diagrams,Set Theory_Operations on sets,true
+Combinatorics,Combinatorics_Advanced counting techniques,true
+Combinatorics_Advanced counting techniques,Combinatorics_Binomial theorem,true
+Combinatorics_Binomial theorem,Combinatorics_Generating functions,true
+Graph Theory,Graph Theory_Graphs and their properties,true
+Graph Theory_Graphs and their properties,Graph Theory_Eulerian and Hamiltonian paths,true
+Graph Theory_Eulerian and Hamiltonian paths,Graph Theory_Graph coloring,true
+Algorithms and Complexity,Algorithms and Complexity_Algorithm design,true
+Algorithms and Complexity_Algorithm design,Algorithms and Complexity_Complexity classes,true
+Algorithms and Complexity_Complexity classes,Algorithms and Complexity_Big O notation,true
+Vector Spaces,Vector Spaces_Definitions and properties,true
+Vector Spaces_Definitions and properties,Vector Spaces_Subspaces,true
+Vector Spaces_Subspaces,Vector Spaces_Basis and dimension,true
+Linear Transformations,Linear Transformations_Matrix representation,true
+Linear Transformations_Matrix representation,Linear Transformations_Geometric transformations,true
+Systems of Linear Equations,Systems of Linear Equations_Solution methods,true
+Systems of Linear Equations_Solution methods,Systems of Linear Equations_Applications,true
+Advanced Topics,Advanced Topics_Orthogonality,true
+Advanced Topics_Orthogonality,Advanced Topics_Least squares,true
+Advanced Topics_Least squares,Advanced Topics_Singular value decomposition,true
+Regression Analysis,Regression Analysis_Simple and multiple linear regression,true
+Regression Analysis_Simple and multiple linear regression,Regression Analysis_Model fitting,true
+ANOVA,ANOVA_Single-factor and multi-factor ANOVA,true
+Nonparametric Tests,Nonparametric Tests_Chi-square tests,true
+Nonparametric Tests_Chi-square tests,Nonparametric Tests_Mann-Whitney U test,true
+Nonparametric Tests_Mann-Whitney U test,Nonparametric Tests_Kruskal-Wallis test,true
+Time Series Analysis,Time Series Analysis_Components of time series,true
+Time Series Analysis_Components of time series,Time Series Analysis_ARIMA models,true
+Bayesian Statistics,Bayesian Statistics_Bayesian inference,true
+Bayesian Statistics_Bayesian inference,Bayesian Statistics_Bayes' theorem,true
+Introduction to Proofs,Introduction to Proofs_Logic and set theory based proofs,true
+Introduction to Proofs_Logic and set theory based proofs,Introduction to Proofs_Direct and indirect proofs,true
+Number Theory,Number Theory_Prime numbers,true
+Number Theory_Prime numbers,Number Theory_Modular arithmetic,true
+Number Theory_Modular arithmetic,Number Theory_Fermat's Little Theorem,true
+Group Theory,Group Theory_Basic properties of groups,true
+Group Theory_Basic properties of groups,Group Theory_Subgroups,true
+Group Theory_Subgroups,Group Theory_Cyclic groups,true
+Real Analysis,Real Analysis_Sequences and series of real numbers,true
+Real Analysis_Sequences and series of real numbers,Real Analysis_Continuity,true
+Real Analysis_Continuity,Real Analysis_Differentiability,true
+Topology,Topology_Basic concepts,true
+Topology_Basic concepts,Topology_Topological spaces,true
+Topology_Topological spaces,Topology_Continuity,true
+Topology_Continuity,Topology_Compactness,true

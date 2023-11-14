@@ -40,7 +40,45 @@ def generate_coordinates(topics_and_subtopics, individual_radius_main_topics, in
 
     return main_topic_coordinates, subtopic_coordinates
 
+def find_radial_angle_of_subtopic(main_topic_coords, topics_and_subtopics, main_topic_name):
+    """
+    Find the radial angle of a subtopic based on its alignment with the main topic.
 
+    :param main_topic_coords: Coordinates of main topics.
+    :param topics_and_subtopics: Dictionary of main topics and their subtopics.
+    :param main_topic_name: The name of the main topic.
+    :param subtopic_name: The name of the subtopic to find the radial angle for.
+    :return: Radial angle of the subtopic.
+    """
+    # Find the index of the main topic
+    main_topic_index = list(topics_and_subtopics.keys()).index(main_topic_name)
+
+    # Get the coordinates of the main topic
+    x, y = main_topic_coords[main_topic_index]
+
+    # Calculate the radial angle
+    angle = math.atan2(y, x)
+    return angle
+
+def generate_subsub_topic_coordinates(subsub_topics, individual_radius_subsub_topics, separation_subsub_topics,sub_topic_radial_angle):
+    num_subsub_topics = sum([len(subsub_list) for subsub_list in subsub_topics.values()])
+    radius_subsub_topics = calculate_radius_for_spacing(num_subsub_topics, individual_radius_subsub_topics, separation_subsub_topics)
+
+    # Starting angle for 'Addition' aligned with 'Basic Operations'
+    start_angle_subsub_topics = sub_topic_radial_angle
+
+    subsub_topic_coordinates = []
+    angle_step_subsub_topics = 2 * math.pi / num_subsub_topics
+    current_angle = start_angle_subsub_topics
+
+    for _, subsub_list in subsub_topics.items():
+        for _ in subsub_list:
+            x = radius_subsub_topics * math.cos(current_angle)
+            y = radius_subsub_topics * math.sin(current_angle)
+            subsub_topic_coordinates.append((x, y))
+            current_angle -= angle_step_subsub_topics  # Move counterclockwise
+
+    return subsub_topic_coordinates
 
 
 def round_coordinates(coordinates):
@@ -49,7 +87,8 @@ def round_coordinates(coordinates):
     """
     return [(round(x, 2), round(y, 2)) for x, y in coordinates]
 
-def generate_gephi_gdf(topics_and_subtopics, main_topic_coords, subtopic_coords, individual_radius_main_topics, individual_radius_subtopics, topic_colors):
+def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, subtopic_coords, subsub_topic_coords,  
+                        individual_radius_main_topics, individual_radius_subtopics, individual_radius_subsub_topics, topic_colors):
     """
     Generate a Gephi GDF file content with nodes and directed edges, including RGB colors for each topic.
     Each topic node is connected to its subsequent topic and its subtopics. The color of each main topic is copied to its subtopics.
@@ -75,6 +114,13 @@ def generate_gephi_gdf(topics_and_subtopics, main_topic_coords, subtopic_coords,
             sub_x, sub_y = subtopic_coords.pop(0)
             gdf_content += f"{topic}_{subtopic},{subtopic},{individual_radius_subtopics},{sub_x},{sub_y},{color}\n"
 
+    # Add nodes for each subsub topic with their coordinates and parent subtopic's color
+    for subtopic, subsub_list in subsub_topics.items():
+        color = f"\"{topic_colors.get(subtopic.split('_')[0], '255,255,255')}\""
+        for subsub in subsub_list:
+            subsub_x, subsub_y = subsub_topic_coords.pop(0)
+            gdf_content += f"{subtopic}_{subsub},{subsub},{individual_radius_subsub_topics},{subsub_x},{subsub_y},{color}\n"
+
     gdf_content += "edgedef>node1 VARCHAR,node2 VARCHAR,directed BOOLEAN\n"
 
     # Directed edges from each topic to the next and to each of its subtopics
@@ -85,6 +131,15 @@ def generate_gephi_gdf(topics_and_subtopics, main_topic_coords, subtopic_coords,
 
         for subtopic in topics_and_subtopics[topic]:
             gdf_content += f"{topic},{topic}_{subtopic},true\n"
+
+    # New directed edges for subtopics to subsub topics
+    for subtopic, subsub_list in subsub_topics.items():
+        if subsub_list:
+            # Edge from subtopic to first subsub topic
+            gdf_content += f"{subtopic},{subtopic}_{subsub_list[0]},true\n"
+            # Edges from each subsub topic to the next
+            for i in range(len(subsub_list) - 1):
+                gdf_content += f"{subtopic}_{subsub_list[i]},{subtopic}_{subsub_list[i+1]},true\n"
 
     return gdf_content
 
@@ -98,22 +153,33 @@ topics_and_subtopics = mt.topics_and_subtopics
 subsub_topics = mt.subsub_topics
 individual_radius_main_topics = 50
 individual_radius_subtopics = 30
+individual_radius_subsub_topics = 15
 separation_main_topics = 2.0
 separation_sub_topics = 1.5
+separation_subsub_topics = 1.5
 topic_colors = mt.topic_colors
 
 # Generate and round coordinates
-main_topic_coords, subtopic_coords = generate_coordinates(topics_and_subtopics, individual_radius_main_topics, individual_radius_subtopics,separation_main_topics,separation_sub_topics)
+main_topic_coords, sub_topic_coords = generate_coordinates(topics_and_subtopics, individual_radius_main_topics, individual_radius_subtopics,separation_main_topics,separation_sub_topics)
+subsub_topic_starting_radial_angle = find_radial_angle_of_subtopic(main_topic_coords, topics_and_subtopics, "Arithmetic" )
+subsub_topic_coords = generate_subsub_topic_coordinates(subsub_topics, individual_radius_subsub_topics, separation_subsub_topics,subsub_topic_starting_radial_angle)
 rounded_main_topic_coords = round_coordinates(main_topic_coords)
-rounded_subtopic_coords = round_coordinates(subtopic_coords)
+rounded_sub_topic_coords = round_coordinates(sub_topic_coords)
+rounded_subsub_topic_coords = round_coordinates(subsub_topic_coords)
 
 # Print the rounded coordinates
 print("Rounded Main Topic Coordinates:")
 for coord in rounded_main_topic_coords:
     print(coord)
 
-print("\nRounded Subtopic Coordinates:")
-for coord in rounded_subtopic_coords:
+print("\nRounded Sub topic Coordinates:")
+for coord in rounded_sub_topic_coords:
     print(coord)
 
-print(generate_gephi_gdf(topics_and_subtopics,rounded_main_topic_coords,rounded_subtopic_coords,individual_radius_main_topics,individual_radius_subtopics,topic_colors))
+print("\nRounded Subsub topic Coordinates:")
+for coord in rounded_subsub_topic_coords:
+    print(coord)
+
+print(generate_gephi_gdf(topics_and_subtopics,subsub_topics, 
+                         rounded_main_topic_coords,rounded_sub_topic_coords,rounded_subsub_topic_coords,
+                         individual_radius_main_topics,individual_radius_subtopics,individual_radius_subsub_topics, topic_colors))
