@@ -133,40 +133,115 @@ def resolve_duplicate_subsub_topic_names(subsub_topics):
 
     return resolved_subsub_topics
 
+
+
 def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, subtopic_coords, subsub_topic_coords, individual_radius_main_topics, individual_radius_subtopics, individual_radius_subsub_topics, topic_colors):
     gdf_content = "nodedef>name VARCHAR,label VARCHAR,width DOUBLE,x DOUBLE,y DOUBLE,color VARCHAR\n"
 
-    # Add nodes for main topics with coordinates, width, and color
-    for i, (topic, subtopics) in enumerate(topics_and_subtopics.items()):
-        x, y = main_topic_coords[i]
-        color = f"\"{topic_colors.get(topic, '255,255,255')}\""
-        gdf_content += f"{topic}_main,{topic},{individual_radius_main_topics},{x},{y},{color}\n"
+    # Process topics and subtopics to replace spaces with underscores
+    topics_and_subtopics_new = {}
+    subsub_topics_new = {}
+ 
+    for km, subtopics in topics_and_subtopics.items(): # km: key main subtopics: values (sub topics)
+        modified_subtopics = [ km + '->' + subtopic for subtopic in subtopics ]
+        topics_and_subtopics_new[km] = modified_subtopics
 
-        # Add nodes for each subtopic with their coordinates and parent topic's color
+    for ks, subsubtopics in subsub_topics.items():
+        # Initialize a list to store the modified subsubtopics
+        modified_subsubtopics = []
+
+        # Iterate over each subsubtopic
+        for subsubtopic in subsubtopics:
+            # Find the main topic and subtopic
+            for main_topic, subtopics in topics_and_subtopics_new.items():
+                if any(ks in subtopic for subtopic in subtopics):
+                    # Format string as "Main Topic->Subtopic->Subsubtopic"
+                    modified_subsubtopic = f"{main_topic}->{ks}->{subsubtopic}"
+                    modified_subsubtopics.append(modified_subsubtopic)
+                    break  # Once found, no need to check other main topics
+
+        # Assign the modified list to the key in subsub_topics_new
+        subsub_topics_new[ks] = modified_subsubtopics
+        
+    print('modified dictionary', topics_and_subtopics_new)
+    print('modified sub dictionary', subsub_topics_new)
+
+
+    
+
+    # for main_topic, subtopics in topics_and_subtopics.items():
+    #     main_topic_key = main_topic.replace(' ', '_')        
+    #     print('main_topic_key= ', main_topic_key)
+    #     for subtopic in subtopics:
+    #         subtopic_key = subtopic.replace(' ', '_')
+    #         processed_subtopic_name = f"{main_topic_key}->{subtopic_key}"
+    #         print(processed_subtopic_name)
+    #         subtopics_list_new.append(processed_subtopic_name)
+    #         for subsub_topic in subsub_topics:
+    #             subsub_topic_key = subsub_topic.replace(' ','_')                           
+    #             if subtopic_key == subtopic:                    
+    #                 processed_subsub_topic_name = f"{main_topic_key}->{subtopic_key}->{subsub_topic_key}"
+    #                 print(processed_subsub_topic_name)     
+    #                 subsub_topics_list_new.append(processed_subsub_topic_name)
+    #         subsub_topics_new[subtopic_key] = subsub_topics_list_new
+    #         subsub_topics_list_new = []
+    #     topics_and_subtopics_new[main_topic_key]=subtopics_list_new
+    #     subtopics_list_new = []
+    print('***************************************************')
+#    print(topics_and_subtopics_new)
+    print('***************************************************')
+#    print(subsub_topics_new)
+
+
+    processed_subtopics = {}
+    for main_topic, subtopics in topics_and_subtopics.items():
+        main_topic_key = main_topic.replace(' ', '_')
         for subtopic in subtopics:
+            subtopic_key = subtopic.replace(' ', '_')
+            processed_subtopic_name = f"{main_topic_key}->{subtopic_key}"
+            processed_subtopics[processed_subtopic_name] = main_topic_key  # Mapping to main topic for color
+            # Add subtopic nodes
             sub_x, sub_y = subtopic_coords.pop(0)
-            gdf_content += f"{subtopic}_sub,{subtopic},{individual_radius_subtopics},{sub_x},{sub_y},{color}\n"
+            color = f"\"{topic_colors.get(main_topic, '255,255,255')}\""
+            gdf_content += f"{processed_subtopic_name},{subtopic},{individual_radius_subtopics},{sub_x},{sub_y},{color}\n"
 
-    # Add nodes for each subsub topic with their coordinates and parent subtopic's color
-    for subtopic, subsub_list in subsub_topics.items():
-        parent_topic = subtopic.split('_')[0]
-        subsub_color = f"\"{topic_colors.get(parent_topic, '255,255,255')}\""
-        for subsub in subsub_list:
-            subsub_x, subsub_y = subsub_topic_coords.pop(0)
-            gdf_content += f"{subsub}_subsub,{subsub},{individual_radius_subsub_topics},{subsub_x},{subsub_y},{subsub_color}\n"
+            # Add subsub topic nodes
+            original_subtopic_key = f"{main_topic}_{subtopic}"
+            if original_subtopic_key in subsub_topics:
+                for subsub_topic in subsub_topics[original_subtopic_key]:
+                    subsub_topic_key = subsub_topic.replace(' ', '_')
+                    processed_subsub_topic_name = f"{processed_subtopic_name}->{subsub_topic_key}"
+                    if subsub_topic_coords:
+                        subsub_x, subsub_y = subsub_topic_coords.pop(0)
+                        gdf_content += f"{processed_subsub_topic_name},{subsub_topic},{individual_radius_subsub_topics},{subsub_x},{subsub_y},{color}\n"
+
+    # Add main topic nodes
+    for i, main_topic in enumerate(topics_and_subtopics.keys()):
+        main_topic_key = main_topic.replace(' ', '_')
+        x, y = main_topic_coords[i]
+        color = f"\"{topic_colors.get(main_topic, '255,255,255')}\""
+        gdf_content += f"{main_topic_key},{main_topic},{individual_radius_main_topics},{x},{y},{color}\n"
 
     gdf_content += "edgedef>node1 VARCHAR,node2 VARCHAR,directed BOOLEAN\n"
 
-  # Directed edges from each topic to its subtopics
+    # Add edges from main topics to subtopics
     for main_topic, subtopics in topics_and_subtopics.items():
+        main_topic_key = main_topic.replace(' ', '_')
         for subtopic in subtopics:
-            gdf_content += f"{main_topic}_main,{subtopic}_sub,true\n"
-            if subtopic in subsub_topics:
-                # Directed edges from this subtopic to each of its subsub topics
-                for subsub_topic in subsub_topics[subtopic]:
-                    gdf_content += f"{subtopic}_sub,{subsub_topic}_subsub,true\n"
+            subtopic_key = subtopic.replace(' ', '_')
+            processed_subtopic_name = f"{main_topic_key}->{subtopic_key}"
+            gdf_content += f"{main_topic_key},{processed_subtopic_name},true\n"
+
+            # Add edges from subtopics to subsub topics
+            original_subtopic_key = f"{main_topic}_{subtopic}"
+            if original_subtopic_key in subsub_topics:
+                for subsub_topic in subsub_topics[original_subtopic_key]:
+                    subsub_topic_key = subsub_topic.replace(' ', '_')
+                    processed_subsub_topic_name = f"{processed_subtopic_name}->{subsub_topic_key}"
+                    gdf_content += f"{processed_subtopic_name},{processed_subsub_topic_name},true\n"
 
     return gdf_content
+
 
 
 
@@ -177,9 +252,9 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, s
 
 # Parameters for individual topic and subtopic radii
 topics_and_subtopics = mt.topics_and_subtopics
-topics_and_subtopics = resolve_duplicate_subtopic_names(topics_and_subtopics)
+#topics_and_subtopics = resolve_duplicate_subtopic_names(topics_and_subtopics)
 subsub_topics = mt.subsub_topics
-subsub_topics = resolve_duplicate_subsub_topic_names(subsub_topics)
+#subsub_topics = resolve_duplicate_subsub_topic_names(subsub_topics)
 individual_radius_main_topics = 50
 individual_radius_subtopics = 30
 individual_radius_subsub_topics = 15
