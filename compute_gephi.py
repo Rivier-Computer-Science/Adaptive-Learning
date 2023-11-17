@@ -204,6 +204,42 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, s
                 subsub_x, subsub_y = subsub_topic_coords.pop(0)
                 gdf_content += f"{subsub_topic},{subsub_topic.split('->')[-1]},{individual_radius_subsub_topics},{subsub_x},{subsub_y},{color}\n"
 
+
+    # Add directed edges from main topics to subtopics and from subtopics to subsub topics
+    gdf_content += "edgedef>node1 VARCHAR,node2 VARCHAR,directed BOOLEAN\n"
+
+ 
+    # Add directed edges from main topics to subtopics and from subtopics to subsub topics
+    for main_topic, subtopics in topics_and_subtopics.items():
+        for subtopic in subtopics:
+            gdf_content += f"{main_topic},{subtopic},true\n"
+            print('subtopic: ', subtopic)
+            if subtopic in subsub_topics:
+                for subsub_topic in subsub_topics[subtopic]:
+                    gdf_content += f"{subtopic},{subsub_topic},true\n"
+
+  # Add directed edges between main topics in the order they appear
+    main_topics = list(topics_and_subtopics.keys())
+    for i in range(len(main_topics) - 1):
+        from_topic = main_topics[i]
+        to_topic = main_topics[i + 1]
+        gdf_content += f"{from_topic},{to_topic},true\n"
+
+    # Add directed edges between adjacent subtopics
+    for subtopics in topics_and_subtopics.values():
+        for i in range(len(subtopics) - 1):
+            gdf_content += f"{subtopics[i]},{subtopics[i + 1]},true\n"
+    
+    # Add directed edges between adjacent subsub topics
+    print('****************************************************************************')
+    print('subsub_topics: \n', subsub_topics)
+    print('****************************************************************************')
+    for subsub_list in subsub_topics.values():
+        for i in range(len(subsub_list) - 1):
+            gdf_content += f"{subsub_list[i]},{subsub_list[i + 1]},true\n"
+
+
+
     return gdf_content
 
 
