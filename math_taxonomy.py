@@ -3,14 +3,14 @@ topic_colors = { # Green to Red
     "Algebra": "97,130,100",    
     "Geometry": "121,172,120",
     "Trigonometry": "176,217,177",
-    "Statistics and Probability": "228,247,143",
+    "Statistics_and_Probability": "228,247,143",
     "Pre-Calculus": "253,255,188",
     "Calculus": "255,238,187",
-    "Advanced Calculus": "255,220,184",
-    "Discrete Mathematics": "255,193,182",
-    "Linear Algebra": "250,135,127",
-    "Advanced Statistics": "239,75,75",
-    "Mathematical Proofs and Theory": "189,87,78"
+    "Advanced_Calculus": "255,220,184",
+    "Discrete_Mathematics": "255,193,182",
+    "Linear_Algebra": "250,135,127",
+    "Advanced_Statistics": "239,75,75",
+    "Mathematical_Proofs_and_Theory": "189,87,78"
 }
 
 topics_and_subtopics = {
