@@ -288,5 +288,312 @@ subsubsub_topics = {
     "Pictograph": ["Data as Symbols", "Legend"], 
     "Line graph": ["Series of Data Points", "Interpret Trends"],
     # Arithmetic Patterns and Sequences
-    "Arithmetic Sequences": ["Constant Difference", "Extend a Sequence"]
+    "Arithmetic Sequences": ["Constant Difference", "Extend a Sequence"],
+    #########################################
+    # ALGEBRA
+    #########################################
+        # Algebraic Expressions
+    "Simplifying": ["Combine Like Terms", "Use Algebraic Properties", "Apply Order of Operations"],
+    "Evaluating Expressions": ["Substitute Values", "Calculate Results", "Use of Variables"],
+    "Combining Like Terms": ["Identify Like Terms", "Summing Coefficients", "Simplifying Polynomials"],
+
+    # Linear Equations
+    "Solving One-Variable": ["Isolate Variable", "Use Inverse Operations", "Check Solutions"],
+    "Multi-Variable Equations": ["Solve Systems of Equations", "Use Elimination", "Use Substitution"],
+    "Word Problems": ["Translate Words to Equations", "Interpret Results", "Solve Real-Life Problems"],
+
+    # Inequalities
+    "Solving": ["Isolate Variable", "Consider Inequality Direction", "Solution Sets"],
+    "Graphing on a Number Line": ["Represent Inequalities", "Use Open/Closed Circles", "Shade Solution Regions"],
+    "Compound Inequalities": ["Intersecting Solutions", "Combining Solution Sets", "Graphical Representation"],
+
+    # Polynomials
+    "Adding": ["Sum Like Terms", "Combine Polynomial Expressions", "Simplify Results"],
+    "Subtracting": ["Subtract Polynomial Terms", "Rearrange Terms", "Simplify Expressions"],
+    "Multiplying": ["Use Distributive Property", "Apply FOIL Method", "Expand Products"],
+    "Dividing": ["Long Division of Polynomials", "Synthetic Division", "Remainder Theorem"],
+    "Polynomial Long Division": ["Divide by Monomials", "Divide by Binomials", "Quotient and Remainder"],
+
+    # Systems of Equations
+    "Methods of Solving": ["Graphical Solution", "Algebraic Solution", "Comparison Method"],
+    "Applications": ["Real-Life Problems", "Word Problems", "Modeling with Systems"],
+
+    # Functions
+    "Notation": ["Function Definition", "Function Evaluation", "Independent and Dependent Variables"],
+    "Domain and Range": ["Determine Domain", "Determine Range", "Function Behavior Analysis"],
+    "Inverse Functions": ["Find Inverse Functions", "Function Inversion Properties", "Graphical Representation"],
+
+    # Quadratic Equations
+    "Factoring": ["Factor Common Terms", "Factor Trinomials", "Factor by Grouping"],
+    "Quadratic Formula": ["Derive Formula", "Solve Quadratic Equations", "Discriminant Analysis"],
+    "Completing the Square": ["Square Completion Technique", "Vertex Finding", "Converting to Vertex Form"],
+    "Graphing Parabolas": ["Identify Vertex", "Find Axis of Symmetry", "Plot Intercepts"],
+
+    ################################
+    # Geometry
+    ################################
+       # Basic Geometric Shapes
+    "Properties of Triangles": ["Angle Sum Property", "Types of Triangles", "Congruence in Triangles"],
+    "Quadrilaterals": ["Properties of Special Quadrilaterals", "Area and Perimeter", "Angle Properties"],
+    "Polygons": ["Regular and Irregular Polygons", "Angle Sum in Polygons", "Properties of Polygons"],
+
+    # Congruence and Similarity
+    "Criteria for Triangles": ["SSS", "SAS", "ASA", "AAS"],
+    "Proving Figures Congruent or Similar": ["Triangle Congruence Proofs", "Similarity in Geometric Shapes"],
+
+    # Pythagorean Theorem
+    "Derivation": ["Geometric Proof", "Algebraic Proof"],
+    "Applications in Different Contexts": ["Problem Solving", "Real World Applications"],
+
+    # Circles
+    "Properties": ["Radius, Diameter, and Circumference", "Central and Inscribed Angles"],
+    "Arc Length": ["Formula for Arc Length", "Applications in Geometry"],
+    "Sector Area": ["Calculating Sector Area", "Real-World Applications"],
+    "Theorems Involving Tangents and Chords": ["Properties of Tangents", "Chord Theorems"],
+
+    # Area and Volume
+    "Formulas for Various Shapes": ["Area of 2D Shapes", "Perimeter and Circumference"],
+    "Surface Area and Volume of 3D Figures": ["Prisms and Cylinders", "Pyramids and Cones", "Spheres"],
+
+    # Coordinate Geometry
+    "Equation of a Line": ["Slope-Intercept Form", "Point-Slope Form", "Standard Form"],
+    "Distance Formula": ["Calculating Distance Between Points", "Applications in Geometry"],
+    "Midpoint Formula": ["Finding Midpoints", "Applications in Geometric Constructions"],
+ 
+    ################################
+    # Trigonometry
+    ################################
+    # Introduction to Trigonometry
+    "Introduction to Sine": ["Definition", "Sine in Right Triangles", "Applications"],
+    "Cosine": ["Definition", "Cosine in Right Triangles", "Applications"],
+    "Tangent": ["Definition", "Tangent in Right Triangles", "Applications"],
+    "Solving Right Triangles": ["Using Trigonometric Ratios", "Applications in Real Life", "Problem Solving Strategies"],
+
+    # Trigonometric Ratios
+    "Definitions": ["Sine, Cosine, Tangent", "Cosecant, Secant, Cotangent", "Trigonometric Ratios of Special Angles"],
+    "Solving for Unknown Sides or Angles in Right Triangles": ["Using Inverse Trigonometric Functions", "Applications in Problem Solving"],
+
+    # Graphs of Trigonometric Functions
+    "Understanding Amplitude": ["Definition of Amplitude", "Effects on Graphs"],
+    "Period": ["Definition of Period", "Determining Period of Functions"],
+    "Phase Shift": ["Understanding Phase Shift", "Graphical Representation"],
+
+    # Trigonometric Identities
+    "Pythagorean": ["Sine and Cosine Pythagorean Identity", "Tangent and Cotangent Pythagorean Identity"],
+    "Sum and Difference": ["Formulas for Sine and Cosine", "Applications"],
+    "Double-Angle Formulas": ["Sine, Cosine, Tangent Double-Angle Identities", "Applications"],
+    "Half-Angle Formulas": ["Sine, Cosine, Tangent Half-Angle Identities", "Applications"],
+
+    # Applications
+    "Real-World Problems": ["Angles of Elevation and Depression", "Navigation and Surveying"],
+    "Wave Motion": ["Modeling Waves with Trigonometric Functions", "Amplitude and Frequency"],
+    "Circular Motion": ["Uniform Circular Motion", "Relationship with Trigonometric Functions"],
+
+    #################################
+    # Statistics and Probability
+    #################################
+       # Descriptive Statistics
+    "Measures of Central Tendency": ["Mean", "Median", "Mode", "Comparing Measures"],
+    "Measures of Dispersion": ["Range", "Variance", "Standard Deviation", "Interquartile Range"],
+    "Box Plots": ["Creating Box Plots", "Interpreting Box Plots", "Outliers Identification"],
+
+    # Probability Basics
+    "Sample Space": ["Definition", "Listing Outcomes", "Tree Diagrams"],
+    "Event Probability": ["Calculating Probabilities", "Probability Rules", "Theoretical vs Experimental Probability"],
+    "Compound Events": ["Addition Rule", "Multiplication Rule", "Complementary Events"],
+    "Independent and Dependent Events": ["Understanding Independence", "Probability of Dependent Events", "Conditional Probability"],
+
+    # Combinations and Permutations
+    "Calculating Factorial": ["Definition", "Calculations", "Applications"],
+    "Arrangements": ["Permutations", "Permutations with Repetition", "Circular Permutations"],
+    "Choosing Elements from a Set": ["Combinations", "Applications", "Differences Between Combinations and Permutations"],
+
+    # Random Variables and Distributions
+    "Understanding Discrete and Continuous Random Variables": ["Definition", "Examples", "Probability Distributions"],
+    "Normal Distribution": ["Characteristics", "Standard Normal Distribution", "Applications"],
+
+    # Inferential Statistics
+    "Basic Concepts of Hypothesis Testing": ["Null and Alternative Hypotheses", "Type I and II Errors", "Test Statistic"],
+    "Confidence Intervals": ["Calculating Intervals", "Interpretation", "Margin of Error"],
+
+    ##########################################
+    # Pre-Calculus
+    ##########################################
+       # Advanced Algebra
+    "Polynomial Division": ["Long Division of Polynomials", "Remainder Theorem", "Applications"],
+    "Synthetic Division": ["Process of Synthetic Division", "Roots of Polynomials", "Using Synthetic Division for Simplification"],
+    "Rational Expressions": ["Simplifying Rational Expressions", "Operations with Rational Expressions", "Complex Fractions"],
+
+    # Complex Numbers
+    "Operations": ["Addition and Subtraction", "Multiplication", "Division", "Complex Conjugates"],
+    "Polar Form": ["Converting to Polar Form", "Multiplication and Division in Polar Form"],
+    "De Moivre's Theorem": ["Statement and Proof", "Applications", "Finding Roots of Complex Numbers"],
+
+    # Exponential and Logarithmic Functions
+    "Properties": ["Laws of Exponents", "Properties of Logarithms"],
+    "Solving Exponential and Logarithmic Equations": ["Transforming Equations", "Application Problems", "Graphical Methods"],
+
+    # Advanced Trigonometry
+    "Solving General Trigonometric Equations": ["Linear Trigonometric Equations", "Quadratic Trigonometric Equations"],
+    "Inverse Trigonometric Functions": ["Defining Inverse Functions", "Properties and Graphs", "Applications and Problem Solving"],
+
+    # Sequences and Series
+    "Arithmetic and Geometric Sequences": ["Finding Terms", "General Formulas", "Real-World Applications"],
+    "Sums": ["Summation Notation", "Summing Arithmetic and Geometric Series", "Partial Sums"],
+    "Introduction to Infinite Series": ["Convergence and Divergence", "Geometric Series", "Basic Tests for Convergence"],
+
+    # Matrices
+    "Operations": ["Matrix Addition and Subtraction", "Scalar Multiplication", "Matrix Multiplication"],
+    "Determinants": ["Calculating Determinants", "Properties", "Cramer's Rule"],
+    "Inverse of a Matrix": ["Finding Inverse Matrices", "Properties", "Applications"],
+    "Applications in Solving Systems": ["Using Matrices to Solve Linear Systems", "Applications in Real Life", "Matrix Algebra"],
+
+    ###################################
+    # Calculus
+    ###################################
+    # Limits
+    "Concept of a Limit": ["Definition", "Intuitive Understanding", "Visualizing Limits"],
+    "Finding Limits Graphically and Numerically": ["Using Graphs", "Limit Estimations", "Limit Tables"],
+    "Limit Laws": ["Properties of Limits", "Simplifying Limits", "Special Cases (e.g., indeterminate forms)"],
+
+    # Derivatives
+    "Definition of Derivative": ["Tangent Line Interpretation", "Limits Definition", "Notation and Terminology"],
+    "Techniques of Differentiation": ["Basic Rules (Power, Product, Quotient, Chain)", "Implicit Differentiation", "Higher Order Derivatives"],
+    "Applications to Motion and Optimization": ["Velocity and Acceleration", "Optimization Problems", "Related Rates"],
+
+    # Integration
+    "Antiderivatives": ["Basic Techniques", "Initial Conditions", "Indefinite Integrals"],
+    "Definite Integrals": ["Properties", "Calculation Techniques", "Interpretation"],
+    "The Fundamental Theorem of Calculus": ["First and Second Part", "Relationship Between Derivatives and Integrals"],
+    "Area under a Curve": ["Geometric Interpretation", "Applications", "Using Definite Integrals"],
+
+    # Differential Equations
+    "Basic Types and Solutions": ["Separable Equations", "Linear Equations", "Exact Equations"],
+    "Applications to Growth and Decay Problems": ["Exponential Growth and Decay", "Modeling with Differential Equations", "Population Dynamics"],
+
+    # Multivariable Calculus
+    "Partial Derivatives": ["Concept and Calculation", "Geometric Interpretation", "Higher Order Partial Derivatives"],
+    "Double and Triple Integrals": ["Setting up Double Integrals", "Applications", "Triple Integrals and Applications"],
+
+
+    ###################################
+    # Advanced Calculus
+    ###################################
+
+    # Series and Sequences
+    "Taylor and Maclaurin Series": ["Formulation of Taylor Series", "Special Case of Maclaurin Series", "Applications and Approximations"],
+    "Convergence Tests": ["Ratio Test", "Root Test", "Integral Test", "Comparison Tests"],
+    "Applications of Series": ["Problem Solving with Series", "Series in Differential Equations", "Fourier Series"],
+
+    # Vector Calculus
+    "Vector Functions": ["Parametric Equations", "Graphing Vector Functions", "Motion in Space"],
+    "Derivatives and Integrals of Vector Functions": ["Velocity and Acceleration Vectors", "Arc Length and Curvature", "Line Integrals"],
+    "Line and Surface Integrals": ["Evaluating Line Integrals", "Surface Integrals", "Applications in Physics and Engineering"],
+
+    # Special Topics in Advanced Calculus
+    "Green’s Theorem": ["Statement and Proof", "Applications in Plane", "Curl and Circulation"],
+    "Stokes' Theorem": ["Understanding Stokes' Theorem", "Applications in 3D", "Relation to Curl"],
+    "Divergence Theorem": ["Gauss's Divergence Theorem", "Applications", "Flux through a Surface"],
+
+    ##########################################
+    # Discrete Math
+    ##########################################
+       # Logic and Proofs
+    "Propositional Logic": ["Truth Tables", "Logical Connectives", "Tautologies and Contradictions"],
+    "Predicate Logic": ["Quantifiers", "Logical Equivalences", "Predicates and Statements"],
+    "Methods of Proof": ["Direct Proof", "Indirect Proof", "Proof by Contradiction", "Mathematical Induction"],
+
+    # Set Theory
+    "Basic Concepts": ["Elements and Subsets", "Universal Set", "Empty Set"],
+    "Venn Diagrams": ["Representing Sets", "Set Relationships", "Applications in Solving Problems"],
+    "Operations on Sets": ["Union", "Intersection", "Difference", "Complement"],
+
+    # Combinatorics
+    "Advanced Counting Techniques": ["Pigeonhole Principle", "Permutations and Combinations", "Inclusion-Exclusion Principle"],
+    "Binomial Theorem": ["Expansion", "Binomial Coefficients", "Applications in Algebra"],
+    "Generating Functions": ["Definition and Construction", "Applications in Counting", "Solving Recurrences"],
+
+    # Graph Theory
+    "Graphs and Their Properties": ["Types of Graphs", "Connectivity", "Trees and Spanning Trees"],
+    "Eulerian and Hamiltonian Paths": ["Euler's Theorem", "Finding Eulerian Paths", "Hamiltonian Cycles"],
+    "Graph Coloring": ["Coloring Algorithms", "Applications", "Chromatic Number"],
+
+    # Algorithms and Complexity
+    "Algorithm Design": ["Sorting Algorithms", "Search Algorithms", "Optimization Problems"],
+    "Complexity Classes": ["P, NP, NP-Complete", "Computational Complexity", "Reduction"],
+    "Big O Notation": ["Time Complexity Analysis", "Space Complexity", "Asymptotic Analysis"],
+ 
+    ##########################################
+    # Linear Algebra
+    ##########################################
+    # Vector Spaces
+    "Definitions and Properties": ["Vector Operations", "Vector Space Axioms", "Examples of Vector Spaces"],
+    "Subspaces": ["Definition and Properties", "Criteria for Subspaces", "Examples"],
+    "Basis and Dimension": ["Definition of Basis", "Finding a Basis", "Dimension of Vector Spaces"],
+
+    # Linear Transformations
+    "Matrix Representation": ["Linear Transformations as Matrices", "Matrix Operations", "Change of Basis"],
+    "Geometric Transformations": ["Rotation", "Scaling", "Reflection", "Shear Transformations"],
+
+    # Systems of Linear Equations
+    "Solution Methods": ["Gaussian Elimination", "Matrix Inversion", "Graphical Interpretation"],
+    "Applications": ["Solving Real-world Problems", "Linear Programming", "Network Flow Problems"],
+
+    # Advanced Topics
+    "Orthogonality": ["Orthogonal Vectors and Subspaces", "Orthogonal Projections", "Gram-Schmidt Process"],
+    "Least Squares": ["Method of Least Squares", "Applications in Data Fitting", "Regression Analysis"],
+    "Singular Value Decomposition": ["Concept and Computation", "Applications", "Connection with Eigenvalues and Eigenvectors"],
+
+    #####################################
+    # Advanced Statistics
+    #####################################
+    # Regression Analysis
+    "Simple and Multiple Linear Regression": ["Model Development", "Parameter Estimation", "Interpretation of Coefficients"],
+    "Model Fitting": ["Goodness of Fit", "Residual Analysis", "Predictive Power of the Model"],
+
+    # ANOVA (Analysis of Variance)
+    "Single-Factor ANOVA": ["Between-Group Variability", "Within-Group Variability", "F-test"],
+    "Multi-Factor ANOVA": ["Interaction Effects", "Main Effects", "ANOVA Table Interpretation"],
+
+    # Nonparametric Tests
+    "Chi-Square Tests": ["Goodness of Fit Test", "Test for Independence", "Homogeneity Test"],
+    "Mann-Whitney U Test": ["Rank Sum Test", "Comparing Two Independent Samples"],
+    "Kruskal-Wallis Test": ["One-Way ANOVA by Ranks", "Comparing More Than Two Independent Groups"],
+
+    # Time Series Analysis
+    "Components of Time Series": ["Trend", "Seasonality", "Cyclical", "Irregular Components"],
+    "ARIMA Models": ["AutoRegressive (AR) Models", "Integrated (I) Models", "Moving Average (MA) Models", "Forecasting"],
+
+    # Bayesian Statistics
+    "Bayesian Inference": ["Prior Probability", "Likelihood", "Posterior Probability", "Updating Beliefs"],
+    "Bayes' Theorem": ["Theorem Derivation", "Practical Applications", "Bayesian vs Frequentist Approach"],
+
+    #####################################
+    # Mathematical Proofs and Theory
+    #####################################
+    # Introduction to Proofs
+    "Logic and Set Theory Based Proofs": ["Proof by Contradiction", "Proof by Contrapositive", "Proof by Cases"],
+    "Direct and Indirect Proofs": ["Direct Proofs", "Indirect Proofs (Proof by Contradiction)", "Proofs Involving Quantifiers"],
+
+    # Number Theory
+    "Prime Numbers": ["Prime Factorization", "Properties of Prime Numbers", "Prime Counting Functions"],
+    "Modular Arithmetic": ["Congruences", "Solving Modular Equations", "Applications in Cryptography"],
+    "Fermat's Little Theorem": ["Statement and Proof", "Applications in Number Theory"],
+
+    # Group Theory
+    "Basic Properties of Groups": ["Group Definitions", "Group Operations", "Identity and Inverses"],
+    "Subgroups": ["Definition and Properties", "Cyclic Subgroups", "Cosets and Lagrange's Theorem"],
+    "Cyclic Groups": ["Definition and Properties", "Generators", "Applications in Group Theory"],
+
+    # Real Analysis
+    "Sequences and Series of Real Numbers": ["Convergence and Divergence", "Tests for Series Convergence", "Power Series"],
+    "Continuity": ["Definition of Continuous Functions", "Intermediate Value Theorem", "Extreme Value Theorem"],
+    "Differentiability": ["Definition of Derivative", "Mean Value Theorem", "Applications in Calculus"],
+
+    # Topology
+    "Basic Concepts": ["Open and Closed Sets", "Topological Spaces", "Neighborhoods"],
+    "Topological Spaces": ["Definition and Properties", "Hausdorff Spaces", "Compactness and Connectedness"],
+    "Continuity": ["Topology of Continuous Functions", "Homeomorphisms", "Applications in Geometry"]
+
+
 }
