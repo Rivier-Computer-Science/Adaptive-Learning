@@ -15,11 +15,24 @@ topic_colors = { # Green to Red
 
 topics_and_subtopics = {
     "Arithmetic": [
+        "Recognizing Shapes",
+        "Number Sense",
         "Basic Operations",
+        "Place Values",
+        "Time and Calendar",
+        "Using Money",
+        "Estimation and Rounding",
+        "Negative Numbers",
+        "Absolute Value",
         "Fractions",
         "Decimals",
+        "Factors and Multiples",
+        "Exponents and Square Roots",
         "Percentages",
-        "Ratios and Proportions"
+        "Ratios and Proportions",
+        "Measurement and Units",
+        "Graphs",
+        "Patterns and Sequences"
     ],
     "Algebra": [
         "Algebraic Expressions",
@@ -107,11 +120,26 @@ topics_and_subtopics = {
 
 
 subsub_topics = {
-    "Basic Operations": ["Addition", "Subtraction", "Multiplication", "Division"],
+    # Arithmetic
+    "Recognizing Shapes": ["Basic Shapes","Symmetry"],
+    "Number Sense": ["Counting","Odd and Even","Prime", "Comparisons"],
+    "Basic Operations": ["Addition", "Subtraction", "Multiplication", "Division","Zero", "PEDMAS"],
+    "Place Value": ["Units", "Writing Large Numbers"],
+    "Time and Calendar": ["Reading Clocks", "Measuring Time", "Calendar Skills"],
     "Fractions": ["Understanding", "Simplifying", "Operations"],
+    "Money": ["Coins and Bills","Basic Transactions","Budgeting"],
+    "Estimation and Rounding": ["Nearest decimal", "Estimate Operations"],
+    "Negative Numbers": ["Concept", "Number Line","Basic Operations","Temperatures", "Debt"],
+    "Absolute Value": ["Number Line", "Distance from Zero"],
     "Decimals": ["Conversion", "Operations"],
+    "Factors and Multiples": ["Finding Factors", "Common Multiples", "GCF", "LCM"],
+    "Exponents and Square Roots": ["Exponentiation as Repeated Multiplication", "Square Roots"],
     "Percentages": ["Calculating percentages", "Percentage increase/decrease", "Real-world applications"],
     "Ratios and Proportions": ["Understanding ratios", "Solving proportion problems", "Direct and inverse variation"],
+    "Measurements and Units": ["Standard Units", "Metric Units", "Converting Units - Length/Weight/Volume"],
+    "Basic Graphs": ["Pictograph", "Line graph"],
+    "Patterns and Sequences": ["Arithmetic Sequences"],
+    # Algebra
     "Algebraic Expressions": ["Simplifying", "Evaluating expressions", "Combining like terms"],
     "Linear Equations": ["Solving one-variable", "Multi-variable equations", "Word problems"],
     "Inequalities": ["Solving", "Graphing on a number line", "Compound inequalities"],
