@@ -18,6 +18,8 @@ topics_and_subtopics = {
         "Recognizing Shapes",
         "Number Sense",
         "Basic Operations",
+        "Number Properties",
+        "Laws",
         "Place Values",
         "Time and Calendar",
         "Using Money",
@@ -38,10 +40,10 @@ topics_and_subtopics = {
         "Algebraic Expressions",
         "Linear Equations",
         "Inequalities",
-        "Systems of Equations",
-        "Quadratic Equations",
         "Polynomials",
-        "Functions"
+        "Systems of Equations",
+        "Functions",
+        "Quadratic Equations"
     ],
     "Geometry": [
         "Basic Geometric Shapes",
@@ -122,8 +124,10 @@ topics_and_subtopics = {
 subsub_topics = {
     # Arithmetic
     "Recognizing Shapes": ["Basic Shapes","Symmetry"],
-    "Number Sense": ["Counting","Odd and Even","Prime", "Comparisons"],
-    "Basic Operations": ["Addition", "Subtraction", "Multiplication", "Division","Zero", "PEDMAS"],
+    "Number Sense": ["Counting","Comparisons"],
+    "Basic Operations": ["Addition", "Subtraction", "Multiplication", "Division","Zero", "Operations Order"],
+    "Number Properties": ["Odd and Even","Prime"],
+    "Laws": ["Associative","Commutative","Distributive"],
     "Place Value": ["Units", "Writing Large Numbers"],
     "Time and Calendar": ["Reading Clocks", "Measuring Time", "Calendar Skills"],
     "Fractions": ["Understanding", "Simplifying", "Operations"],
@@ -136,17 +140,17 @@ subsub_topics = {
     "Exponents and Square Roots": ["Exponentiation as Repeated Multiplication", "Square Roots"],
     "Percentages": ["Calculating percentages", "Percentage increase/decrease", "Real-world applications"],
     "Ratios and Proportions": ["Understanding ratios", "Solving proportion problems", "Direct and inverse variation"],
-    "Measurements and Units": ["Standard Units", "Metric Units", "Converting Units - Length/Weight/Volume"],
+    "Measurements and Units": ["Standard Units", "Metric Units", "Converting Units"],
     "Basic Graphs": ["Pictograph", "Line graph"],
     "Patterns and Sequences": ["Arithmetic Sequences"],
     # Algebra
     "Algebraic Expressions": ["Simplifying", "Evaluating expressions", "Combining like terms"],
     "Linear Equations": ["Solving one-variable", "Multi-variable equations", "Word problems"],
     "Inequalities": ["Solving", "Graphing on a number line", "Compound inequalities"],
-    "Systems of Equations": ["Methods of solving", "Applications"],
-    "Quadratic Equations": ["Factoring", "Quadratic formula", "Completing the square", "Graphing parabolas"],
     "Polynomials": ["Adding", "Subtracting", "Multiplying", "Dividing", "Polynomial long division"],
-    "Functions": ["Understanding function notation", "Domain and range", "Inverse functions"],
+    "Systems of Equations": ["Methods of solving", "Applications"],
+    "Functions": ["Notation", "Domain and Range", "Inverse Functions"],
+    "Quadratic Equations": ["Factoring", "Quadratic formula", "Completing the square", "Graphing parabolas"],
     # Geometry
     "Basic Geometric Shapes": ["Properties of triangles", "Quadrilaterals", "Polygons"],
     "Congruence and Similarity": ["Criteria for triangles", "Proving figures congruent or similar"],
@@ -206,4 +210,83 @@ subsub_topics = {
     "Group Theory": ["Basic properties of groups", "Subgroups", "Cyclic groups"],
     "Real Analysis": ["Sequences and series of real numbers", "Continuity", "Differentiability"],
     "Topology": ["Basic concepts", "Topological spaces", "Continuity", "Compactness"]
+}
+
+
+subsubsub_topics = {
+    # Arithmetic Recognizing Shapes
+    "Basic Shapes": ["Square", "Circle", "Triangle"],
+    "Symmetry": ["Line (Reflective)", "Rotational", "Counting Lines of Symmetry"],
+    # Arithmetic Number Sense
+    "Counting": ["Count Forwards", "Count Backwards"],
+    "Comparisons": ["Equality", "Less Than", "Greater Than"],
+    # Arithmetic Basic Operations
+    "Addition": ["Addends", "Sums", "Carries"], 
+    "Subtraction": ["Minuend", "Subtrahend", "Difference", "Borrows"],
+    "Multiplication": ["Multiplicand", "Multiplier", "Product", "Factors","Repeated Addition"],
+    "Division": ["Dividend", "Divisor", "Quotient", "Remainder"],
+    "Zero": ["Absence of Quantity", "Add/Sub Unchanged","Mpy is 0", "Divide is Undefined"], 
+    "Operations Order": ["PEDMAS", "BODMAS"],
+    # Arithmetic Number Properties
+    "Odd and Even": ["Division by 2","Addition by 1 and 2", "Multiplication by 2"],
+    "Prime": ["Definition", "Identification"],
+    # Arithmetic Laws
+    "Associative": ["Definition", "Grouping Numbers", "Add/Mpy", "Not Sub/Div"],
+    "Commutative": ["Definition", "Operation Order", "Add/Mpy", "Not Sub/Div"],
+    "Distributive" :["Definition", "Formula", "Multiplication", "Division Differences"],
+    # Arithmetic Place Value
+    "Units": ["Digit Dependence", "Digit Position", "Names (tens, hundreds, etc.)"], 
+    "Writing Large Numbers": ["Base 10 Value System", "Use of Commas", "Periods (thousands, millions)"],
+    # Arithmetic Time and Calendar
+    "Reading Clocks": ["Analog","Digital","Hand Positions", "AM/PM"],
+    "Measuring Time": ["Units", "Elapsed Time", "Difference between Times"],
+    "Calendar Skills": ["Structure", "Reading", "Leap Years", "Non-Western Calendars"],
+    # Arithmetic Fractions
+    "Understanding": ["Part of Whole", "Numerator", "Denominator", "Mixed Numbers", "Improper"],
+    "Simplifying": ["Equivalent", "GCD", "Simplist Form"],
+    "Operations": ["Add", "Subtract", "Multiply", "Divide", "Compare"],
+    # Arithmetic Money
+    "Coins and Bills": ["Identification", "Relative Value", "Counting"],
+    "Basic Transactions": ["Cost of Items", "Computing Change"],
+    "Budgeting": ["Income", "Expenses", "Savings"],
+    # Arithmetic Estimation and Rounding
+    "Nearest decimal": ["Up/Down based on digits"], 
+    "Estimate Operations": ["Approximate Basic Operations"],
+    # Arithmetic Negative Numbers
+    "Concept": ["Less than zero"], 
+    "Number Line": ["Visualize"],
+    "Basic Operations": ["Add", "Subtract", "Multiply", "Divide", "Combining Positive and Negative"],
+    "Temperatures": ["Below Freezing"], 
+    "Debt": ["Amount Owed", "Net Worth"],
+    # Arithmetic Absolute Value
+    "Number Line": ["Visualize"], 
+    "Distance from Zero": ["Always Positive or Zero"],
+    # Arithmetic Decimals
+    "Conversion": ["Convert to Fraction"], 
+    "Operations": ["Add", "Subtract", "Multiply", "Divide", "Align Decimal Points"],
+    # Arithmetic Factors and Multiples
+    "Finding Factors": ["No Remainder"], 
+    "Common Multiples": ["List Multiples", "Identify Common"], 
+    "GCF": ["List Factors", "Identify Common"], 
+    "LCM": ["Divide Product by GCF"],
+    # Arithmetic Exponents and Square Roots
+    "Exponentiation as Repeated Multiplication": ["Repeated Self Multiplication", "Notation"], 
+    "Square Roots": ["Perfect Squares", "Non-perfect Squares"],
+    # Arithmetic Percentages
+    "Calculating percentages": ["Fraction of 100", "Compute Percent"], 
+    "Percentage increase/decrease": ["Percent Change Formula"], 
+    "Real-world applications": ["Shopping Discounts", "Tips", "Taxes"],
+    # Arithmetic Ratios and Proportions
+    "Understanding ratios": ["Division of Quantities", "Notation"], 
+    "Solving proportion problems": ["Equal Ratios", "Solving for Unknown"], 
+    "Direct and inverse variation": ["Increase/Decrease at Same Rates", "Opposite Rates"],
+    # Arithmetic Measurements and Units
+    "Standard Units": ["Feet", "Pounds", "Yards", "Gallons"], 
+    "Metric Units": ["Meters", "Kilograms", "Liters"], 
+    "Converting Units": ["Length", "Weight", "Volume"] ,
+    # Arithmetic Basic Graphs
+    "Pictograph": ["Data as Symbols", "Legend"], 
+    "Line graph": ["Series of Data Points", "Interpret Trends"],
+    # Arithmetic Patterns and Sequences
+    "Arithmetic Sequences": ["Constant Difference", "Extend a Sequence"]
 }
