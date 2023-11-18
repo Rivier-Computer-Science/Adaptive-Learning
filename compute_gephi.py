@@ -89,65 +89,22 @@ def round_coordinates(coordinates):
     return [(round(x, 2), round(y, 2)) for x, y in coordinates]
 
 
-def resolve_duplicate_subtopic_names(topics_and_subtopics):
-    # Create a list of all subtopic names
-    all_subtopics = [subtopic for subtopics in topics_and_subtopics.values() for subtopic in subtopics]
-
-    # Identify duplicates
-    duplicates = {name for name in all_subtopics if all_subtopics.count(name) > 1}
-
-    # Resolve duplicates by appending characters from the main topic's name
-    resolved_subtopics = {}
-    for main_topic, subtopics in topics_and_subtopics.items():
-        resolved_subtopics[main_topic] = []
-        for subtopic in subtopics:
-            new_name = subtopic
-            while new_name in duplicates:
-                main_topic_name = main_topic
-                new_name = main_topic_name[0] + new_name  # Append first letter of main topic
-                main_topic_name = main_topic_name[1:]  # Reduce main topic name for the next iteration if needed
-                if main_topic_name == "":  # Restart appending if we run out of characters
-                    main_topic_name = main_topic
-            resolved_subtopics[main_topic].append(new_name)
-            duplicates.add(new_name)  # Update duplicates set with the new name
-
-    return resolved_subtopics
-
-def resolve_duplicate_subsub_topic_names(subsub_topics):
-    # Create a combined list of all subsub topic names
-    all_subsub_topics = [subsub for subsubs in subsub_topics.values() for subsub in subsubs]
-
-    # Identify duplicates and initialize counters
-    duplicates = {name: 0 for name in all_subsub_topics if all_subsub_topics.count(name) > 1}
-
-    # Resolve duplicates starting from subsub topics
-    resolved_subsub_topics = {}
-    for subtopic, subsubs in subsub_topics.items():
-        resolved_subsub_topics[subtopic] = []
-        for subsub in subsubs:
-            if subsub in duplicates:
-                duplicates[subsub] += 1  # Increment counter for this duplicate
-                new_name = subsub + str(duplicates[subsub])
-            else:
-                new_name = subsub
-            resolved_subsub_topics[subtopic].append(new_name)
-
-    return resolved_subsub_topics
-
 def replace_spaces_in_dictionary(dict):
     dict_new = {key.replace(" ", "_"): [value.replace(" ", "_") for value in values]
                 for key, values in dict.items()}       
     return dict_new
 
-def rename_nodes_in_dictionary(topics_and_subtopics,subsub_topics):
+def rename_nodes_in_dictionary(topics_and_subtopics,subsub_topics,subsubsub_topics):
     topics_and_subtopics_new = replace_spaces_in_dictionary(topics_and_subtopics)
     subsub_topics_new = replace_spaces_in_dictionary(subsub_topics)
     subsub_topics_new2 = {} #Required because dictionary keys are modified
+    subsubsub_topics_new = replace_spaces_in_dictionary(subsubsub_topics)
+    subsubsub_topics_new2 = {}
 
 
     for km, subtopics in topics_and_subtopics_new.items(): # km: key main subtopics: values (sub topics)
-        modified_subtopics = [ km.replace(" ","_") + '->' + subtopic for subtopic in subtopics ]
-        topics_and_subtopics_new[km.replace(" ", "_")] = modified_subtopics
+        modified_subtopics = [ km + '->' + subtopic for subtopic in subtopics ]
+        topics_and_subtopics_new[km] = modified_subtopics
 
     for ks, subsubtopics in subsub_topics_new.items():
         # Initialize a list to store the modified subsubtopics
@@ -157,27 +114,21 @@ def rename_nodes_in_dictionary(topics_and_subtopics,subsub_topics):
         # Iterate over each subsubtopic
         for subsubtopic in subsubtopics:
             print('subsubtopic: ', subsubtopic)
-            # Replace spaces with underscores in the subsubtopic
-            subsubtopic_formatted = subsubtopic.replace(" ", "_")
-
             # Find the main topic and subtopic            
             for main_topic, subtopics in topics_and_subtopics_new.items():                
                 print('main_topic: ', main_topic)
                 if any(ks in subtopic for subtopic in subtopics):
-                    # Replace spaces with underscores in main_topic and ks
-                    main_topic_formatted = main_topic.replace(" ", "_")
-                    ks_formatted = ks.replace(" ", "_")
-
-                    # Format string as "Main_Topic->Subtopic->Subsubtopic" with underscores
-                    modified_subsubtopic = f"{main_topic_formatted}->{ks_formatted}->{subsubtopic_formatted}"
+                     # Format string as "Main_Topic->Subtopic->Subsubtopic" with underscores
+                    modified_subsubtopic = f"{main_topic}->{ks}->{subsubtopic}"
                     modified_subsubtopics.append(modified_subsubtopic)
                     new_subsub_key = main_topic + '->' + ks
-                    break  # Once found, no need to check other main topics
+                    break  # Once found, no need to check other main topics            
 
         # Assign the modified list to the key in subsub_topics_new
         subsub_topics_new2[new_subsub_key] = modified_subsubtopics
 
-    return topics_and_subtopics_new, subsub_topics_new2
+
+    return topics_and_subtopics_new, subsub_topics_new2, subsubsub_topics_new
 
 def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, subtopic_coords, subsub_topic_coords, individual_radius_main_topics, individual_radius_subtopics, individual_radius_subsub_topics, topic_colors):
     gdf_content = "nodedef>name VARCHAR,label VARCHAR,width DOUBLE,x DOUBLE,y DOUBLE,color VARCHAR\n"
@@ -247,19 +198,20 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, s
 
 # Parameters for individual topic and subtopic radii
 topics_and_subtopics = mt.topics_and_subtopics
-#topics_and_subtopics = resolve_duplicate_subtopic_names(topics_and_subtopics)
 subsub_topics = mt.subsub_topics
-#subsub_topics = resolve_duplicate_subsub_topic_names(subsub_topics)
+subsubsub_topics = mt.subsubsub_topics
 individual_radius_main_topics = 50
 individual_radius_subtopics = 30
 individual_radius_subsub_topics = 15
+individual_radius_subsubsub_topics = 5
 separation_main_topics = 2.0
 separation_sub_topics = 1.5
 separation_subsub_topics = 1.5
+separation_subsubsub_topics = 1.5
 topic_colors = mt.topic_colors
 
 # Rename nodes, replace spaces with underscores and provide full taxonomy
-topics_and_subtopics_new, subsub_topics_new = rename_nodes_in_dictionary(topics_and_subtopics, subsub_topics)
+topics_and_subtopics_new, subsub_topics_new, subsubsub_topics_new = rename_nodes_in_dictionary(topics_and_subtopics, subsub_topics, subsubsub_topics)
 
 # Generate Coordinates
 main_topic_coords, sub_topic_coords = generate_coordinates(topics_and_subtopics_new, individual_radius_main_topics, individual_radius_subtopics,separation_main_topics,separation_sub_topics)
