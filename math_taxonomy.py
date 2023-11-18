@@ -22,7 +22,7 @@ topics_and_subtopics = {
         "Laws",
         "Place Values",
         "Time and Calendar",
-        "Using Money",
+        "Money",
         "Estimation and Rounding",
         "Negative Numbers",
         "Absolute Value",
@@ -32,7 +32,7 @@ topics_and_subtopics = {
         "Exponents and Square Roots",
         "Percentages",
         "Ratios and Proportions",
-        "Measurement and Units",
+        "Measurements and Units",
         "Graphs",
         "Patterns and Sequences"
     ],
@@ -79,8 +79,6 @@ topics_and_subtopics = {
         "Limits",
         "Derivatives",
         "Integration",
-        "Differential Equations",
-        "Multivariable Calculus"
     ],
     "Advanced Calculus": [
         "Series and Sequences",
@@ -99,7 +97,7 @@ topics_and_subtopics = {
     "Linear Algebra": [
         "Vector Spaces",
         "Linear Transformations",
-        "Matrices",
+        "Advanced Matrices",
         "Systems of Linear Equations",
         "Advanced Topics"
     ],
@@ -128,20 +126,20 @@ subsub_topics = {
     "Basic Operations": ["Addition", "Subtraction", "Multiplication", "Division","Zero", "Operations Order"],
     "Number Properties": ["Odd and Even","Prime"],
     "Laws": ["Associative","Commutative","Distributive"],
-    "Place Value": ["Units", "Writing Large Numbers"],
+    "Place Values": ["Units", "Writing Large Numbers"],
     "Time and Calendar": ["Reading Clocks", "Measuring Time", "Calendar Skills"],
-    "Fractions": ["Understanding", "Simplifying", "Operations"],
     "Money": ["Coins and Bills","Basic Transactions","Budgeting"],
     "Estimation and Rounding": ["Nearest decimal", "Estimate Operations"],
     "Negative Numbers": ["Concept", "Number Line","Basic Operations","Temperatures", "Debt"],
     "Absolute Value": ["Number Line", "Distance from Zero"],
+    "Fractions": ["Understanding", "Simplifying", "Operations"],
     "Decimals": ["Conversion", "Operations"],
     "Factors and Multiples": ["Finding Factors", "Common Multiples", "GCF", "LCM"],
     "Exponents and Square Roots": ["Exponentiation as Repeated Multiplication", "Square Roots"],
     "Percentages": ["Calculating percentages", "Percentage increase/decrease", "Real-world applications"],
     "Ratios and Proportions": ["Understanding ratios", "Solving proportion problems", "Direct and inverse variation"],
     "Measurements and Units": ["Standard Units", "Metric Units", "Converting Units"],
-    "Basic Graphs": ["Pictograph", "Line graph"],
+    "Graphs": ["Pictograph", "Line graph"],
     "Patterns and Sequences": ["Arithmetic Sequences"],
     # Algebra
     "Algebraic Expressions": ["Simplifying", "Evaluating expressions", "Combining like terms"],
@@ -181,12 +179,12 @@ subsub_topics = {
     "Limits": ["Concept of a limit", "Finding limits graphically and numerically", "Limit laws"],
     "Derivatives": ["Definition", "Techniques of differentiation", "Applications to motion and optimization"],
     "Integration": ["Antiderivatives", "Definite integrals", "The Fundamental Theorem of Calculus", "Area under a curve"],
-    "Differential Equations": ["Basic types and solutions", "Applications to growth and decay problems"],
-    "Multivariable Calculus": ["Partial derivatives", "Double and triple integrals"],
     # Advanced Calculus
     "Series and Sequences": ["Taylor and Maclaurin series", "Convergence tests", "Applications"],
     "Vector Calculus": ["Vector functions", "Derivatives and integrals of vector functions", "Line and surface integrals"],
-    "Special Topics": ["Green’s Theorem", "Stokes' Theorem", "Divergence Theorem"],
+    "Multivariable Calculus": ["Partial derivatives", "Double and triple integrals"],
+    "Differential Equations": ["Basic types and solutions", "Applications to growth and decay problems"],
+    "Special Topics": ["Greens Theorem", "Stokes Theorem", "Divergence Theorem"],
     # Discrete Mathematics
     "Logic and Proofs": ["Propositional logic", "Predicate logic", "Methods of proof"],
     "Set Theory": ["Basic concepts", "Venn diagrams", "Operations on sets"],
@@ -196,6 +194,7 @@ subsub_topics = {
     # Linear Algebra
     "Vector Spaces": ["Definitions and properties", "Subspaces", "Basis and dimension"],
     "Linear Transformations": ["Matrix representation", "Geometric transformations"],
+    "Advanced Matrices": ["Operations", "Special Matrices", "Inverses", "Matrix Equations", "Eigenvalues", "Factorization", "Rank", "Norms", "Exponentiation", "Applications"],
     "Systems of Linear Equations": ["Solution methods", "Applications"],
     "Advanced Topics": ["Orthogonality", "Least squares", "Singular value decomposition"],
     # Advanced Statistics
@@ -467,15 +466,8 @@ subsubsub_topics = {
     "The Fundamental Theorem of Calculus": ["First and Second Part", "Relationship Between Derivatives and Integrals"],
     "Area under a Curve": ["Geometric Interpretation", "Applications", "Using Definite Integrals"],
 
-    # Differential Equations
-    "Basic Types and Solutions": ["Separable Equations", "Linear Equations", "Exact Equations"],
-    "Applications to Growth and Decay Problems": ["Exponential Growth and Decay", "Modeling with Differential Equations", "Population Dynamics"],
-
-    # Multivariable Calculus
-    "Partial Derivatives": ["Concept and Calculation", "Geometric Interpretation", "Higher Order Partial Derivatives"],
-    "Double and Triple Integrals": ["Setting up Double Integrals", "Applications", "Triple Integrals and Applications"],
-
-
+ 
+ 
     ###################################
     # Advanced Calculus
     ###################################
@@ -490,9 +482,17 @@ subsubsub_topics = {
     "Derivatives and Integrals of Vector Functions": ["Velocity and Acceleration Vectors", "Arc Length and Curvature", "Line Integrals"],
     "Line and Surface Integrals": ["Evaluating Line Integrals", "Surface Integrals", "Applications in Physics and Engineering"],
 
+    # Multivariable Calculus
+    "Partial Derivatives": ["Concept and Calculation", "Geometric Interpretation", "Higher Order Partial Derivatives"],
+    "Double and Triple Integrals": ["Setting up Double Integrals", "Applications", "Triple Integrals and Applications"],
+
+    # Differential Equations
+    "Basic Types and Solutions": ["Separable Equations", "Linear Equations", "Exact Equations"],
+    "Applications to Growth and Decay Problems": ["Exponential Growth and Decay", "Modeling with Differential Equations", "Population Dynamics"],
+
     # Special Topics in Advanced Calculus
-    "Green’s Theorem": ["Statement and Proof", "Applications in Plane", "Curl and Circulation"],
-    "Stokes' Theorem": ["Understanding Stokes' Theorem", "Applications in 3D", "Relation to Curl"],
+    "Greens Theorem": ["Statement and Proof", "Applications in Plane", "Curl and Circulation"],
+    "Stokes Theorem": ["Understanding Stokes' Theorem", "Applications in 3D", "Relation to Curl"],
     "Divergence Theorem": ["Gauss's Divergence Theorem", "Applications", "Flux through a Surface"],
 
     ##########################################
@@ -530,6 +530,19 @@ subsubsub_topics = {
     "Definitions and Properties": ["Vector Operations", "Vector Space Axioms", "Examples of Vector Spaces"],
     "Subspaces": ["Definition and Properties", "Criteria for Subspaces", "Examples"],
     "Basis and Dimension": ["Definition of Basis", "Finding a Basis", "Dimension of Vector Spaces"],
+
+    # Matrices
+    "Operations": ["Matrix Addition and Subtraction", "Scalar Multiplication", "Matrix Multiplication", "Transposition"],
+    "Special Matrices": ["Identity Matrix", "Zero Matrix", "Diagonal Matrix", "Symmetric Matrix", "Skew-Symmetric Matrix", "Orthogonal Matrix"],
+    "Inverses": ["Invertible Matrices (Non-Singular)", "Determinants and Inverses", "Finding Matrix Inverses"],
+    "Matrix Equations": ["Systems of Linear Equations as Matrices", "Matrix Equation AX = B", "Solving Linear Systems Using Matrices"],
+    "Eigenvalues": ["Eigenvalues and Eigenvectors of a Matrix", "Diagonalization of Matrices", "Applications in Linear Transformations"],
+    "Factorization": ["LU Decomposition", "QR Decomposition", "Singular Value Decomposition (SVD)"],
+    "Rank": ["Rank of a Matrix", "Null Space (Kernel) of a Matrix", "Rank-Nullity Theorem"],
+    "Norms": ["Norms of Matrices", "Condition Number of a Matrix", "Sensitivity of Solutions"],
+    "Exponentiation": ["Exponentiating a Matrix", "Applications in Differential Equations"],
+    "Applications": ["Linear Transformations", "Markov Chains", "Least Squares Approximations", "Principal Component Analysis (PCA)"],
+
 
     # Linear Transformations
     "Matrix Representation": ["Linear Transformations as Matrices", "Matrix Operations", "Change of Basis"],
