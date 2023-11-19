@@ -94,41 +94,49 @@ def replace_spaces_in_dictionary(dict):
                 for key, values in dict.items()}       
     return dict_new
 
-def rename_nodes_in_dictionary(topics_and_subtopics,subsub_topics,subsubsub_topics):
+def rename_nodes_in_dictionary(topics_and_subtopics, subsub_topics, subsubsub_topics):
     topics_and_subtopics_new = replace_spaces_in_dictionary(topics_and_subtopics)
     subsub_topics_new = replace_spaces_in_dictionary(subsub_topics)
-    subsub_topics_new2 = {} #Required because dictionary keys are modified
     subsubsub_topics_new = replace_spaces_in_dictionary(subsubsub_topics)
-    subsubsub_topics_new2 = {}
+    subsub_topics_renamed = {}
+    subsubsub_topics_renamed = {}
 
-
-    for km, subtopics in topics_and_subtopics_new.items(): # km: key main subtopics: values (sub topics)
-        modified_subtopics = [ km + '->' + subtopic for subtopic in subtopics ]
+    # Renaming subtopics
+    for km, subtopics in topics_and_subtopics_new.items():
+        modified_subtopics = [km + '->' + subtopic for subtopic in subtopics]
         topics_and_subtopics_new[km] = modified_subtopics
 
+    # Renaming subsub topics
     for ks, subsubtopics in subsub_topics_new.items():
-        # Initialize a list to store the modified subsubtopics
         modified_subsubtopics = []
-        new_subsub_key = ''
- 
-        # Iterate over each subsubtopic
         for subsubtopic in subsubtopics:
-            print('subsubtopic: ', subsubtopic)
-            # Find the main topic and subtopic            
-            for main_topic, subtopics in topics_and_subtopics_new.items():                
-                print('main_topic: ', main_topic)
+            # Find the main topic and subtopic
+            new_subsub_key = ''
+            for main_topic, subtopics in topics_and_subtopics_new.items():
                 if any(ks in subtopic for subtopic in subtopics):
-                     # Format string as "Main_Topic->Subtopic->Subsubtopic" with underscores
-                    modified_subsubtopic = f"{main_topic}->{ks}->{subsubtopic}"
-                    modified_subsubtopics.append(modified_subsubtopic)
-                    new_subsub_key = main_topic + '->' + ks
-                    break  # Once found, no need to check other main topics            
+                    new_subsub_key = f"{main_topic}->{ks}->{subsubtopic}"
+                    modified_subsubtopics.append(new_subsub_key)
+                    break
+            subsub_topics_renamed[new_subsub_key] = subsubtopic
 
         # Assign the modified list to the key in subsub_topics_new
-        subsub_topics_new2[new_subsub_key] = modified_subsubtopics
+        subsub_topics_new[ks] = modified_subsubtopics
 
+    # Renaming subsubsub topics based on subsub topics values
+    for subsub_key, subsub_value in subsub_topics_renamed.items():
+        if subsub_value in subsubsub_topics_new:
+            modified_subsubsubtopics = []
+            for subsubsub_topic in subsubsub_topics_new[subsub_value]:
+                modified_subsubsubtopic = f"{subsub_key}->{subsubsub_topic}"
+                
+                print('new subsubsub key:          ', subsub_key)
+                print('modified_subsubsubtopic:    ', modified_subsubsubtopic)
 
-    return topics_and_subtopics_new, subsub_topics_new2, subsubsub_topics_new
+                modified_subsubsubtopics.append(modified_subsubsubtopic)
+            subsubsub_topics_renamed[subsub_key] = modified_subsubsubtopics
+
+    return topics_and_subtopics_new, subsub_topics_new, subsubsub_topics_renamed
+
 
 def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, subtopic_coords, subsub_topic_coords, individual_radius_main_topics, individual_radius_subtopics, individual_radius_subsub_topics, topic_colors):
     gdf_content = "nodedef>name VARCHAR,label VARCHAR,width DOUBLE,x DOUBLE,y DOUBLE,color VARCHAR\n"
