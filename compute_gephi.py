@@ -81,6 +81,35 @@ def generate_subsub_topic_coordinates(subsub_topics, individual_radius_subsub_to
 
     return subsub_topic_coordinates
 
+import math
+
+def generate_subsubsub_topic_coordinates(start_angle, subsubsub_topics, individual_radius):
+    """
+    Generate coordinates for subsubsub topics, starting from a given angle and using individual radius.
+
+    :param start_angle: Starting radial angle in radians.
+    :param subsubsub_topics: List of subsubsub topics.
+    :param individual_radius: Radius for placing each subsubsub topic.
+    :return: Dictionary of coordinates for subsubsub topics.
+    """
+    subsubsub_topic_coords = {}
+    num_subsubsub_topics = len(subsubsub_topics)
+
+    # Calculate the angular gap between each subsubsub topic
+    if num_subsubsub_topics > 1:
+        angle_gap = 2 * math.pi / num_subsubsub_topics
+    else:
+        angle_gap = 0  # Avoid division by zero if only one subsubsub topic
+
+    # Generate coordinates for each subsubsub topic
+    for i, subsubsub_topic in enumerate(subsubsub_topics):
+        angle = start_angle + angle_gap * i
+        x = individual_radius * math.cos(angle)
+        y = individual_radius * math.sin(angle)
+        subsubsub_topic_coords[subsubsub_topic] = (x, y)
+
+    return subsubsub_topic_coords
+
 
 def round_coordinates(coordinates):
     """
@@ -128,10 +157,6 @@ def rename_nodes_in_dictionary(topics_and_subtopics, subsub_topics, subsubsub_to
             modified_subsubsubtopics = []
             for subsubsub_topic in subsubsub_topics_new[subsub_value]:
                 modified_subsubsubtopic = f"{subsub_key}->{subsubsub_topic}"
-                
-                print('new subsubsub key:          ', subsub_key)
-                print('modified_subsubsubtopic:    ', modified_subsubsubtopic)
-
                 modified_subsubsubtopics.append(modified_subsubsubtopic)
             subsubsub_topics_renamed[subsub_key] = modified_subsubsubtopics
 
@@ -208,14 +233,17 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, s
 topics_and_subtopics = mt.topics_and_subtopics
 subsub_topics = mt.subsub_topics
 subsubsub_topics = mt.subsubsub_topics
+
 individual_radius_main_topics = 50
 individual_radius_subtopics = 30
 individual_radius_subsub_topics = 15
 individual_radius_subsubsub_topics = 5
+
 separation_main_topics = 2.0
 separation_sub_topics = 1.5
 separation_subsub_topics = 1.5
 separation_subsubsub_topics = 1.5
+
 topic_colors = mt.topic_colors
 
 # Rename nodes, replace spaces with underscores and provide full taxonomy
@@ -223,10 +251,15 @@ topics_and_subtopics_new, subsub_topics_new, subsubsub_topics_new = rename_nodes
 
 # Generate Coordinates
 main_topic_coords, sub_topic_coords = generate_coordinates(topics_and_subtopics_new, individual_radius_main_topics, individual_radius_subtopics,separation_main_topics,separation_sub_topics)
+rounded_main_topic_coords = round_coordinates(main_topic_coords)
+
 subsub_topic_starting_radial_angle = find_radial_angle_of_subtopic(main_topic_coords, topics_and_subtopics_new, "Arithmetic" )
 subsub_topic_coords = generate_subsub_topic_coordinates(subsub_topics_new, individual_radius_subsub_topics, separation_subsub_topics,subsub_topic_starting_radial_angle)
-rounded_main_topic_coords = round_coordinates(main_topic_coords)
 rounded_sub_topic_coords = round_coordinates(sub_topic_coords)
+
+
+#subsubsub_topic_starting_radial_angle = find_radial_angle_of_subtopic(subsub_topics_new, subsubsub_topics_new, "Arithmetic->Recognizing_Shapes->Basic_Shapes")
+subsubsub_topic_coords = generate_subsubsub_topic_coordinates(math.radians(-180), subsubsub_topics_new, individual_radius_subsubsub_topics)
 rounded_subsub_topic_coords = round_coordinates(subsub_topic_coords)
 
 # Export graph in GDF format
