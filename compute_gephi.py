@@ -83,7 +83,7 @@ def generate_subsub_topic_coordinates(subsub_topics, individual_radius_subsub_to
 
 import math
 
-def generate_subsubsub_topic_coordinates(start_angle, subsubsub_topics, individual_radius):
+def generate_subsubsub_topic_coordinates(start_angle, subsubsub_topics, individual_radius, separation):
     """
     Generate coordinates for subsubsub topics, starting from a given angle and using individual radius.
 
@@ -92,6 +92,9 @@ def generate_subsubsub_topic_coordinates(start_angle, subsubsub_topics, individu
     :param individual_radius: Radius for placing each subsubsub topic.
     :return: Dictionary of coordinates for subsubsub topics.
     """
+    radius_subsubsubtopics = calculate_radius_for_spacing(sum([len(subsubsub_topics) for subsubsubtopics in subsubsub_topics.values()]), 
+                                                          individual_radius,separation)
+
     subsubsub_topic_coords = {}
     num_subsubsub_topics = len(subsubsub_topics)
 
@@ -104,11 +107,11 @@ def generate_subsubsub_topic_coordinates(start_angle, subsubsub_topics, individu
     # Generate coordinates for each subsubsub topic
     for i, subsubsub_topic in enumerate(subsubsub_topics):
         angle = start_angle + angle_gap * i
-        x = individual_radius * math.cos(angle)
-        y = individual_radius * math.sin(angle)
+        x = radius_subsubsubtopics * math.cos(angle)
+        y = radius_subsubsubtopics * math.sin(angle)
         subsubsub_topic_coords[subsubsub_topic] = (x, y)
 
-    return subsubsub_topic_coords
+    return subsubsub_topic_coords.values()
 
 
 def round_coordinates(coordinates):
@@ -126,6 +129,7 @@ def replace_spaces_in_dictionary(dict):
 def rename_nodes_in_dictionary(topics_and_subtopics, subsub_topics, subsubsub_topics):
     topics_and_subtopics_new = replace_spaces_in_dictionary(topics_and_subtopics)
     subsub_topics_new = replace_spaces_in_dictionary(subsub_topics)
+    subsub_topics_new2 = {}
     subsubsub_topics_new = replace_spaces_in_dictionary(subsubsub_topics)
     subsub_topics_renamed = {}
     subsubsub_topics_renamed = {}
@@ -138,18 +142,18 @@ def rename_nodes_in_dictionary(topics_and_subtopics, subsub_topics, subsubsub_to
     # Renaming subsub topics
     for ks, subsubtopics in subsub_topics_new.items():
         modified_subsubtopics = []
+        new_subsub_key = ''
         for subsubtopic in subsubtopics:
-            # Find the main topic and subtopic
-            new_subsub_key = ''
+            # Find the main topic and subtopic            
             for main_topic, subtopics in topics_and_subtopics_new.items():
-                if any(ks in subtopic for subtopic in subtopics):
-                    new_subsub_key = f"{main_topic}->{ks}->{subsubtopic}"
-                    modified_subsubtopics.append(new_subsub_key)
+                if any(ks in subtopic for subtopic in subtopics):                    
+                    new_subsub_key = f"{main_topic}->{ks}"
+                    modified_subsubtopics.append(f"{main_topic}->{ks}->{subsubtopic}")
                     break
             subsub_topics_renamed[new_subsub_key] = subsubtopic
 
         # Assign the modified list to the key in subsub_topics_new
-        subsub_topics_new[ks] = modified_subsubtopics
+        subsub_topics_new2[new_subsub_key] = modified_subsubtopics
 
     # Renaming subsubsub topics based on subsub topics values
     for subsub_key, subsub_value in subsub_topics_renamed.items():
@@ -160,10 +164,13 @@ def rename_nodes_in_dictionary(topics_and_subtopics, subsub_topics, subsubsub_to
                 modified_subsubsubtopics.append(modified_subsubsubtopic)
             subsubsub_topics_renamed[subsub_key] = modified_subsubsubtopics
 
-    return topics_and_subtopics_new, subsub_topics_new, subsubsub_topics_renamed
+    return topics_and_subtopics_new, subsub_topics_new2, subsubsub_topics_renamed
 
 
-def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, subtopic_coords, subsub_topic_coords, individual_radius_main_topics, individual_radius_subtopics, individual_radius_subsub_topics, topic_colors):
+def generate_gephi_gdf(topics_and_subtopics, subsub_topics, subsubsub_topics, 
+                       main_topic_coords, subtopic_coords, subsub_topic_coords, subsubsub_topic_coords, 
+                       individual_radius_main_topics, individual_radius_subtopics, individual_radius_subsub_topics, individual_radius_subsubsub_topics, 
+                       topic_colors):
     gdf_content = "nodedef>name VARCHAR,label VARCHAR,width DOUBLE,x DOUBLE,y DOUBLE,color VARCHAR\n"
 
     # Add nodes for main topics with coordinates, width, and color
@@ -190,19 +197,53 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, s
                 gdf_content += f"{subsub_topic},{subsub_topic.split('->')[-1].replace('_',' ')},{individual_radius_subsub_topics},{subsub_x},{subsub_y},{color}\n"
 
 
+    # # Add nodes for subsubsub topics with correct color based on main topic
+    # for subsub_topic_key, subsubsub_list in subsubsub_topics.items():
+    #     main_topic_key = subsub_topic_key.split('->')[0]
+    #     color = f"\"{topic_colors.get(main_topic_key, '255,255,255')}\""
+
+    #     for subsubsub_topic in subsubsub_list:
+    #         if subsubsub_topic_coords:  # Check for available coordinates
+    #             subsubsub_x, subsubsub_y = subsubsub_topic_coords.pop(0)
+    #             gdf_content += f"{subsubsub_topic},{subsubsub_topic.split('->')[-1].replace('_',' ')},{individual_radius_subsubsub_topics},{subsubsub_x},{subsubsub_y},{color}\n"
+
+
+    ######################################################
+    # EDGES
+    ######################################################
+
     # Add directed edges from main topics to subtopics and from subtopics to subsub topics
     gdf_content += "edgedef>node1 VARCHAR,node2 VARCHAR,directed BOOLEAN\n"
 
  
-    # Add directed edges from main topics to subtopics and from subtopics to subsub topics
+
+    # Add directed edges from main topics to subtopics
     for main_topic, subtopics in topics_and_subtopics.items():
         for subtopic in subtopics:
             gdf_content += f"{main_topic},{subtopic},true\n"
+
+            # Add directed edges from each subtopic to all its corresponding subsub topics
+            print('main_topic: ', main_topic, '  subtopic: ', subtopic)
             if subtopic in subsub_topics:
                 for subsub_topic in subsub_topics[subtopic]:
+                    print('subsub_topic: ', subsub_topic)
                     gdf_content += f"{subtopic},{subsub_topic},true\n"
 
-  # Add directed edges between main topics in the order they appear
+
+    #  # Add directed edges from main topics to subtopics and from subtopics to the first subsub topic
+    # for main_topic, subtopics in topics_and_subtopics.items():
+    #     for subtopic in subtopics:
+    #         gdf_content += f"{main_topic},{subtopic},true\n"
+    #         # Check if there are subsub topics for this subtopic and add an edge to the first subsub topic
+    #         if subtopic in subsub_topics and subsub_topics[subtopic]:
+    #             first_subsub_topic = subsub_topics[subtopic][0]
+    #             gdf_content += f"{subtopic},{first_subsub_topic},true\n"
+    #         # Add edges from each subtopic to all its subsub topics
+    #         if subtopic in subsub_topics:
+    #             for subsub_topic in subsub_topics[subtopic]:
+    #                 gdf_content += f"{subtopic},{subsub_topic},true\n"
+
+    # Add directed edges between main topics in the order they appear
     main_topics = list(topics_and_subtopics.keys())
     for i in range(len(main_topics) - 1):
         from_topic = main_topics[i]
@@ -218,6 +259,36 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, main_topic_coords, s
     for subsub_list in subsub_topics.values():
         for i in range(len(subsub_list) - 1):
             gdf_content += f"{subsub_list[i]},{subsub_list[i + 1]},true\n"
+
+    # # Add directed edges between main topics in the order they appear
+    # main_topics = list(topics_and_subtopics.keys())
+    # for i in range(len(main_topics) - 1):
+    #     from_topic = main_topics[i]
+    #     to_topic = main_topics[i + 1]
+    #     gdf_content += f"{from_topic},{to_topic},true\n"
+
+    # # Add directed edges between adjacent subtopics
+    # for subtopics in topics_and_subtopics.values():
+    #     for i in range(len(subtopics) - 1):
+    #         gdf_content += f"{subtopics[i]},{subtopics[i + 1]},true\n"
+    
+    # # Add directed edges between adjacent subsub topics
+    # for subsub_list in subsub_topics.values():
+    #     for i in range(len(subsub_list) - 1):
+    #         gdf_content += f"{subsub_list[i]},{subsub_list[i + 1]},true\n"
+
+    # # Add directed edges from subsub topics to subsubsub topics
+    # for subsub_topic, subsubsub_list in subsubsub_topics.items():
+    #     for subsubsub_topic in subsubsub_list:
+    #         gdf_content += f"{subsub_topic},{subsubsub_topic},true\n"
+
+    # # Add directed edges between adjacent subsubsub topics
+    # for subsubsub_list in subsubsub_topics.values():
+    #     for i in range(len(subsubsub_list) - 1):
+    #         gdf_content += f"{subsubsub_list[i]},{subsubsub_list[i + 1]},true\n"
+
+
+
 
     return gdf_content
 
@@ -252,20 +323,25 @@ topics_and_subtopics_new, subsub_topics_new, subsubsub_topics_new = rename_nodes
 # Generate Coordinates
 main_topic_coords, sub_topic_coords = generate_coordinates(topics_and_subtopics_new, individual_radius_main_topics, individual_radius_subtopics,separation_main_topics,separation_sub_topics)
 rounded_main_topic_coords = round_coordinates(main_topic_coords)
+rounded_sub_topic_coords = round_coordinates(sub_topic_coords)
 
 subsub_topic_starting_radial_angle = find_radial_angle_of_subtopic(main_topic_coords, topics_and_subtopics_new, "Arithmetic" )
 subsub_topic_coords = generate_subsub_topic_coordinates(subsub_topics_new, individual_radius_subsub_topics, separation_subsub_topics,subsub_topic_starting_radial_angle)
-rounded_sub_topic_coords = round_coordinates(sub_topic_coords)
+rounded_subsub_topic_coords = round_coordinates(subsub_topic_coords)
 
 
 #subsubsub_topic_starting_radial_angle = find_radial_angle_of_subtopic(subsub_topics_new, subsubsub_topics_new, "Arithmetic->Recognizing_Shapes->Basic_Shapes")
-subsubsub_topic_coords = generate_subsubsub_topic_coordinates(math.radians(-180), subsubsub_topics_new, individual_radius_subsubsub_topics)
-rounded_subsub_topic_coords = round_coordinates(subsub_topic_coords)
+subsubsub_topic_coords = generate_subsubsub_topic_coordinates(math.radians(-180), subsubsub_topics_new, individual_radius_subsubsub_topics,separation_subsubsub_topics)
+print('subsubsub topic coords: \n',subsubsub_topic_coords)
+rounded_subsubsub_topic_coords = round_coordinates(subsubsub_topic_coords)
 
 # Export graph in GDF format
-gdf_data = generate_gephi_gdf(topics_and_subtopics_new,subsub_topics_new, 
-                         rounded_main_topic_coords,rounded_sub_topic_coords,rounded_subsub_topic_coords,
-                         individual_radius_main_topics,individual_radius_subtopics,individual_radius_subsub_topics, topic_colors)
+gdf_data = generate_gephi_gdf(topics_and_subtopics_new, subsub_topics_new, subsubsub_topics_new, 
+                              rounded_main_topic_coords,rounded_sub_topic_coords,rounded_subsub_topic_coords, rounded_subsubsub_topic_coords,
+                              individual_radius_main_topics, individual_radius_subtopics, individual_radius_subsub_topics, individual_radius_subsubsub_topics, 
+                              topic_colors)
+
+
 
 # Write the GDF content to a file
 file_path = './gephi/math_nodes_and_edges.gdf'
@@ -277,3 +353,12 @@ with open(file_path, 'w') as file:
 
 print(gdf_data)
 print(f"GDF file saved to: {file_path}")
+
+print('***********************************************************************************')
+print('topics_and_subtopics_new\n', topics_and_subtopics_new)
+print('***********************************************************************************')
+print('subsub_topics_new\n', subsub_topics_new)
+print('***********************************************************************************')
+print('subsubsub_topics_new\n', subsubsub_topics_new)
+print('***********************************************************************************')
+

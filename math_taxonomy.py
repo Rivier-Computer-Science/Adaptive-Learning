@@ -1,6 +1,6 @@
 topic_colors = { # Green to Red
     "Arithmetic": "97,130,100", 
-    "Algebra": "97,130,100",    
+    "Algebra": "109,151,110",    
     "Geometry": "121,172,120",
     "Trigonometry": "176,217,177",
     "Statistics_and_Probability": "228,247,143",
@@ -234,8 +234,8 @@ subsubsub_topics = {
     "Commutative": ["Definition", "Operation Order", "Add/Mpy", "Not Sub/Div"],
     "Distributive" :["Definition", "Formula", "Multiplication", "Division Differences"],
     # Arithmetic Place Value
-    "Units": ["Digit Dependence", "Digit Position", "Names (tens, hundreds, etc.)"], 
-    "Writing Large Numbers": ["Base 10 Value System", "Use of Commas", "Periods (thousands, millions)"],
+    "Units": ["Digit Dependence", "Digit Position", "Names - tens/hundreds"], 
+    "Writing Large Numbers": ["Base 10 Value System", "Use of Commas", "Periods - thousands/millions"],
     # Arithmetic Time and Calendar
     "Reading Clocks": ["Analog","Digital","Hand Positions", "AM/PM"],
     "Measuring Time": ["Units", "Elapsed Time", "Difference between Times"],
@@ -369,7 +369,7 @@ subsubsub_topics = {
     "Solving Right Triangles": ["Using Trigonometric Ratios", "Applications in Real Life", "Problem Solving Strategies"],
 
     # Trigonometric Ratios
-    "Definitions": ["Sine, Cosine, Tangent", "Cosecant, Secant, Cotangent", "Trigonometric Ratios of Special Angles"],
+    "Definitions": ["Sine/Cosine/Tangent", "Cosecant/Secant/Cotangent", "Trigonometric Ratios of Special Angles"],
     "Solving for Unknown Sides or Angles in Right Triangles": ["Using Inverse Trigonometric Functions", "Applications in Problem Solving"],
 
     # Graphs of Trigonometric Functions
