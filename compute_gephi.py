@@ -133,6 +133,7 @@ def rename_nodes_in_dictionary(topics_and_subtopics, subsub_topics, subsubsub_to
     subsubsub_topics_new = replace_spaces_in_dictionary(subsubsub_topics)
     subsub_topics_renamed = {}
     subsubsub_topics_renamed = {}
+    subsubsub_topics_new2 = {}
 
     # Renaming subtopics
     for km, subtopics in topics_and_subtopics_new.items():
@@ -155,16 +156,22 @@ def rename_nodes_in_dictionary(topics_and_subtopics, subsub_topics, subsubsub_to
         # Assign the modified list to the key in subsub_topics_new
         subsub_topics_new2[new_subsub_key] = modified_subsubtopics
 
-    # Renaming subsubsub topics based on subsub topics values
-    for subsub_key, subsub_value in subsub_topics_renamed.items():
-        if subsub_value in subsubsub_topics_new:
-            modified_subsubsubtopics = []
-            for subsubsub_topic in subsubsub_topics_new[subsub_value]:
-                modified_subsubsubtopic = f"{subsub_key}->{subsubsub_topic}"
-                modified_subsubsubtopics.append(modified_subsubsubtopic)
-            subsubsub_topics_renamed[subsub_key] = modified_subsubsubtopics
 
-    return topics_and_subtopics_new, subsub_topics_new2, subsubsub_topics_renamed
+    # Renaming subsubsub topics based on subsub topics values
+    for kss, subsubsubtopics in subsubsub_topics_new.items():
+        modified_subsubsubtopics = []
+        new_subsubsub_key = ''
+        for subsubsubtopic in subsubsubtopics:
+            for subtopic, subsubtopics in subsub_topics_new2.items():
+                if any(kss in subsubtopic for subsubtopic in subsubtopics):
+                    new_subsubsub_key = f"{subtopic}->{kss}"
+                    modified_subsubsubtopics.append(f"{subtopic}->{kss}->{subsubsubtopic}")
+                    break
+            subsubsub_topics_renamed[new_subsubsub_key] = subsubsubtopic
+
+        subsubsub_topics_new2[new_subsubsub_key] = modified_subsubsubtopics
+
+    return topics_and_subtopics_new, subsub_topics_new2, subsubsub_topics_new2
 
 
 def generate_gephi_gdf(topics_and_subtopics, subsub_topics, subsubsub_topics, 
@@ -196,16 +203,15 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, subsubsub_topics,
                 subsub_x, subsub_y = subsub_topic_coords.pop(0)
                 gdf_content += f"{subsub_topic},{subsub_topic.split('->')[-1].replace('_',' ')},{individual_radius_subsub_topics},{subsub_x},{subsub_y},{color}\n"
 
+    # Add nodes for subsubsub topics with correct color based on main topic
+    for subsub_topic_key, subsubsub_list in subsubsub_topics.items():
+        main_topic_key = subsub_topic_key.split('->')[0]
+        color = f"\"{topic_colors.get(main_topic_key, '255,255,255')}\""
 
-    # # Add nodes for subsubsub topics with correct color based on main topic
-    # for subsub_topic_key, subsubsub_list in subsubsub_topics.items():
-    #     main_topic_key = subsub_topic_key.split('->')[0]
-    #     color = f"\"{topic_colors.get(main_topic_key, '255,255,255')}\""
-
-    #     for subsubsub_topic in subsubsub_list:
-    #         if subsubsub_topic_coords:  # Check for available coordinates
-    #             subsubsub_x, subsubsub_y = subsubsub_topic_coords.pop(0)
-    #             gdf_content += f"{subsubsub_topic},{subsubsub_topic.split('->')[-1].replace('_',' ')},{individual_radius_subsubsub_topics},{subsubsub_x},{subsubsub_y},{color}\n"
+        for subsubsub_topic in subsubsub_list:
+            if subsubsub_topic_coords:  # Check for available coordinates
+                subsubsub_x, subsubsub_y = subsubsub_topic_coords.pop(0)
+                gdf_content += f"{subsubsub_topic},{subsubsub_topic.split('->')[-1].replace('_',' ')},{individual_radius_subsubsub_topics},{subsubsub_x},{subsubsub_y},{color}\n"
 
 
     ######################################################
@@ -230,18 +236,6 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, subsubsub_topics,
                     gdf_content += f"{subtopic},{subsub_topic},true\n"
 
 
-    #  # Add directed edges from main topics to subtopics and from subtopics to the first subsub topic
-    # for main_topic, subtopics in topics_and_subtopics.items():
-    #     for subtopic in subtopics:
-    #         gdf_content += f"{main_topic},{subtopic},true\n"
-    #         # Check if there are subsub topics for this subtopic and add an edge to the first subsub topic
-    #         if subtopic in subsub_topics and subsub_topics[subtopic]:
-    #             first_subsub_topic = subsub_topics[subtopic][0]
-    #             gdf_content += f"{subtopic},{first_subsub_topic},true\n"
-    #         # Add edges from each subtopic to all its subsub topics
-    #         if subtopic in subsub_topics:
-    #             for subsub_topic in subsub_topics[subtopic]:
-    #                 gdf_content += f"{subtopic},{subsub_topic},true\n"
 
     # Add directed edges between main topics in the order they appear
     main_topics = list(topics_and_subtopics.keys())
@@ -260,30 +254,11 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, subsubsub_topics,
         for i in range(len(subsub_list) - 1):
             gdf_content += f"{subsub_list[i]},{subsub_list[i + 1]},true\n"
 
-    # # Add directed edges between main topics in the order they appear
-    # main_topics = list(topics_and_subtopics.keys())
-    # for i in range(len(main_topics) - 1):
-    #     from_topic = main_topics[i]
-    #     to_topic = main_topics[i + 1]
-    #     gdf_content += f"{from_topic},{to_topic},true\n"
-
-    # # Add directed edges between adjacent subtopics
-    # for subtopics in topics_and_subtopics.values():
-    #     for i in range(len(subtopics) - 1):
-    #         gdf_content += f"{subtopics[i]},{subtopics[i + 1]},true\n"
-    
-    # # Add directed edges between adjacent subsub topics
-    # for subsub_list in subsub_topics.values():
-    #     for i in range(len(subsub_list) - 1):
-    #         gdf_content += f"{subsub_list[i]},{subsub_list[i + 1]},true\n"
-
-    # # Add directed edges from subsub topics to subsubsub topics
+ 
+    # # Add directed edges from subsub topics to subsubsub topics and between adjacent subsubsub topics
     # for subsub_topic, subsubsub_list in subsubsub_topics.items():
     #     for subsubsub_topic in subsubsub_list:
     #         gdf_content += f"{subsub_topic},{subsubsub_topic},true\n"
-
-    # # Add directed edges between adjacent subsubsub topics
-    # for subsubsub_list in subsubsub_topics.values():
     #     for i in range(len(subsubsub_list) - 1):
     #         gdf_content += f"{subsubsub_list[i]},{subsubsub_list[i + 1]},true\n"
 
