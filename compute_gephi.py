@@ -107,8 +107,8 @@ def generate_subsubsub_topic_coordinates(start_angle, subsubsub_topics, individu
     # Generate coordinates for each subsubsub topic
     for i, subsubsub_topic in enumerate(subsubsub_topics):
         angle = start_angle + angle_gap * i
-        x = radius_subsubsubtopics * math.cos(angle)
-        y = radius_subsubsubtopics * math.sin(angle)
+        x = radius_subsubsubtopics * math.cos(angle) / 9.0  #FIXME: Hack
+        y = radius_subsubsubtopics * math.sin(angle) / 9.0  #FIXME: Hack
         subsubsub_topic_coords[subsubsub_topic] = (x, y)
 
     return subsubsub_topic_coords.values()
@@ -159,16 +159,26 @@ def rename_nodes_in_dictionary(topics_and_subtopics, subsub_topics, subsubsub_to
 
     # Renaming subsubsub topics based on subsub topics values
     for kss, subsubsubtopics in subsubsub_topics_new.items():
+        print('kss: ', kss)
+        print('subsubsubtopics: ', subsubsubtopics)
         modified_subsubsubtopics = []
         new_subsubsub_key = ''
         for subsubsubtopic in subsubsubtopics:
+            matched = False
             for subtopic, subsubtopics in subsub_topics_new2.items():
                 if any(kss in subsubtopic for subsubtopic in subsubtopics):
                     new_subsubsub_key = f"{subtopic}->{kss}"
-                    modified_subsubsubtopics.append(f"{subtopic}->{kss}->{subsubsubtopic}")
+                    new_subsubsub_topic = f"{subtopic}->{kss}->{subsubsubtopic}"
+                    modified_subsubsubtopics.append(new_subsubsub_topic)
+                    print('new_subsubsub_key:       ', new_subsubsub_key)
+                    print('modified_subsubsubtopic: ', new_subsubsub_topic )
+                    matched = True
                     break
-            subsubsub_topics_renamed[new_subsubsub_key] = subsubsubtopic
+            if matched:
+                break
+        subsubsub_topics_renamed[new_subsubsub_key] = subsubsubtopic
 
+        print('modified_subsubsubtopics: ', modified_subsubsubtopics)
         subsubsub_topics_new2[new_subsubsub_key] = modified_subsubsubtopics
 
     return topics_and_subtopics_new, subsub_topics_new2, subsubsub_topics_new2
@@ -214,6 +224,7 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, subsubsub_topics,
                 gdf_content += f"{subsubsub_topic},{subsubsub_topic.split('->')[-1].replace('_',' ')},{individual_radius_subsubsub_topics},{subsubsub_x},{subsubsub_y},{color}\n"
 
 
+
     ######################################################
     # EDGES
     ######################################################
@@ -229,10 +240,10 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, subsubsub_topics,
             gdf_content += f"{main_topic},{subtopic},true\n"
 
             # Add directed edges from each subtopic to all its corresponding subsub topics
-            print('main_topic: ', main_topic, '  subtopic: ', subtopic)
+            #print('main_topic: ', main_topic, '  subtopic: ', subtopic)
             if subtopic in subsub_topics:
                 for subsub_topic in subsub_topics[subtopic]:
-                    print('subsub_topic: ', subsub_topic)
+                    #print('subsub_topic: ', subsub_topic)
                     gdf_content += f"{subtopic},{subsub_topic},true\n"
 
 
@@ -268,7 +279,75 @@ def generate_gephi_gdf(topics_and_subtopics, subsub_topics, subsubsub_topics,
     return gdf_content
 
 
+def create_multidimensional_dict(topics_and_subtopics, subsub_topics, subsubsub_topics):
+    """
+    Creates a multidimensional dictionary from given topics, subtopics, and sub-subtopics.
 
+    :param topics_and_subtopics: Dictionary of topics and their subtopics
+    :param subsub_topics: Dictionary of subtopics and their further subtopics
+    :param subsubsub_topics: Dictionary of sub-subtopics and their detailed topics
+    :return: Nested dictionary combining all three dictionaries
+    """
+    multidimensional_dict = {}
+    for topic, subtopics in topics_and_subtopics.items():
+        multidimensional_dict[topic] = {}
+        for subtopic in subtopics:
+            if subtopic in subsub_topics:
+                multidimensional_dict[topic][subtopic] = {}
+                for subsub in subsub_topics[subtopic]:
+                    if subsub in subsubsub_topics:
+                        multidimensional_dict[topic][subtopic][subsub] = {}
+                        for subsubsub_item in subsubsub_topics[subsub]:
+                            # Now we iterate through each item in the list and assign it to the dictionary
+                            multidimensional_dict[topic][subtopic][subsub][subsubsub_item] = None
+                    else:
+                        multidimensional_dict[topic][subtopic][subsub] = None
+            else:
+                multidimensional_dict[topic][subtopic] = None
+    return multidimensional_dict
+
+
+
+
+
+def flatten_dict(d, parent_key='', sep=' -> '):
+    """
+    Flatten a nested dictionary into a list of strings showing the hierarchy.
+
+    :param d: The dictionary to flatten
+    :param parent_key: The base path for the current level
+    :param sep: Separator to use between levels
+    :return: A list of strings representing the flattened structure
+    """
+    items = []
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+        if isinstance(v, dict):
+            items.extend(flatten_dict(v, new_key, sep=sep))
+        elif v is None or isinstance(v, list):
+            if isinstance(v, list):
+                items.append(f"{new_key}: {', '.join(v)}")
+            else:
+                items.append(new_key)
+    return items
+
+def pretty_print(d, indent=0, sep=' -> '):
+    """
+    Recursively pretty prints a nested dictionary to visually represent its hierarchical structure.
+
+    :param d: The dictionary to be printed
+    :param indent: The current indentation level
+    :param sep: Separator to use between levels
+    """
+    for key, value in d.items():
+        print(' ' * indent + str(key))
+        if isinstance(value, dict):
+            pretty_print(value, indent + len(sep))
+        elif isinstance(value, list):
+            for item in value:
+                print(' ' * (indent + len(sep)) + str(item))
+        else:
+            print(' ' * (indent + len(sep)) + str(value))
 
 #######################################################
 # Main()
@@ -337,3 +416,11 @@ print('*************************************************************************
 print('subsubsub_topics_new\n', subsubsub_topics_new)
 print('***********************************************************************************')
 
+print('###########################################################################################')
+md_dict = create_multidimensional_dict(topics_and_subtopics_new,subsub_topics_new, subsubsub_topics_new)
+print(md_dict)
+
+pretty_print(md_dict)
+
+print('******************************************************************')
+print(replace_spaces_in_dictionary(mt.subsubsub_topics))
