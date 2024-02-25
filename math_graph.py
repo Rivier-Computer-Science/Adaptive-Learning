@@ -1,39 +1,56 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import os
+import math
+import math_taxonomy as mt
+import scipy
 
 
-# Create a directed graph
-G = nx.DiGraph()
+class KnowledgeGraph:
+    def __init__(self):
+        self.graph = nx.DiGraph()  # Directed graph to represent progression
 
-# Add top-level nodes
-topics = ["Arithmetic", "Algebra", "Geometry", "Trigonometry", "Statistics and Probability", 
-          "Pre-Calculus", "Calculus", "Advanced Calculus (Honors)", "Discrete Mathematics (Honors)", 
-          "Linear Algebra (Honors)", "Advanced Statistics (Honors)", "Mathematical Proofs and Theory (Honors)"]
-G.add_node("Math", color='blue')  # Assuming 'blue' denotes the start
-for topic in topics:
-    G.add_node(topic, color='blue')  # Change colors as needed
-    G.add_edge("Math", topic)  # Undirected edge from Math to topic
+    def add_topic(self, topic_name, difficulty):
+        self.graph.add_node(topic_name, difficulty=difficulty)
 
-# Add subtopics and sub-subtopics for Arithmetic as an example
-arithmetic_subtopics = {
-    "Basic operations": ["Addition", "Subtraction", "Multiplication", "Division", "Order of operations (PEMDAS)"],
-    "Fractions": ["Simplifying", "Comparing", "Addition", "Subtraction", "Multiplication", "Division"],
-    # ... add other subtopics and their respective sub-subtopics
-}
+    def add_prerequisite(self, topic_from, topic_to):
+        """Add a directed edge indicating that topic_from is a prerequisite for topic_to"""
+        self.graph.add_edge(topic_from, topic_to)
 
-for subtopic, operations in arithmetic_subtopics.items():
-    G.add_node(subtopic, color='green')  # Change colors as needed
-    prev_operation = subtopic  # Start from the subtopic
-    for operation in operations:
-        G.add_node(operation, color='green')  # Change colors as needed
-        G.add_edge(prev_operation, operation, directed=True)
-        prev_operation = operation  # Update the previous operation
+    def get_next_topics(self, current_topic):
+        """Returns topics that directly follow the current topic"""
+        return list(self.graph.successors(current_topic))
 
-# Repeat the above steps for other main topics and their subtopics
+    def get_difficulty(self, topic_name):
+        """Get the difficulty level of a topic"""
+        return self.graph.nodes[topic_name]['difficulty']
+    
+    def build_dag_from_dict(self, topics_dict):
+        self.graph = nx.DiGraph()
 
-# Visualization (Optional)
-nx.draw(G, with_labels=True, node_size=1000, font_size=8)
-plt.show()
+        # Previous node variable to keep track of the last node added
+        # This will help in linking the sequential nodes across different keys
+        prev_node = None
+        difficulty_level = 1
 
-# Save to a file or export (Optional)
-nx.write_gexf(G, "/home/glossner/GitRepos/knowledge/gephi/math_taxonomy_graph.gexf")
+        for _, children in topics_dict.items():
+            for child in children:
+                # Add each child as a node. networkx won't duplicate nodes.
+                self.graph.add_node(child, difficulty=difficulty_level)
+                difficulty_level += 1
+                
+                # If there's a previous node, draw an edge from it to the current child
+                if prev_node is not None:
+                    self.graph.add_edge(prev_node, child)
+                
+                # Update the previous node to be the current child for the next iteration
+                prev_node = child
+        return
+
+    def plot_dag(self):
+        nx.draw(self.graph, with_labels=True)
+        plt.show()
+
+
+
+
