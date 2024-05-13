@@ -1,5 +1,6 @@
-# To install required packages:
-# pip install pyautogen==0.2.9 panel==1.3.8
+
+# Panel runs on port 8000
+
 import autogen
 
 import panel as pn
