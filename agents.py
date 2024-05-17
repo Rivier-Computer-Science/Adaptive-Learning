@@ -13,24 +13,20 @@ config_list = [
 gpt4_config = {"config_list": config_list, "temperature": 0, "seed": 53}
 
 class MyConversableAgent(autogen.ConversableAgent):
-    def __init__(self, chat_interface, **kwargs):
+    def __init__(self, input_queue, chat_interface, **kwargs):  # Add input_queue here
         super().__init__(**kwargs)
         self.chat_interface = chat_interface
+        self.input_queue = input_queue  # Store the queue as an attribute
 
     async def a_get_human_input(self, prompt: str) -> str:
-        global input_future
-        print('AGET!!!!!!')  # or however you wish to display the prompt
         self.chat_interface.send(prompt, user="System", respond=False)
-        if input_future is None or input_future.done():
-            input_future = asyncio.Future()
-        await input_future
-        input_value = input_future.result()
-        input_future = None
-        return input_value
+        return await self.input_queue.get()  # Use the stored queue
+
 
 class AdminAgent(MyConversableAgent):
-    def __init__(self, chat_interface):
+    def __init__(self, input_queue, chat_interface):  # Add input_queue here
         super().__init__(
+            input_queue=input_queue,  # Pass the queue to the parent
             chat_interface=chat_interface,
             name="Admin",
             is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("exit"),
@@ -38,6 +34,7 @@ class AdminAgent(MyConversableAgent):
             code_execution_config=False,
             human_input_mode="ALWAYS",
             llm_config=gpt4_config,
+
         )
 
 class EngineerAgent(autogen.AssistantAgent):

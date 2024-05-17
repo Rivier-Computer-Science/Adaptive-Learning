@@ -1,10 +1,12 @@
 import panel as pn
 import asyncio
+from asyncio import Queue
 import autogen
 from agents import AdminAgent, EngineerAgent, ScientistAgent, PlannerAgent, ExecutorAgent, CriticAgent, print_messages
 from globals import input_future, initiate_chat_task_created
 
 pn.extension(design="material")
+input_queue = Queue()
 
 async def delayed_initiate_chat(agent, recipient, message):
     global initiate_chat_task_created
@@ -12,20 +14,18 @@ async def delayed_initiate_chat(agent, recipient, message):
     await asyncio.sleep(2)
     await agent.a_initiate_chat(recipient, message=message)
 
+
 async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
     global initiate_chat_task_created
-    global input_future
     if not initiate_chat_task_created:
         asyncio.create_task(delayed_initiate_chat(admin, manager, contents))
     else:
-        if input_future and not input_future.done():
-            input_future.set_result(contents)
-        else:
-            print("There is currently no input being awaited.")
+        await input_queue.put(contents)
+
 
 chat_interface = pn.chat.ChatInterface(callback=callback)
 
-admin = AdminAgent(chat_interface)
+admin = AdminAgent(input_queue, chat_interface) 
 engineer = EngineerAgent()
 scientist = ScientistAgent()
 planner = PlannerAgent()
