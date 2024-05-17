@@ -3,7 +3,6 @@ import os
 import asyncio
 from globals import input_future
 
-
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
 config_list = [
@@ -12,7 +11,6 @@ config_list = [
     }
 ]
 gpt4_config = {"config_list": config_list, "temperature": 0, "seed": 53}
-
 
 class MyConversableAgent(autogen.ConversableAgent):
     def __init__(self, chat_interface, **kwargs):
@@ -94,5 +92,21 @@ Check whether the plan includes adding verifiable info such as source URL.""",
             human_input_mode="NEVER",
         )
 
+avatar = {
+    "Admin": "👨‍💼",
+    "Engineer": "👩‍💻",
+    "Scientist": "👩‍🔬",
+    "Planner": "🗓",
+    "Executor": "🛠",
+    "Critic": "📝",
+}
 
-
+def print_messages(recipient, messages, sender, config):
+    print(f"Messages from: {sender.name} sent to: {recipient.name} | num messages: {len(messages)} | message: {messages[-1]}")
+    content = messages[-1]['content']
+    if hasattr(recipient, 'chat_interface'):
+        if all(key in messages[-1] for key in ['name']):
+            recipient.chat_interface.send(content, user=messages[-1]['name'], avatar=avatar[messages[-1]['name']], respond=False)
+        else:
+            recipient.chat_interface.send(content, user=recipient.name, avatar=avatar[recipient.name], respond=False)
+    return False, None

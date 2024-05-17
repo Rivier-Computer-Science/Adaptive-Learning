@@ -1,11 +1,10 @@
 import panel as pn
 import asyncio
-import autogen 
-from agents import AdminAgent, EngineerAgent, ScientistAgent, PlannerAgent, ExecutorAgent, CriticAgent
-from globals import input_future
+import autogen
+from agents import AdminAgent, EngineerAgent, ScientistAgent, PlannerAgent, ExecutorAgent, CriticAgent, print_messages
+from globals import input_future, initiate_chat_task_created
 
 pn.extension(design="material")
-
 
 async def delayed_initiate_chat(agent, recipient, message):
     global initiate_chat_task_created
@@ -24,17 +23,8 @@ async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         else:
             print("There is currently no input being awaited.")
 
-def print_messages(recipient, messages, sender, config):
-    print(f"Messages from: {sender.name} sent to: {recipient.name} | num messages: {len(messages)} | message: {messages[-1]}")
-    content = messages[-1]['content']
-    if all(key in messages[-1] for key in ['name']):
-        chat_interface.send(content, user=messages[-1]['name'], avatar=avatar[messages[-1]['name']], respond=False)
-    else:
-        chat_interface.send(content, user=recipient.name, avatar=avatar[recipient.name], respond=False)
-    return False, None
-
-
 chat_interface = pn.chat.ChatInterface(callback=callback)
+
 admin = AdminAgent(chat_interface)
 engineer = EngineerAgent()
 scientist = ScientistAgent()
@@ -54,17 +44,12 @@ avatar = {
     "Critic": "📝",
 }
 
-
 admin.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
 engineer.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
 scientist.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
 planner.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
 executor.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
 critic.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
-
-initiate_chat_task_created = False
-
-
 
 chat_interface.send("Send a message!", user="System", respond=False)
 chat_interface.servable()
