@@ -1,4 +1,3 @@
-# knowledge
 # Adaptive Learning
 
 ## Hugging Face
