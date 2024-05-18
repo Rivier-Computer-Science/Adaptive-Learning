@@ -10,7 +10,7 @@
 - https://huggingface.co/organizations/rivier-cs/share/JxILqgwhDbIheptwtscovBQilXPkBezdNa 
 - Links to an external site.
 
-### Install Hugging Face USING Conda
+### Install Hugging Face USING Conda.
 - See half way down at this link: https://huggingface.co/docs/huggingface_hub/installation 
 - Links to an external site.
 
