@@ -26,11 +26,11 @@ async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
 chat_interface = pn.chat.ChatInterface(callback=callback)
 
 admin = AdminAgent(input_queue, chat_interface) 
-engineer = EngineerAgent()
-scientist = ScientistAgent()
-planner = PlannerAgent()
+engineer = EngineerAgent(input_queue)
+scientist = ScientistAgent(input_queue)
+planner = PlannerAgent(input_queue)
 executor = ExecutorAgent()
-critic = CriticAgent()
+critic = CriticAgent(input_queue)
 
 groupchat = autogen.GroupChat(agents=[admin, engineer, scientist, planner, executor, critic], messages=[], max_round=20)
 manager = autogen.GroupChatManager(groupchat=groupchat, llm_config={"config_list": [{"model": "gpt-3.5-turbo"}], "temperature": 0, "seed": 53})
