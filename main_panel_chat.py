@@ -2,26 +2,53 @@ import panel as pn
 import asyncio
 from asyncio import Queue
 import autogen
-from agents import CoachAgent, TutorAgent, ContentProviderAgent, EvaluatorAgent, LearnerAgent, VerifierAgent, print_messages
+from agents import CustomGroupChat, CoachAgent, TutorAgent, ContentProviderAgent, EvaluatorAgent, LearnerAgent, VerifierAgent, print_messages
 from globals import input_future, initiate_chat_task_created
 
 pn.extension(design="material")
 
-async def delayed_initiate_chat(agent, recipient, message):
-    global initiate_chat_task_created
-    initiate_chat_task_created = True
-    await asyncio.sleep(2)
-    await agent.a_initiate_chat(recipient, message=message)
+# main.py
+# async def delayed_initiate_chat(agent, recipient, message):
+#     global initiate_chat_task_created, current_task
 
-async def callback(contents: str, user: str, instance: pn.chat.ChatInterface, input_queue: Queue = None):
+#     # Cancel any existing task before starting a new one
+#     if current_task and not current_task.done():
+#         current_task.cancel()
+
+#     initiate_chat_task_created = True
+#     current_task = asyncio.current_task()  # Store the current task
+#     await asyncio.sleep(2)
+
+#     # Prepare messages to send, including user's message and initial system message
+#     user_message = {'content': message, 'role': 'user'}
+#     system_message = {'role': 'system', 'content': recipient.system_message}
+#     recipient.groupchat._oai_messages = [user_message, system_message]
+
+#     # Trigger the reply generation of the Coach (speaker) first
+#     await agent.a_generate_reply([system_message, user_message], recipient)
+
+async def handle_user_message(contents, user):
     global initiate_chat_task_created
-    print(f"Callback received contents: {contents}, user: {user}")
+
+    message_to_send = {'content': contents, 'role': 'user'}
+
     if not initiate_chat_task_created:
-        asyncio.create_task(delayed_initiate_chat(coach, manager, contents))
-        return
-    if input_queue is not None:
-        await input_queue.put({'content': contents, 'name': user})
-    print(f"Content put into queue: {contents}")
+        system_message = {'role': 'system', 'content': coach.system_message}
+        manager.groupchat._oai_messages = [message_to_send, system_message]  # Use manager.groupchat
+        await coach.a_generate_reply([system_message, message_to_send], manager)
+        initiate_chat_task_created = True
+    else:
+        try:
+            await input_queue.put({'content': contents, 'name': user})
+            print(f"Content put into queue: {contents}")
+        except AttributeError as e:
+            print(f"Error putting message into queue: {e}")
+
+
+async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):  
+    asyncio.create_task(handle_user_message(contents, user))
+
+
 
 chat_interface = pn.chat.ChatInterface(callback=callback)
 
@@ -34,8 +61,10 @@ evaluator = EvaluatorAgent(input_queue)
 learner = LearnerAgent()
 verifier = VerifierAgent(input_queue, chat_interface)
 
-groupchat = autogen.GroupChat(agents=[coach, tutor, contentprovider, evaluator, learner, verifier], messages=[], max_round=20)
+
+groupchat = CustomGroupChat(agents=[coach, tutor, contentprovider, evaluator, learner, verifier], messages=[], max_round=20)
 manager = autogen.GroupChatManager(groupchat=groupchat, llm_config={"config_list": [{"model": "gpt-3.5-turbo"}], "temperature": 0, "seed": 53})
+
 
 coach.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": callback, "input_queue": coach.get_queue()})
 tutor.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": callback, "input_queue": tutor.get_queue()})

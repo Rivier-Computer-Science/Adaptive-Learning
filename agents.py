@@ -1,4 +1,5 @@
 import autogen
+from autogen.agentchat.groupchat import GroupChat
 import os
 import asyncio
 from globals import input_future
@@ -13,6 +14,72 @@ config_list = [
 gpt4_config = {"config_list": config_list, "temperature": 0, "seed": 53}
 
 
+
+####################################################################
+#
+# Group Chat
+#
+##################################################################### 
+class CustomGroupChat(GroupChat):
+    def __init__(self, agents, messages=None, max_round=20, allow_code_execution=False): 
+        super().__init__(agents, messages, max_round)
+        self.allow_code_execution = allow_code_execution 
+
+    async def a_run_chat(self, speaker, receiver, max_turn=5):
+        self._oai_messages = []
+        round_count = 0
+        while round_count < max_turn:
+            round_count += 1
+
+            # If sending to the group chat manager, ensure the recipient is set to the appropriate agent
+            if isinstance(receiver, autogen.GroupChatManager):
+                if round_count == 1:
+                    receiver = list(filter(lambda x: x != speaker, self.agents))[0]
+                else:
+                    receiver = speaker.chat_partner
+
+            # speaker sends message
+            print(f"{speaker.name} (to {receiver.name}):\n\n{self._oai_messages[-1]['content'] if self._oai_messages else ''}\n\n")
+            if round_count == 1 and speaker.system_message:
+                self._oai_messages.append({"role": "system", "content": speaker.system_message})
+
+            if self.allow_code_execution:
+                reply = await speaker.a_generate_reply(sender=receiver)  
+                _, output = await self._process_code(reply, speaker, receiver)
+
+                if reply.get("content") and output is not None:  
+                    self._oai_messages.append({"role": "assistant", "content": reply.get("content")})  
+                    self._oai_messages.append({"role": "function", "name": reply["function_call"]["name"], "content": output})
+
+            else: 
+                reply = await speaker.a_generate_reply(messages=self._oai_messages, sender=self)
+
+                if reply.get("content"):  
+                    self._oai_messages.append({"role": "assistant", "content": reply.get("content")}) 
+
+            # stop if termination_msg
+            if speaker._is_termination_msg(reply):  # Access the protected method
+                break
+
+            # receiver receives and replies
+            print(f"{receiver.name} (to {speaker.name}):\n\n{reply.get('content')}\n\n")
+            self._oai_messages.append({"role": "user", "content": reply.get("content")})  
+
+            # stop if termination_msg
+            if receiver._is_termination_msg(reply):  # Access the protected method
+                break
+
+            # Break the loop if it's the first round and the speaker is the coach 
+            if round_count == 1 and speaker.name == "Coach":
+                break
+
+
+        return self._oai_messages
+
+
+
+
+
 ####################################################################
 #
 # Conversable Agents
@@ -20,41 +87,36 @@ gpt4_config = {"config_list": config_list, "temperature": 0, "seed": 53}
 ##################################################################### 
 
 class MyConversableAgent(autogen.ConversableAgent):
-    def __init__(self, input_queue, chat_interface, **kwargs):  
+    def __init__(self, input_queue, chat_interface, **kwargs):
         super().__init__(**kwargs)
         self.chat_interface = chat_interface
-        self.input_queue = input_queue  
+        self.input_queue = input_queue
 
     def get_queue(self):
         return self.input_queue
- 
+
     async def a_get_human_input(self, prompt: str) -> str:
         self.chat_interface.send(prompt, user="System", respond=False)
         response = await self.input_queue.get()
         return response
 
     async def a_receive(self, message, sender, request_reply=True, silent=False):
+        # If messages is not defined, initialize it to an empty list
+        if not hasattr(self, "messages"):
+            self.messages = []
+
         print(f"Received message: {message['content']}")
-        reply = await self.a_generate_reply([message], sender)
+        self.messages.append(message)  # Add the message to the message history
+        reply = await self.a_generate_reply(self.messages, sender, config=None)
         if not silent:
-            self.chat_interface.send(reply, user=self.name, avatar=avatar.get(self.name, "👤"), respond=False)
+            self.chat_interface.send(reply['content'], user=self.name, avatar=avatar.get(self.name, "👤"), respond=False)
         return reply
 
 
 class CoachAgent(MyConversableAgent):
-    '''
-        Emphasizes the coach's role in building rapport and fostering a positive learning environment.
-        Highlights the importance of goal-setting and progress tracking.
-        Encourages motivation and positive reinforcement.
-        Focuses on identifying challenges and providing solutions.
-        Promotes open communication and collaboration.
-        Clarifies that the coach is not responsible for direct instruction or evaluation, 
-            but rather for supporting the learner's overall experience.
-    '''
-
-    def __init__(self, input_queue, chat_interface):  
+    def __init__(self, input_queue, chat_interface):
         super().__init__(
-            input_queue=input_queue, 
+            input_queue=input_queue,
             chat_interface=chat_interface,
             name="Coach",
             is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("exit"),
@@ -80,18 +142,32 @@ class CoachAgent(MyConversableAgent):
             code_execution_config=False,
             human_input_mode="ALWAYS",
             llm_config=gpt4_config,
-
         )
+
+    async def a_generate_reply(self, messages, sender):
+        print(f"CoachAgent received message: {messages[-1]}")
+        latest_message = messages[-1]['content'].lower()  # Get the latest message
+
+        if any(keyword in latest_message for keyword in ['feedback', 'continue']):  
+            reply_content = "Great! Let's continue."
+        elif any(keyword in latest_message for keyword in ['hello', 'hi']):
+            reply_content = "Hi there! I'm your learning coach. How can I help you today?"
+        else:
+            reply_content = "Let's get started on algebra. What do you need help with?"
+
+        reply = {'content': reply_content, 'name': self.name, 'role': 'assistant'}
+        print(f"CoachAgent generated reply: {reply}")
+        if hasattr(self, 'chat_interface'):
+            self.chat_interface.send(reply['content'], user=self.name, avatar=avatar.get(self.name, "👤"), respond=False)
+        return reply
+
+
+
 class TutorAgent(MyConversableAgent):
-    '''
-        Acts as a personalized tutor 
-        Analyzes the learner's performance and knowledge level.
-        Generates tailored learning materials, questions, and feedback based on the learner's needs.
-    '''
     def __init__(self, input_queue, chat_interface):
         super().__init__(
-            input_queue = input_queue,
-            chat_interface = chat_interface,
+            input_queue=input_queue,
+            chat_interface=chat_interface,
             name="Tutor",
             human_input_mode="ALWAYS",
             llm_config=gpt4_config,
@@ -104,13 +180,15 @@ class TutorAgent(MyConversableAgent):
                 """
         )
 
-    async def a_generate_reply(self, messages, sender):
+    async def a_generate_reply(self, messages, sender, config=None):
         print(f"TutorAgent received message: {messages[-1]}")
-        reply = await super().a_generate_reply(messages, sender)
+        reply_content = f"I received your message: {messages[-1]['content']}. Let's start with basic algebra concepts."
+        reply = {'content': reply_content, 'name': self.name, 'role': 'assistant'}
         print(f"TutorAgent generated reply: {reply}")
         if hasattr(self, 'chat_interface'):
-            self.chat_interface.send(reply, user=self.name, avatar=avatar.get(self.name, "👤"), respond=False)
+            self.chat_interface.send(reply['content'], user=self.name, avatar=avatar.get(self.name, "👤"), respond=False)
         return reply
+
 
 
 class ContentProviderAgent(MyConversableAgent):
@@ -247,12 +325,15 @@ avatar = {
 #     return False, None
 
 def print_messages(recipient, messages, sender, config):
-    print(f"Messages from: {sender.name} sent to: {recipient.name} | num messages: {len(messages)} | message: {messages[-1]}")
-    content = messages[-1]['content']
-    user_name = messages[-1].get('name', sender.name)
-    avatar_icon = avatar.get(user_name, "👤")
+    print(f"Messages from: {sender.name if sender else 'Unknown'} sent to: {recipient.name if recipient else 'Unknown'} | num messages: {len(messages)}")  
 
-    if hasattr(recipient, 'chat_interface'):
-        recipient.chat_interface.send(content, user=user_name, avatar=avatar_icon, respond=False)
-    print(f"Message sent to chat interface: {content}")
+    if messages: # Check if messages is not empty before accessing the last message
+        content = messages[-1]['content']
+        user_name = messages[-1].get('name', sender.name if sender else 'Unknown') 
+        avatar_icon = avatar.get(user_name, "👤")
+        if hasattr(recipient, 'chat_interface'):
+            recipient.chat_interface.send(content, user=user_name, avatar=avatar_icon, respond=False)
+        print(f"Message sent to chat interface: {content}")
+    else:
+        print("No messages to send.")
     return False, None
