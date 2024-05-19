@@ -1,8 +1,44 @@
-import autogen
-from autogen.agentchat.groupchat import GroupChat
+# High-Level Workflow
+#
+#     Initialization:
+#         The chat interface (e.g., terminal, web interface) is initialized.
+#         The CoachAgent (ConversableAgent) welcomes the human user and establishes rapport.
+#         The CoachAgent and human user discuss and collaboratively set learning goals.
+#         The LearnerModelAgent (AssistantAgent) is initialized to represent the learner's knowledge and skill level.
+#
+#     Learning Loop:
+#         Needs Assessment: The TutorAgent (ConversableAgent) assesses the LearnerModelAgent to estimate the learner's current knowledge.
+#         Content Selection:
+#             The TutorAgent consults the ContentProviderAgent (AssistantAgent) based on the assessment.
+#             The ContentProviderAgent retrieves suitable learning materials.
+#         Content Delivery: The TutorAgent presents the content to the human user through the chat interface.
+#         Human Input:
+#             The TutorAgent poses questions or tasks to the human user via the chat interface.
+#             The chat interface captures the human user's responses.
+#         Evaluation:
+#             The EvaluatorAgent (AssistantAgent) evaluates the human user's response and updates the LearnerModelAgent accordingly.
+#             The VerifierAgent (AssistantAgent) double-checks the evaluation for accuracy and offers alternative perspectives if necessary.
+#         Feedback:
+#             The TutorAgent provides feedback to the human user through the chat interface, focusing on strengths and areas for improvement.
+#             The CoachAgent offers motivational support and reinforces positive learning behaviors through the chat interface.
+#             The LearnerModelAgent updates its internal representation of the learner's knowledge based on the feedback.
+#
+#     Adaptation & Progress Tracking:
+#         The TutorAgent and CoachAgent continuously analyze the LearnerModelAgent to adapt the learning path and content selection in real time.
+#         The CoachAgent engages in periodic conversations with the human user to discuss progress, goals, and challenges.
+#
+#     Termination:
+#         When the learning goals are met or the user decides to end the session, the CoachAgent provides a summary of the learner's progress and offers encouragement.
+
+import sys
+sys.path.insert(0, '/home/jglossner/anaconda3/envs/math/lib/python3.11/site-packages') 
+
+import pyautogen
+from pyautogen.agentchat.groupchat import GroupChat
 import os
 import asyncio
-from globals import input_future
+#from globals import input_future
+from avatar import avatar
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
@@ -17,106 +53,28 @@ gpt4_config = {"config_list": config_list, "temperature": 0, "seed": 53}
 
 ####################################################################
 #
-# Group Chat
-#
-##################################################################### 
-class CustomGroupChat(GroupChat):
-    def __init__(self, agents, messages=None, max_round=20, allow_code_execution=False): 
-        super().__init__(agents, messages, max_round)
-        self.allow_code_execution = allow_code_execution 
-
-    async def a_run_chat(self, speaker, receiver, max_turn=5):
-        self._oai_messages = []
-        round_count = 0
-        while round_count < max_turn:
-            round_count += 1
-
-            # If sending to the group chat manager, ensure the recipient is set to the appropriate agent
-            if isinstance(receiver, autogen.GroupChatManager):
-                if round_count == 1:
-                    receiver = list(filter(lambda x: x != speaker, self.agents))[0]
-                else:
-                    receiver = speaker.chat_partner
-
-            # speaker sends message
-            print(f"{speaker.name} (to {receiver.name}):\n\n{self._oai_messages[-1]['content'] if self._oai_messages else ''}\n\n")
-            if round_count == 1 and speaker.system_message:
-                self._oai_messages.append({"role": "system", "content": speaker.system_message})
-
-            if self.allow_code_execution:
-                reply = await speaker.a_generate_reply(sender=receiver)  
-                _, output = await self._process_code(reply, speaker, receiver)
-
-                if reply.get("content") and output is not None:  
-                    self._oai_messages.append({"role": "assistant", "content": reply.get("content")})  
-                    self._oai_messages.append({"role": "function", "name": reply["function_call"]["name"], "content": output})
-
-            else: 
-                reply = await speaker.a_generate_reply(messages=self._oai_messages, sender=self)
-
-                if reply.get("content"):  
-                    self._oai_messages.append({"role": "assistant", "content": reply.get("content")}) 
-
-            # stop if termination_msg
-            if speaker._is_termination_msg(reply):  # Access the protected method
-                break
-
-            # receiver receives and replies
-            print(f"{receiver.name} (to {speaker.name}):\n\n{reply.get('content')}\n\n")
-            self._oai_messages.append({"role": "user", "content": reply.get("content")})  
-
-            # stop if termination_msg
-            if receiver._is_termination_msg(reply):  # Access the protected method
-                break
-
-            # Break the loop if it's the first round and the speaker is the coach 
-            if round_count == 1 and speaker.name == "Coach":
-                break
-
-
-        return self._oai_messages
-
-
-
-
-
-####################################################################
-#
 # Conversable Agents
 #
 ##################################################################### 
 
-class MyConversableAgent(autogen.ConversableAgent):
-    def __init__(self, input_queue, chat_interface, **kwargs):
+class MyConversableAgent(pyautogen.ConversableAgent):
+    def __init__(self, chat_interface, **kwargs):
         super().__init__(**kwargs)
         self.chat_interface = chat_interface
-        self.input_queue = input_queue
-
-    def get_queue(self):
-        return self.input_queue
+        self.response_event = asyncio.Event()  # Add an event object
 
     async def a_get_human_input(self, prompt: str) -> str:
         self.chat_interface.send(prompt, user="System", respond=False)
-        response = await self.input_queue.get()
-        return response
+        self.response_event.clear()  # Reset the event before waiting
 
-    async def a_receive(self, message, sender, request_reply=True, silent=False):
-        # If messages is not defined, initialize it to an empty list
-        if not hasattr(self, "messages"):
-            self.messages = []
+        # Wait for a new message to be received through the callback
+        await self.response_event.wait()
 
-        print(f"Received message: {message['content']}")
-        self.messages.append(message)  # Add the message to the message history
-        reply = await self.a_generate_reply(self.messages, sender, config=None)
-        if not silent:
-            self.chat_interface.send(reply['content'], user=self.name, avatar=avatar.get(self.name, "👤"), respond=False)
-        return reply
 
 
 class CoachAgent(MyConversableAgent):
-    def __init__(self, input_queue, chat_interface):
+    def __init__(self, chat_interface):
         super().__init__(
-            input_queue=input_queue,
             chat_interface=chat_interface,
             name="Coach",
             is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("exit"),
@@ -144,29 +102,10 @@ class CoachAgent(MyConversableAgent):
             llm_config=gpt4_config,
         )
 
-    async def a_generate_reply(self, messages, sender):
-        print(f"CoachAgent received message: {messages[-1]}")
-        latest_message = messages[-1]['content'].lower()  # Get the latest message
-
-        if any(keyword in latest_message for keyword in ['feedback', 'continue']):  
-            reply_content = "Great! Let's continue."
-        elif any(keyword in latest_message for keyword in ['hello', 'hi']):
-            reply_content = "Hi there! I'm your learning coach. How can I help you today?"
-        else:
-            reply_content = "Let's get started on algebra. What do you need help with?"
-
-        reply = {'content': reply_content, 'name': self.name, 'role': 'assistant'}
-        print(f"CoachAgent generated reply: {reply}")
-        if hasattr(self, 'chat_interface'):
-            self.chat_interface.send(reply['content'], user=self.name, avatar=avatar.get(self.name, "👤"), respond=False)
-        return reply
-
-
 
 class TutorAgent(MyConversableAgent):
-    def __init__(self, input_queue, chat_interface):
+    def __init__(self, chat_interface):
         super().__init__(
-            input_queue=input_queue,
             chat_interface=chat_interface,
             name="Tutor",
             human_input_mode="ALWAYS",
@@ -180,27 +119,27 @@ class TutorAgent(MyConversableAgent):
                 """
         )
 
-    async def a_generate_reply(self, messages, sender, config=None):
-        print(f"TutorAgent received message: {messages[-1]}")
-        reply_content = f"I received your message: {messages[-1]['content']}. Let's start with basic algebra concepts."
-        reply = {'content': reply_content, 'name': self.name, 'role': 'assistant'}
-        print(f"TutorAgent generated reply: {reply}")
-        if hasattr(self, 'chat_interface'):
-            self.chat_interface.send(reply['content'], user=self.name, avatar=avatar.get(self.name, "👤"), respond=False)
-        return reply
+
+####################################################################
+#
+# Assisstant Agents
+#
+#####################################################################        
+
+class MyAssisstantAgent(pyautogen.AssistantAgent):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+    
 
 
-
-class ContentProviderAgent(MyConversableAgent):
+class ContentProviderAgent(MyAssisstantAgent):
     '''
         Manages the learning content (e.g., texts, exercises, quizzes).
         Retrieves appropriate content based on the learner's progress and the tutor's recommendations.
     '''
-    def __init__(self, input_queue, chat_interface):
+    def __init__(self):
         super().__init__(
-            input_queue = input_queue,
-            chat_interface=chat_interface,
-            name="ContentProvider",
+             name="ContentProvider",
             human_input_mode="NEVER",
             llm_config=gpt4_config,
             system_message="""ContentProvider. You provide learning materials. 
@@ -208,12 +147,10 @@ class ContentProviderAgent(MyConversableAgent):
                 """,
         )
 
-class VerifierAgent(MyConversableAgent):
-    def __init__(self, input_queue, chat_interface):
+class VerifierAgent(MyAssisstantAgent):
+    def __init__(self):
         super().__init__(
-            input_queue = input_queue,
-            chat_interface=chat_interface,
-            name="Verifier",
+             name="Verifier",
             system_message="""You are a VerifierAgent. Your role is to double-check the information and responses generated by other agents in the system. 
                 Key Responsibilities:
                 1. Factual Accuracy: Validate the factual accuracy of information provided by the 
@@ -236,40 +173,14 @@ class VerifierAgent(MyConversableAgent):
         )
 
 
-####################################################################
-#
-# Assisstant Agents
-#
-#####################################################################        
-
-class MyAssisstantAgent(autogen.AssistantAgent):
-    def __init__(self, input_queue, **kwargs):
-        super().__init__(**kwargs)
-        self.input_queue = input_queue
-
-    def get_queue(self):
-        return self.input_queue
-
-    async def generate_reply(self, messages, sender, config):  # Override generate_reply
-        self.reply_message = self.llm_generate_reply(messages, sender, config)  # Generate the reply
-        await self.input_queue.put(self.reply_message)  # Put the reply into the queue
-        return self.reply_message
-    
-    # async def enqueue_reply(self):
-    #     await self.input_queue.put(self.reply_message)  # Now awaited in a separate task
-
-
-
-
 class EvaluatorAgent(MyAssisstantAgent):
     '''
         Assesses the learner's answers or task performance.
         Provides feedback to both the learner and the tutor.
     '''
-    def __init__(self, input_queue):
+    def __init__(self):
         super().__init__(
-            input_queue = input_queue,
-            name="Evaluator",
+             name="Evaluator",
             human_input_mode="NEVER",
             system_message="""Evaluator. You evaluate the learner's responses and performance. 
                 Provide feedback that highlights strengths and areas for improvement.  """,
@@ -278,15 +189,7 @@ class EvaluatorAgent(MyAssisstantAgent):
 
 
 
-
-
-####################################################################
-#
-# UserProxy Agents
-#
-#####################################################################        
-
-class LearnerAgent(autogen.UserProxyAgent):
+class LearnerModelAgent(MyAssisstantAgent):
     '''
         This agent will represent the learner or student.
         It receives learning materials, questions, or tasks.
@@ -295,34 +198,20 @@ class LearnerAgent(autogen.UserProxyAgent):
     '''
     def __init__(self):
         super().__init__(
-            name="Learner",
-            system_message="""Learner. You are the learner. 
-                Your goal is to master the subject matter. 
-                Engage with the tutor, ask questions, and actively participate in the learning process.""",
+            name="LearnerModel",
+            system_message="""You are the LearnerModelAgent. 
+                Your purpose is to model the knowledge and skills of a human learner. 
+                Initially, you have no information about the learner's abilities. 
+                As you receive feedback and observe the learner's responses, you will update your 
+                    internal representation of their knowledge.
+                Focus on accurately reflecting the learner's strengths and weaknesses so that the system 
+                    can personalize the learning experience effectively.
+            """,
             human_input_mode="NEVER",
             #code_execution_config={"last_n_messages": 3, "work_dir": "paper"},
         )
 
 
-
-avatar = {
-    "Learner": "🎓",        # Graduate cap: Represents the learner
-    "Tutor": "👩‍🏫",       # Woman teacher: Represents the tutor
-    "ContentProvider": "📚",  # Books: Represents the source of learning materials
-    "Evaluator": "✅",       # Checkmark: Represents assessment and feedback
-    "Verifier": "🔍",       # Magnifying glass: Represents the verification process
-    "Coach": "💪"   # Flexed biceps: Represents support and encouragement
-}
-
-# def print_messages(recipient, messages, sender, config):
-#     print(f"Messages from: {sender.name} sent to: {recipient.name} | num messages: {len(messages)} | message: {messages[-1]}")
-#     content = messages[-1]['content']
-#     if hasattr(recipient, 'chat_interface'):
-#         if all(key in messages[-1] for key in ['name']):
-#             recipient.chat_interface.send(content, user=messages[-1]['name'], avatar=avatar[messages[-1]['name']], respond=False)
-#         else:
-#             recipient.chat_interface.send(content, user=recipient.name, avatar=avatar[recipient.name], respond=False)
-#     return False, None
 
 def print_messages(recipient, messages, sender, config):
     print(f"Messages from: {sender.name if sender else 'Unknown'} sent to: {recipient.name if recipient else 'Unknown'} | num messages: {len(messages)}")  
