@@ -30,11 +30,9 @@
 #     Termination:
 #         When the learning goals are met or the user decides to end the session, the CoachAgent provides a summary of the learner's progress and offers encouragement.
 
-import sys
-sys.path.insert(0, '/home/jglossner/anaconda3/envs/math/lib/python3.11/site-packages') 
 
-import pyautogen
-from pyautogen.agentchat.groupchat import GroupChat
+import autogen
+from autogen.agentchat.groupchat import GroupChat
 import os
 import asyncio
 #from globals import input_future
@@ -57,7 +55,7 @@ gpt4_config = {"config_list": config_list, "temperature": 0, "seed": 53}
 #
 ##################################################################### 
 
-class MyConversableAgent(pyautogen.ConversableAgent):
+class MyConversableAgent(autogen.ConversableAgent):
     def __init__(self, chat_interface, **kwargs):
         super().__init__(**kwargs)
         self.chat_interface = chat_interface
@@ -126,7 +124,7 @@ class TutorAgent(MyConversableAgent):
 #
 #####################################################################        
 
-class MyAssisstantAgent(pyautogen.AssistantAgent):
+class MyAssisstantAgent(autogen.AssistantAgent):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
