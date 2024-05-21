@@ -4,6 +4,8 @@ import openai
 import os
 import time
 import asyncio
+import globals
+from agents import LearnerAgent, TutorAgent, ProblemGeneratorAgent, SolutionVerifierAgent, MotifatorAgent, VisualizerAgent, CodeExecutorAgent
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
@@ -12,80 +14,25 @@ config_list = [
 ]
 gpt4_config = {"config_list": config_list, "temperature": 0, "seed": 53}
 
-input_future = None
+globals.input_future = None
+
+# Agents
+learner = LearnerAgent()
+tutor = TutorAgent()
+problem_generator = ProblemGeneratorAgent()
+solution_verifier = SolutionVerifierAgent()
+motivator = MotifatorAgent()
+visualizer = VisualizerAgent()
+executor = CodeExecutorAgent()
 
 
-class LearnerAgent(autogen.ConversableAgent):  
-    async def a_get_human_input(self, prompt: str) -> str:
-        global input_future
-        chat_interface.send(prompt, user="Tutor", respond=False) 
-
-        if input_future is None or input_future.done():
-            input_future = asyncio.Future()
-
-        await input_future
-
-        input_value = input_future.result()
-        input_future = None
-        return input_value
-
-
-learner = LearnerAgent(
-    name="Learner",
-    is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("exit"),
-    system_message="""You are a student learning math. You will ask questions, solve problems, and receive feedback from the Tutor.""",
-    code_execution_config=False,
-    human_input_mode="ALWAYS",
-    llm_config=gpt4_config,
-)
-
-tutor = autogen.AssistantAgent(
-    name="Tutor",
-    human_input_mode="NEVER",
-    llm_config=gpt4_config,
-    system_message='''You are a patient and helpful math tutor. Adapt your explanations and problem difficulty to the Learner's progress. Guide the Learner, provide hints, and assess their understanding. When necessary, you can ask the Problem Generator to create practice problems, the Solution Verifier to check the Learner's answers, or the Visualizer to generate visualizations of equations and concepts. Encourage the Learner with positive feedback from the Motivator. 
-    ''',
-)
-
-problem_generator = autogen.AssistantAgent(
-    name="Problem Generator",
-    human_input_mode="NEVER",
-    llm_config=gpt4_config,
-    system_message='''You generate math problems at the appropriate level for the Learner, based on the Tutor's request and the Learner's current skill level.''',
-)
-
-solution_verifier = autogen.AssistantAgent(
-    name="Solution Verifier",
-    human_input_mode="NEVER",
-    llm_config=gpt4_config,
-    system_message='''You check the Learner's solutions to math problems and provide feedback to the Tutor on whether the solution is correct and, if not, why.''',
-)
-
-motivator = autogen.AssistantAgent(
-    name="Motivator",
-    human_input_mode="NEVER",
-    llm_config=gpt4_config,
-    system_message='''You provide positive and encouraging feedback to the Learner to keep them motivated. Offer specific praise and acknowledge their effort and progress.''',
-)
-
-visualizer = autogen.AssistantAgent(
-    name="Visualizer",
-    human_input_mode="NEVER",
-    llm_config=gpt4_config,
-    system_message='''You are skilled at creating visualizations of mathematical equations and concepts. You can generate code (e.g., Python with libraries like Matplotlib or Plotly) to produce graphs, plots, or interactive visualizations based on requests from the Tutor. Please provide the code within code blocks specifying the language. Do not ask for user input in the code.''',
-)
-
-
-
-# --- Group Chat and Interface ---
-
-groupchat = autogen.GroupChat(agents=[learner, tutor, problem_generator, solution_verifier, motivator, visualizer], messages=[], max_round=20)
+groupchat = autogen.GroupChat(agents=[learner, tutor, problem_generator, solution_verifier, motivator, visualizer,executor], messages=[], max_round=20)
 manager = autogen.GroupChatManager(groupchat=groupchat, llm_config=gpt4_config)
 
 
 avatar = {
     learner.name: "🎓", tutor.name: "🧑‍🏫", problem_generator.name: "❓", 
-    solution_verifier.name: "✅", motivator.name: "🙌", visualizer.name: "📊"
+    solution_verifier.name: "✅", motivator.name: "🙌", visualizer.name: "📊", executor.name: "🖥️"
 }  
 
 
@@ -133,17 +80,20 @@ async def delayed_initiate_chat(agent, recipient, message):
 
 async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
     global initiate_chat_task_created
-    global input_future
 
     if not initiate_chat_task_created:
-        asyncio.create_task(delayed_initiate_chat(learner, tutor, contents))  # CORRECTED LINE PLACEMENT
+        asyncio.create_task(delayed_initiate_chat(learner, tutor, contents))  
     else:
-        if input_future and not input_future.done():
-            input_future.set_result(contents)
+        if globals.input_future and not globals.input_future.done():
+            globals.input_future.set_result(contents)
         else:
             print("No input being awaited.")
 
 
 chat_interface = pn.chat.ChatInterface(callback=callback)
+
+#Register chat interface with ConversableAgent
+learner.chat_interface = chat_interface
+
 chat_interface.send("Welcome to the Adaptive Math Tutor! How can I help you today?", user="Tutor", respond=False)
 chat_interface.servable()
