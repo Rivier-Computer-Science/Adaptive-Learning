@@ -1,3 +1,15 @@
+# agents.py
+
+class LearnerAgent:
+    def __init__(self):
+        self.name = "Learner"
+
+# Define other agents if needed...
+# agents.py
+
+learner = LearnerAgent()
+
+
 import autogen
 import os
 import asyncio
