@@ -93,9 +93,9 @@ Llemma LLM model:a model or method that deals with lemmatization in natural lang
 
    - Open in a browser the hyperlink you see in the terminal output. Mine was [http://localhost:5006/panel_gui](http://localhost:5006/panel_gui). Your port may be different.
 
-### 11. Installation and Uninstallation of Hugging Face using Conda
+### 11.**Hugging Face using Conda:**
 
-### Installation Steps
+#### Installation Steps
 
 1. **Create a New Conda Environment (Optional):**
    steps to install and uninstall the Hugging Face library (transformers) using pip,
@@ -116,7 +116,7 @@ Llemma LLM model:a model or method that deals with lemmatization in natural lang
    python -c "import transformers; print(transformers.__version__)"
    ```
 
-### Uninstallation Steps
+#### Uninstallation Steps
 
 1. **Uninstall via pip:**
    To uninstall the library, use the following pip command:
