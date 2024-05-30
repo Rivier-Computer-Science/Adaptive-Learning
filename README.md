@@ -9,8 +9,11 @@ Python 3.12+: Ensure Python is installed and added to the system PATH.
 pip: The package installer for Python.
 Git: Required to clone repositories.
 Github for windows: to pull and push the changes from local to remote repository.
-Huggigface hub:
-Llemma LLM model:
+Huggigface hub: It is a central repository where you can find a variety of pre-trained models and datasets, making it easier for developers and researchers to build and deploy machine learning applications.
+Llemma LLM model:a model or method that deals with lemmatization in natural language processing (NLP).
+(Lemmatization is the process of reducing words to their base or dictionary form, known as a lemma. For example, the words "running" and "ran" can be reduced to the lemma "run".)
+
+# Steps to setup LLM locally:
 
 ### 1. **Install Anaconda Python:**
 
@@ -63,10 +66,11 @@ Llemma LLM model:
      pip install openai pyautogen
      ```
 
-### 7. **Github:**
+### 7. **Github and CodeEditor:**
 
-   - Download software from Github.
-   - Plugins for Visual Studio Code or GitHub Desktop are recommended.
+   - Download and intall the Github desktop software.
+   - Several popular code editors availabe widely used by developers but one of the popular one is VS Code. 
+   - Install and download Plugins for Visual Studio Code or GitHub Desktop are recommended.
 
 ### 8. **Clone Code Repository:**
 
