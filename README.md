@@ -5,12 +5,12 @@ This guide will walk you through setting up and running the Llemma7b model local
 
 ### ***Prerequisites:***
 
-- Python 3.12+: Ensure Python is installed and added to the system PATH.
-- pip: The package installer for Python.
-- Git: Required to clone repositories.
-- Github for windows: to pull and push the changes from local to remote repository.
-- Huggigface hub: It is a central repository where you can find a variety of pre-trained models and datasets, making it easier for - - developers and researchers to build and deploy machine learning applications.
-- Llemma LLM model:a model or method that deals with lemmatization in natural language processing (NLP).
+- **Python 3.12+:** Ensure Python is installed and added to the system PATH.
+- **pip**: The package installer for Python.
+- **Git:** Required to clone repositories.
+- **Github for windows:** to pull and push the changes from local to remote repository.
+- **Huggigface hub:** It is a central repository where you can find a variety of pre-trained models and datasets, making it easier for - developers and researchers to build and deploy machine learning applications.
+- **Llemma LLM model:** a model or method that deals with lemmatization in natural language processing (NLP).
 (Lemmatization is the process of reducing words to their base or dictionary form, known as a lemma. For example, the words "running" and "ran" can be reduced to the lemma "run".)
 
 ## Steps to setup LLM locally:
