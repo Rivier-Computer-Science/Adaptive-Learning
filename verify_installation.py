@@ -1,5 +1,6 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+<<<<<<< HEAD
 def verify_installation():
     print("Starting verification...")
     
@@ -14,6 +15,11 @@ def verify_installation():
     print("Model loaded successfully.")
     
     print("Verification completed successfully.")
+=======
+model_name = "EleutherAI/llemma_7b"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+>>>>>>> origin/SU24-Sprint-1
 
 if __name__ == "__main__":
     verify_installation()

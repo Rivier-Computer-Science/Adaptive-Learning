@@ -1,60 +1,96 @@
-# Adaptive Learning
+This guide will walk you through setting up and running the Llemma7b hugging face model locally. 
 
-### Create an Account
-- http://huggingface.co 
-- Links to an external site.
+# 1. Install Anaconda
 
-### Join Rivier CS
-- https://huggingface.co/organizations/rivier-cs/share/JxILqgwhDbIheptwtscovBQilXPkBezdNa 
-- Links to an external site.
+- Download and install it from the [official Anaconda website](https://www.anaconda.com/products/individual).
 
-## Setup and Installation
+- Create an environment
 
-### Step 1: Create a Conda Environment
+```sh
+conda create -n adaptive python=3.12 anaconda
+conda activate adaptive
+```
 
-1. **Install Conda:** If you do not have Conda installed, download and install it from [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html).
+# 2. Install PyTorch using conda.
 
-2. **Create and Activate the Conda Environment:**
+## 2.1 CPU Only
 
-   conda create -n adaptive-learning python=3.9
-   conda activate adaptive-learning
+```sh
+conda install pytorch torchvision torchaudio cpuonly -c pytorch
+```
 
-### Step 2: Install Hugging Face and Required Packages
+## 2.2 GPU (CUDA) Version
 
-1. **Install Hugging Face Packages:**
+```sh
+conda install pytorch torchvision torchaudio cudatoolkit -c pytorch
+```
 
-conda install -c huggingface transformers datasets
+If you need a specific version of CUDA.
 
-2. **Install Additional Dependencies:**
+```sh
+conda install pytorch torchvision torchaudio cudatoolkit=11.7 -c pytorch -c nvidia
+```
 
-pip install torch tokenizers huggingface-hub
+## 2.3 See also: [PyTorch installation page](https://pytorch.org/get-started/locally/).
 
-### Step 3: Verify the Installation
 
-1. **Create a Verification Script:**
+## 2.4 Verify the Installation
 
-Create a Python script named verify_installation.py with the following content:
+1. Open Python in your terminal:
 
-from transformers import AutoModelForCausalLM, AutoTokenizer
+```sh
+python
+```
 
-model_name = "EleutherAI/llemma_34b"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
+2. Import PyTorch and print the version:
 
-print("Model and tokenizer loaded successfully.")
+```python
+import torch
+print(torch.__version__)
+print(torch.cuda.is_available())  # Check if CUDA is available (optional)
+```
 
-2. **Run the Verification Script:**
+If PyTorch is installed correctly, it will display the version number and `True` if CUDA is available (for GPU installations).
 
-Run the script to ensure everything is set up correctly:
+# 3. Install Hugging Face using Conda.
 
+## 3.1 Install Libraries
+
+```sh
+conda install -c conda-forge transformers huggingface_hub tokenizers datasets
+```
+
+## 3.2 Verify the Installation
+
+1. Open Python in your terminal:
+
+```sh
+python
+```
+
+2. Import the `transformers` library and print the version:
+
+```python
+import transformers
+print(transformers.__version__)
+```
+
+If the library is installed correctly, it will display the version number.
+
+# 4. Download the Llemma 7B model.
+
+## 4.1 Run `verify_installation.py`
+This will automatically download and cache the Llemma 7B model.
+
+```sh
 python verify_installation.py
+```
 
-You should see the message "Model and tokenizer loaded successfully."
+## 4.2  Example Output
 
+If everything is set up correctly, you should see output similar to this:
 
-### Documentation
-- See: https://huggingface.co/docs/huggingface_hub/index 
-- How-to guides: https://huggingface.co/docs/huggingface_hub/guides/overview
-
-### Models
-- Llemma (34b): https://huggingface.co/EleutherAI/llemma_34b 
+```
+Successfully loaded huggingface/lemma-7b
+tensor([[...]], grad_fn=<AddBackward0>)
+```
