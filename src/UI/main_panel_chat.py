@@ -2,10 +2,10 @@ import panel as pn
 import asyncio
 from asyncio import Queue
 import autogen
-from agents import CoachAgent, TutorAgent, ContentProviderAgent, EvaluatorAgent, LearnerModelAgent, \
+from Agents.agents import CoachAgent, TutorAgent, ContentProviderAgent, EvaluatorAgent, LearnerModelAgent, \
                     VerifierAgent, UserProxyAgent, print_messages #, MyGroupChatManager, 
-from globals import input_future, initiate_chat_task_created
-from avatar import avatar
+from src.globals import input_future, initiate_chat_task_created
+from UI.avatar import avatar
 
 pn.extension(design="material")
 

@@ -47,8 +47,8 @@ import autogen
 #from autogen.agentchat import ChatMessage
 import os
 import asyncio
-from globals import input_future
-from avatar import avatar
+from src.globals import input_future
+from UI.avatar import avatar
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 

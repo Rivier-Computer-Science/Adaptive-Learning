@@ -1,8 +1,8 @@
 import autogen
 import os
 import asyncio
-import globals
-from avatar import avatar
+import src.globals as globals
+from UI.avatar import avatar
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 

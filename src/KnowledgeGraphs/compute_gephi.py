@@ -1,6 +1,6 @@
 import os
 import math
-import math_taxonomy as mt
+import KnowledgeGraphs.math_taxonomy as mt
 
 def calculate_radius_for_spacing(num_points, individual_radius, separation_factor=1.5, additional_radius=0.0):
     """

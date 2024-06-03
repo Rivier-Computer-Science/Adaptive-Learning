@@ -5,7 +5,7 @@ import os
 # Add the parent directory to sys.path to find your_module
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from math_graph import KnowledgeGraph  # Make sure to replace 'your_module' with the actual name of your Python file
+from KnowledgeGraphs.math_graph import KnowledgeGraph  # Make sure to replace 'your_module' with the actual name of your Python file
 
 class TestKnowledgeGraph(unittest.TestCase):
 

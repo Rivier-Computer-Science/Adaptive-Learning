@@ -4,8 +4,8 @@ import openai
 import os
 import time
 import asyncio
-import globals
-from agents import LearnerAgent, TutorAgent, ProblemGeneratorAgent, SolutionVerifierAgent, MotifatorAgent, VisualizerAgent, CodeExecutorAgent
+import src.globals as globals
+from Agents.agents import LearnerAgent, TutorAgent, ProblemGeneratorAgent, SolutionVerifierAgent, MotifatorAgent, VisualizerAgent, CodeExecutorAgent
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 

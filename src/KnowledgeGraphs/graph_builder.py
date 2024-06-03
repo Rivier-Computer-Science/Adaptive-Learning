@@ -1,5 +1,5 @@
-import math_graph as mg
-import math_taxonomy as mt
+import KnowledgeGraphs.math_graph as mg
+import KnowledgeGraphs.math_taxonomy as mt
 
 def main():
     kg = mg.KnowledgeGraph()
