@@ -108,35 +108,37 @@ def print_messages(recipient, messages, sender, config):
     global num_correct, num_incorrect       #FIXME: Bad practice
     print(f"Messages from: {sender.name} sent to: {recipient.name} | num messages: {len(messages)} | message: {messages[-1]}")    
     content = messages[-1]['content']
-    is_correct = check_answer(content)  # Check the answer
+    is_correct = check_answer(content)
 
+ 
     if 'name' not in messages[-1]:
-        messages[-1]['name'] = sender.name  # Set the correct user name
+        messages[-1]['name'] = sender.name  # Set the correct user name    
+        chat_interface.send(content, user=messages[-1]['name'], avatar=avatar.get(messages[-1]['name'], "🤖"), respond=False)
 
-    chat_interface.send(content, user=messages[-1]['name'], avatar=avatar.get(messages[-1]['name'], "🤖"), respond=False)
-    
-    # Handle explanations and hints if requested
+        # Handle explanations and hints if requested
+    #print("\n\n MESSAGES \n\n")
+    #print(messages)
+    # This line doesn't work because all agents aren't adding their messages to the message queue
+    #if len(messages) >=2 and messages[-1]['name'] == 'Tutor' and 'name' in messages[-2] and messages[-2]['name'] == "Learner":
     if content.lower() == "explain":
         explanation = provide_explanation()
         chat_interface.send(explanation, user=recipient.name, respond=False)
     elif content.lower() == "hint":
         hint = provide_hint()
         chat_interface.send(hint, user=recipient.name, respond=False)
-    else:
-        # Send a confirmation or request for further action based on the check result
-        if is_correct:
-            num_correct += 1
-            correct_score.value = num_correct 
-            chat_interface.send(f"{sender.name}'s answer is correct.", user=recipient.name, respond=False)
-        else:
-            num_incorrect += 1
-            incorrect_score.value = num_incorrect
-            chat_interface.send(f"Please review {sender.name}'s answer.", user=recipient.name, respond=False)
-        
-        # Update widget
+    elif is_correct: 
+        num_correct += 1
+        correct_score.value = num_correct 
         correct_score.param.trigger('value')
+        chat_interface.send(f"{sender.name}'s answer is correct.", user=recipient.name, respond=False)
+    elif not is_correct:
+        num_incorrect += 1
+        incorrect_score.value = num_incorrect
         incorrect_score.param.trigger('value')
-    
+        chat_interface.send(f"Please review {sender.name}'s answer.", user=recipient.name, respond=False)
+    else:
+        print("No answers to check")
+        
     pn.io.push_notebook()  # Force UI update after sending the message
     return False, None
 
