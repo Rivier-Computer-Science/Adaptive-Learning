@@ -81,10 +81,8 @@ critic = autogen.AssistantAgent(
 # Backend logic for answer checking
 def check_answer(message_content):
     # Simple simulation: check if the message matches a predefined correct answer
-    correct_answers = ["yes", "no", "correctly", "correct", "well done"]
-    if message_content.lower() in correct_answers:
-        return True
-    return False
+    correct_answers = ["yes", "no", "correct", "correctly", "great job", "well done"]
+    return message_content.lower() in correct_answers
 
 # Functionality for creating/gathering explanations and hints
 def provide_explanation():
@@ -101,21 +99,14 @@ avatar = {
     solution_verifier.name: "✅", motivator.name: "🙌", visualizer.name: "📊", executor.name: "🖥️", critic.name: '📝'
 }
 
-# Define custom CSS for the correctness indicator
-custom_css = """
-.custom-boolean-indicator .bk.true {
-    background-color: #4CAF50; /* Green for success */
-    border-color: #4CAF50;
-}
+# Correctness Counters
+num_correct = 0
+num_incorrect = 0
 
-.custom-boolean-indicator .bk.false {
-    background-color: #F44336; /* Red for incorrect */
-    border-color: #F44336;
-}
-"""
 
 def print_messages(recipient, messages, sender, config):
-    print(f"Messages from: {sender.name} sent to: {recipient.name} | num messages: {len(messages)} | message: {messages[-1]}")
+    global num_correct, num_incorrect       #FIXME: Bad practice
+    print(f"Messages from: {sender.name} sent to: {recipient.name} | num messages: {len(messages)} | message: {messages[-1]}")    
     content = messages[-1]['content']
     is_correct = check_answer(content)  # Check the answer
 
@@ -124,37 +115,28 @@ def print_messages(recipient, messages, sender, config):
 
     chat_interface.send(content, user=messages[-1]['name'], avatar=avatar.get(messages[-1]['name'], "🤖"), respond=False)
     
-    # Correctness
-    if sender.name == "Learner":
-        # Send a confirmation or request for further action based on the check result
-        if is_correct:
-            correctness_symbol = "✅"
-            css_class = "true"
-            chat_interface.send(f"{sender.name}'s answer is correct.", user=recipient.name, respond=False)
-        else:
-            correctness_symbol = "❌"
-            css_class = "false"
-
-        content_with_symbol = f"{content} {correctness_symbol}"
-        content_with_css = f'<div class="custom-boolean-indicator {css_class}">{content_with_symbol}</div>'
-        chat_interface.send(content_with_css, user=messages[-1]['name'], avatar=avatar.get(messages[-1]['name'], "🤖"), respond=False)
-
-    # Explanations and hints if requested
-    elif content.lower() == "explain":
+    # Handle explanations and hints if requested
+    if content.lower() == "explain":
         explanation = provide_explanation()
         chat_interface.send(explanation, user=recipient.name, respond=False)
-    
     elif content.lower() == "hint":
         hint = provide_hint()
         chat_interface.send(hint, user=recipient.name, respond=False)
- 
     else:
-        # For other agents, just display the message
-        chat_interface.send(content, user=messages[-1]['name'], avatar=avatar.get(messages[-1]['name'], "🤖"), respond=False)
-
- 
- 
- 
+        # Send a confirmation or request for further action based on the check result
+        if is_correct:
+            num_correct += 1
+            correct_score.value = num_correct 
+            chat_interface.send(f"{sender.name}'s answer is correct.", user=recipient.name, respond=False)
+        else:
+            num_incorrect += 1
+            incorrect_score.value = num_incorrect
+            chat_interface.send(f"Please review {sender.name}'s answer.", user=recipient.name, respond=False)
+        
+        # Update widget
+        correct_score.param.trigger('value')
+        incorrect_score.param.trigger('value')
+    
     pn.io.push_notebook()  # Force UI update after sending the message
     return False, None
 
@@ -192,21 +174,20 @@ async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
 chat_interface = pn.chat.ChatInterface(callback=callback)
 
 # Correctness indicator
-
 correctness_indicator = pn.indicators.BooleanIndicator(name="Answer Correctness", value=False, width=50, height=50)
-
+# Score Display Widgets
+correct_score = pn.indicators.Number(name="Correct Answers", value=num_correct, format="{value}", align="center")
+incorrect_score = pn.indicators.Number(name="Incorrect Answers", value=num_incorrect, format="{value}", align="center")
+score_layout = pn.Row(correct_score, incorrect_score)
 
 # Difficulty Meter
 difficulty_level = pn.widgets.Select(name="Difficulty Level", options=["Easy", "Medium", "Hard"])
 layout = pn.Column(
     difficulty_level, 
+    score_layout,
     chat_interface,
-    width=1200
+    #width=1200
 )
-
-# For Correct Indicator
-layout.css_classes = ['custom-boolean-indicator']
-pn.config.raw_css.append(custom_css)
 
 layout.servable()
 
@@ -215,4 +196,3 @@ layout.servable()
 learner.chat_interface = chat_interface
 
 chat_interface.send("Welcome to the Adaptive Math Tutor! How can I help you today?", user="Tutor", respond=False)
-chat_interface.servable()
