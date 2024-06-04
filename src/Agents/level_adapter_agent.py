@@ -4,7 +4,7 @@ from src.Models.llm_config import gpt3_config
 
 class LevelAdapterAgent(MyConversableAgent):
     description = """You ask the Learner Model what the current level of the Student is.  
-                     You provide input to the Problem Generator on the Student's level
+                     You provide input to the Problem Generator on the Student's level.
                   """
     def __init__(self):
         super().__init__(
