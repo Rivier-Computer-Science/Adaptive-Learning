@@ -16,10 +16,19 @@ from src.UI.avatar import avatar
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
 globals.input_future = None
-    
+
+
+####################################################
+# If you want to isolate your agent, you can do 
+#    that by overriding the agents list in GroupChat
+# 
+# Instantiated agents are defined in agents.py
+#####################################################
+agents = list(agents_dict.values()) # All agents
+#agents = [student, tutor]   #my subset of agents
 
 # Create the GroupChat with agents and a manager
-groupchat = autogen.GroupChat(agents=list(agents_dict.values()), 
+groupchat = autogen.GroupChat(agents=agents, 
                               messages=[],
                               max_round=40,
                               send_introductions=True,
