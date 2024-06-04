@@ -10,7 +10,7 @@ class SolutionVerifierAgent(MyConversableAgent):
     def __init__(self):
         super().__init__(
                 name="SolutionVerifier",
-                human_input_mode="NEVER",
+                human_input_mode="ALWAYS",
                 llm_config=gpt3_config,
                 system_message=self.description,
                 description=self.description
