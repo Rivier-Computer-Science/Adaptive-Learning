@@ -1,5 +1,14 @@
 
 
+## Running the Module Version of the code
+```sh
+(math) jglossner@jglossner-Alienware-Aurora-R7:~/TestGit/Adaptive-Learning$ python -m src.UI.panel_gui_unconstrained
+```
+
+
+## Hugging Face
+
+
 
 This guide will walk you through setting up and running the Llemma7b hugging face model locally. 
 
