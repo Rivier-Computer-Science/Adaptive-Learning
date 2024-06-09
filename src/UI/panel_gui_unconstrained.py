@@ -15,6 +15,7 @@ from src.UI.avatar import avatar
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
+
 globals.input_future = None
 
 
@@ -25,7 +26,7 @@ globals.input_future = None
 # Instantiated agents are defined in agents.py
 #####################################################
 agents = list(agents_dict.values()) # All agents
-#agents = [student, tutor]   #my subset of agents
+agents = [student, knowledge_tracer]   #my subset of agents
 
 # Create the GroupChat with agents and a manager
 groupchat = autogen.GroupChat(agents=agents, 
@@ -87,4 +88,3 @@ if __name__ == "__main__":
     app = create_app()
     #pn.serve(app, debug=True)
     pn.serve(app)
- 
