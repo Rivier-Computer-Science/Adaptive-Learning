@@ -3,7 +3,7 @@ from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt3_config
 
 class LearnerModelAgent(MyConversableAgent):
-    description = """You are a diligent learning tracker."""
+    description = """You are a diligent learning tracker who collaborates with the Tutor to assess the Student's learning progress."""
     def __init__(self):
         super().__init__(
             name="LearnerModel",
