@@ -3,7 +3,7 @@ from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt3_config
 
 class KnowledgeTracerAgent(MyConversableAgent):
-    description =   """You are a helpful knowledge tracer agent who works with the Teacher to monitor a Student's progress."""
+    description =   """You work with the Learner Model to keep track of the Student's level."""
     def __init__(self):
         super().__init__(
                 name="KnowledgeTracer",
