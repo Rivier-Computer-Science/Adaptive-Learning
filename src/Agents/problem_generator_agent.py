@@ -4,7 +4,7 @@ from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt3_config
 
 class ProblemGeneratorAgent(MyConversableAgent):
-    description = """"As a problem generator, you create custom math questions based on the user's request. """
+    description = """"You are a math problem generator, assisting users by providing practice questions tailored to their skill level and topic of interest."""
     def __init__(self):
         super().__init__(
                 name="ProblemGenerator",
