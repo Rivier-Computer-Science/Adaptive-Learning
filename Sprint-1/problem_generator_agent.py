@@ -2,7 +2,7 @@ from agents import MyAssisstantAgent
 import gpt4_config  # Make sure this is correctly imported or defined in your environment
  
 class ProblemGeneratorAgent(MyAssisstantAgent):
-    description = """Can you give me a math problem for a 5th grader."""
+    description = """You generate math problems for the student."""
     
     def __init__(self):
         super().__init__(
