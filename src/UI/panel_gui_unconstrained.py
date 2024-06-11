@@ -1,23 +1,26 @@
+import sys
+import os
+
+# Add the root of the project to Python path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from src import globals
+from src.Agents.agents import *
+from src.UI.avatar import avatar
 import autogen
 import panel as pn
 import openai
-import os
 import time
 import asyncio
 from typing import List, Dict
 import logging
-from src import globals
-from src.Agents.agents import *
-from src.UI.avatar import avatar
 
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG, 
 #                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
-
 globals.input_future = None
-
 
 ####################################################
 # If you want to isolate your agent, you can do 
@@ -26,7 +29,7 @@ globals.input_future = None
 # Instantiated agents are defined in agents.py
 #####################################################
 agents = list(agents_dict.values()) # All agents
-agents = [student, knowledge_tracer]   #my subset of agents
+agents = [student, problem_generator]   #my subset of agents
 
 # Create the GroupChat with agents and a manager
 groupchat = autogen.GroupChat(agents=agents, 
@@ -42,7 +45,6 @@ def create_app():
     # --- Panel Interface ---
     pn.extension(design="material")
 
-
     async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         if not globals.initiate_chat_task_created:
             asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))  
@@ -51,7 +53,6 @@ def create_app():
                 globals.input_future.set_result(contents)
             else:
                 print("No input being awaited.")
-
 
     chat_interface = pn.chat.ChatInterface(callback=callback)
 
@@ -74,17 +75,11 @@ def create_app():
 
     # Create the Panel app object with the chat interface
     app = pn.template.BootstrapTemplate(title=globals.APP_NAME)
-    app.main.append(
-        pn.Column(
-            chat_interface
-        )
-    )
+    app.main.append(pn.Column(chat_interface))
     chat_interface.send("Welcome to the Adaptive Math Tutor! How can I help you today?", user="System", respond=False)
     
     return app
 
-
 if __name__ == "__main__":
     app = create_app()
-    #pn.serve(app, debug=True)
     pn.serve(app)
