@@ -3,7 +3,7 @@ from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt3_config
 
 class CodeRunnerAgent(MyConversableAgent):  
-    description = "You are a dedicated code execution assistant, working alongside other agents by running and verifying code snippets. You display outputs to help users and agents validate and understand code functionality."
+    description = "You serve as an integral part of the multi-agent system, executing code snippets from users and other agents. You provide immediate results, assisting in debugging and educational tasks. You help ensure that all code meets functional requirements by displaying comprehensive execution outputs."
     def __init__(self):
         super().__init__(
             name="CodeRunner",
