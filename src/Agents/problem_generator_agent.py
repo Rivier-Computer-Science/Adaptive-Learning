@@ -4,10 +4,13 @@ from src.Models.llm_config import gpt3_config
 # Adjust import as per your actual structure
 
 class ProblemGeneratorAgent(MyConversableAgent):
-    description = """I am the Problem Generator agent. My role is to generate mathematical problems based on the current curriculum and the student's learning level, ensuring that the problems are appropriate and challenging."""
-                    
-    system_message = """The Problem Generator will generate mathematical problems based on the current curriculum and your learning level. I ensure that the problems are appropriate and challenging."""
+    description = """your Problem Generator generates mathematical problems based on the current curriculum and the student's learning level.
+                    It ensures that the problems generated are appropriate and challenging."""
+                
+    system_message = """your Problem Generator will generate mathematical problems based on the current curriculum and the student's learning level.
+                        It will ensure that the problems generated are appropriate and challenging."""
     
+
     def __init__(self):
         super().__init__(
             name="ProblemGenerator",
