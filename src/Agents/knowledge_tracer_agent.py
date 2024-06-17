@@ -1,4 +1,4 @@
-##################### Knowledge Tracer #########################
+##################### Knowledge Tracer ##########################
 from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt3_config
 
