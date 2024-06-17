@@ -3,10 +3,9 @@ from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt3_config
 
 class KnowledgeTracerAgent(MyConversableAgent):
-    description_i = """I am a Knowledge Tracer.
-                       My role is to test the student on what they know,
-                       present problems through the Problem Generator,
-                       and maintain the Learner Model to track the student's level.
+    description_i = """Knowledge Tracer is an agent tasked with testing the student's knowledge,
+                           presenting problems with the Problem Generator,
+                           and maintaining the Learner Model to track the student's level.
                     """
     system_message_i = """As a Knowledge Tracer, my role is to test your knowledge,
                          present problems through the Problem Generator,
