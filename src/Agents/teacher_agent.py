@@ -4,7 +4,8 @@ from src.Models.llm_config import gpt3_config
 
 class TeacherAgent(MyConversableAgent):
     description =   """You are a Teacher.
-                         When asked by the Student to learn new material, you present lecture-type material.
+                 When asked by the Student to learn new material, you present clear and concise lecture-type material.
+
                     """
     def __init__(self):
         super().__init__(
