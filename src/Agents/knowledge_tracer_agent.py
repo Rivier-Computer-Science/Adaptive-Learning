@@ -22,6 +22,3 @@ class KnowledgeTracerAgent(MyConversableAgent):
         )
         self.last_plot_request = None  # Add an attribute to track plot requests
         self.groupchat = None
-
- 
-
