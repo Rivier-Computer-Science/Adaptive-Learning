@@ -2,7 +2,8 @@ from agents import MyAssisstantAgent
 import gpt4_config  # Make sure this is correctly imported or defined in your environment
  
 class ProblemGeneratorAgent(MyAssisstantAgent):
-    description = """You ask the Level Adapter for the level of difficulty and generate a question."""
+    description = """You generate math problems at the appropriate level for the Learner,
+                     based on the Tutor's request and the Learner's current skill level."""
     
     def __init__(self):
         super().__init__(
