@@ -28,14 +28,9 @@ globals.input_future = None
 # 
 # Instantiated agents are defined in agents.py
 #####################################################
-agents = list(agents_dict.values()) # All agents
-<<<<<<< HEAD
-agents = [student, tutor]   #my subset of agents
-=======
 
-agents = [student,learner_model, knowledge_tracer, problem_generator]   #my subset of agents
+agents = list(agents_dict.values()) # All agents
 # agents = [student, problem_generator]   #my subset of agents
->>>>>>> origin/SU24-Sprint-2
 
 # Create the GroupChat with agents and a manager
 groupchat = autogen.GroupChat(agents=agents, 
