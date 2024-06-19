@@ -1,34 +1,24 @@
-# problem_generator_agent.py
+from .conversable_agent import MyConversableAgent
+from src.Models.llm_config import gpt3_config
 
-import os
-import sys
-
-# Ensure the src directory is in the sys.path
-current_dir = os.path.dirname(os.path.abspath(__file__))
-src_dir = os.path.abspath(os.path.join(current_dir, '../../src'))
-sys.path.append(src_dir)
-
-from Agents.conversable_agent import MyConversableAgent
-from Models.llm_config import gpt3_config
+# Adjust import as per your actual structure
 
 class ProblemGeneratorAgent(MyConversableAgent):
-    description = "You are a math problem generator, assisting users by providing practice questions tailored to their skill level and topic of interest."
+    description = """ProblemGenerator is designed to generate mathematical problems based on the current curriculum and the student's learning level.
+                ProblemGenerator ensures that the problems generated are appropriate and challenging."""
+                    
+    system_message = """ProblemGenerator will generate mathematical problems based on the current curriculum and the student's learning level.
+                        ProblemGenerator ensures that the problems generated are appropriate and challenging."""
     
+
     def __init__(self):
         super().__init__(
             name="ProblemGenerator",
+            is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("exit"),
+            system_message=self.system_message,
+            description=self.description,
+            code_execution_config=False,
             human_input_mode="NEVER",
-            llm_config=gpt3_config,
-            system_message=self.description,
-            description=self.description
+            llm_config=gpt3_config  # Ensure gpt3_config is correctly defined or imported
         )
 
-    def generate_problem(self, skill_level):
-        if skill_level == 2:
-            return "Solve 5 + 3"
-        elif skill_level == 4:
-            return "Solve 12 * 8"
-        elif skill_level == 6:
-            return "Solve the integral of x^2"
-        else:
-            return "Skill level not recognized"
