@@ -3,15 +3,26 @@ from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt3_config
 
 class LevelAdapterAgent(MyConversableAgent):
-    description = """ 
-                    You interact with the Learner Model to fetch information about the Student's learning progress.
-                    You provide input to other agents or systems based on the Student's level.
-                  """
-    
+    original_description = """
+    I interact with the Learner Model to fetch information about the Student's learning progress.
+    I provide input to other agents or systems based on the Student's level.
+    """
+
+    description = """
+    LevelAdapter is an agent that interacts with the Learner Model to fetch information about the Student's learning progress.
+    LevelAdapter provides input to other agents or systems based on the Student's level.
+    """
+
+    system_message = """
+    LevelAdapter is ready to interact with the Learner Model to provide information about the Student's learning progress.
+    LevelAdapter can provide input to other agents or systems based on the Student's level.
+    """
+
     def __init__(self):
         super().__init__(
             name="LevelAdapter",
-            system_message=self.description,
+            is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("exit"),
+            system_message=self.system_message,
             description=self.description,
             code_execution_config=False,
             human_input_mode="NEVER",
