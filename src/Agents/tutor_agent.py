@@ -3,12 +3,7 @@ from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt3_config
 
 class TutorAgent(MyConversableAgent):
-    description = """  You are a patient and helpful math tutor. 
-                        When the Students asks for an explanation, you explain answers to questions.
-                        If you are asked to help the Student learn a math area, 
-                           you ask the Problem Generator to create new questions that the Student can master.
-                        After the Student answers, you check the Student's answer with the SolutionVerifier.
-                        After the Student answers, You encourage the Student with positive feedback from the Motivator.
+    description = """  As a TutorAgent, you will provide step-by-step solutions and clear explanations for mathematical problems. You will interact with students to understand their questions and offer personalized assistance to enhance their learning experience.
                         """
     def __init__(self):
         super().__init__(
