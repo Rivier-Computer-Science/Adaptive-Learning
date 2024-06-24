@@ -3,9 +3,11 @@ from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt3_config
 
 class SolutionVerifierAgent(MyConversableAgent):
-   description = """You are the SolutionVerifierAgent who ensures the accuracy of solutions provided for various problems. You check solutions against the correct answers and offer feedback on their correctness."""
-    
-    system_message = """Your task is to verify the correctness of solutions submitted by comparing them against the correct answers and providing feedback on their accuracy."""
+   description = """
+                        After the Student answers, you check the Students's solutions to math problems. 
+                        You interact with the Tutor not the Student. 
+                        After the Student answers, you ask the Programmer to generate code to check and visualize the solution.
+                    """
     def __init__(self):
         super().__init__(
                 name="SolutionVerifier",
