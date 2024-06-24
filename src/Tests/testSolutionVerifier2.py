@@ -36,7 +36,7 @@ class TestSolutionVerifier(unittest.TestCase):
         self.assertEqual(solve_question_5(), 4, "The solution for Question 5 is incorrect.")
 
 
-def test_problem_1(self):
+    def test_problem_1(self):
         # Problem 1: Solve the equation 2x + 5 = 11
         # Expected answer: x = 3
         expected_x = 3
