@@ -7,6 +7,9 @@ class SolutionVerifierAgent(MyConversableAgent):
                         After the Student answers, you check the Students's solutions to math problems. 
                         You interact with the Tutor not the Student. 
                         After the Student answers, you ask the Programmer to generate code to check and visualize the solution.
+                       
+                        Student submits a sequence of mathematical problems  to solve. Check the student's answer against the correct solution with the tutor whether the solution is correct or incorrect.
+
                     """
     def __init__(self):
         super().__init__(
