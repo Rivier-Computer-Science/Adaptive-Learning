@@ -22,18 +22,18 @@ class TestSolutionVerifier(unittest.TestCase):
     
    
     def test_solve_dquestion_1(self):
-        self.assertEqual(solve_question_1(), 40, "The solution for Question 1 is incorrect.")
+        self.assertEqual(solve_dquestion_1(), 40, "The solution for Question 1 is incorrect.")
     
     def test_solve_dquestion_2(self):
-        self.assertEqual(solve_question_2(), 5, "The solution for Question 2 is incorrect.")
+        self.assertEqual(solve_dquestion_2(), 5, "The solution for Question 2 is incorrect.")
     
     def test_solve_dquestion_3(self):
-        self.assertEqual(solve_question_3(), 63, "The solution for Question 3 is incorrect.")
+        self.assertEqual(solve_dquestion_3(), 63, "The solution for Question 3 is incorrect.")
     
     def test_solve_dquestion_4(self):
-        self.assertEqual(solve_question_4(), 15, "The solution for Question 4 is incorrect.")
+        self.assertEqual(solve_dquestion_4(), 15, "The solution for Question 4 is incorrect.")
     
     def test_solve_dquestion_5(self):
-        self.assertEqual(solve_question_5(), 4, "The solution for Question 5 is incorrect.")
+        self.assertEqual(solve_dquestion_5(), 4, "The solution for Question 5 is incorrect.")
 if __name__ == '__main__':
     unittest.main()
