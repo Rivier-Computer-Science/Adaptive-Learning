@@ -4,11 +4,6 @@ from src.Models.llm_config import gpt3_config
 
 class SolutionVerifierAgent(MyConversableAgent):
     description = """
-                    After the Student answers, you check the Students's solutions to math problems. 
-                        You interact with the Tutor not the Student. 
-                        After the Student answers, you ask the Programmer to generate code to check and visualize the solution.
-
-                        A student submits a solution to a math problem. Student needs to check with the tutor, including the verification results and visualizations.
                        
                         Student submits a sequence of mathematical problems  to solve. Check the student's answer against the correct solution with the tutor whether the solution is correct or incorrect.
                     """
