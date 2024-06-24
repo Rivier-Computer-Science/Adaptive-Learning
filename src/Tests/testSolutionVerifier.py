@@ -46,33 +46,33 @@ def solve_dquestion_5():
 # Define the unittest class
 class TestSolutionVerifier(unittest.TestCase):
     
-    def test_solve_dquestion_1(self):
+    def test_solve_question_1(self):
         self.assertEqual(solve_question_1(), 3, "The solution for Question 1 is incorrect.")
     
-    def test_solve_dquestion_2(self):
+    def test_solve_question_2(self):
         self.assertEqual(solve_question_2(), 8, "The solution for Question 2 is incorrect.")
     
-    def test_solve_dquestion_3(self):
+    def test_solve_question_3(self):
         self.assertEqual(solve_question_3(), 4, "The solution for Question 3 is incorrect.")
     
-    def test_solve_dquestion_4(self):
+    def test_solve_question_4(self):
         self.assertEqual(solve_question_4(), 6, "The solution for Question 4 is incorrect.")
     
-    def test_solve_dquestion_5(self):
+    def test_solve_question_5(self):
         self.assertEqual(solve_question_5(), 3, "The solution for Question 5 is incorrect.")
-    def test_solve_question_1(self):
+    def test_solve_dquestion_1(self):
         self.assertEqual(solve_question_1(), 40, "The solution for Question 1 is incorrect.")
     
-    def test_solve_question_2(self):
+    def test_solve_dquestion_2(self):
         self.assertEqual(solve_question_2(), 5, "The solution for Question 2 is incorrect.")
     
-    def test_solve_question_3(self):
+    def test_solve_dquestion_3(self):
         self.assertEqual(solve_question_3(), 63, "The solution for Question 3 is incorrect.")
     
-    def test_solve_question_4(self):
+    def test_solve_dquestion_4(self):
         self.assertEqual(solve_question_4(), 15, "The solution for Question 4 is incorrect.")
     
-    def test_solve_question_5(self):
+    def test_solve_dquestion_5(self):
         self.assertEqual(solve_question_5(), 4, "The solution for Question 5 is incorrect.")
 if __name__ == '__main__':
     unittest.main()
