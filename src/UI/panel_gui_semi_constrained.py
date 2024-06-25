@@ -19,24 +19,39 @@ globals.input_future = None
     
 
 allowed_agent_transitions = {
-    student: [tutor, teacher, problem_generator],
+    student: [tutor, teacher],
     tutor: [student, teacher, problem_generator, solution_verifier, motivator],
-    teacher: [student, learner_model],
+    teacher: [tutor, learner_model],
     knowledge_tracer: [student, problem_generator, learner_model, level_adapter],
     problem_generator: [student],
     solution_verifier: [programmer],
     programmer: [code_runner],
     code_runner: [solution_verifier],
     learner_model: [knowledge_tracer, level_adapter],
-    level_adapter: [problem_generator, learner_model],
-    motivator: [student]
+    level_adapter: [tutor, problem_generator, learner_model],
+    motivator: [tutor]
 }
+
+# allowed_agent_transitions = {
+#     student: [tutor, teacher],
+#     tutor: [student, teacher, problem_generator, solution_verifier, motivator, knowledge_tracer],
+#     teacher: [tutor, learner_model, problem_generator],
+#     knowledge_tracer: [student, problem_generator, learner_model, level_adapter],
+#     problem_generator: [student, learner_model, solution_verifier],
+#     solution_verifier: [programmer],
+#     programmer: [code_runner],
+#     code_runner: [solution_verifier],
+#     learner_model: [knowledge_tracer, level_adapter, problem_generator],
+#     level_adapter: [tutor, problem_generator, learner_model],
+#     motivator: [tutor]
+# }
+
 
 
 # Create the GroupChat with agents and a manager
 groupchat = autogen.GroupChat(agents=list(agents_dict.values()), 
                               messages=[],
-                              max_round=20,
+                              max_round=40,
                               send_introductions=True,
                               speaker_transitions_type="allowed",
                               allowed_or_disallowed_speaker_transitions=allowed_agent_transitions,

@@ -1,19 +1,26 @@
 
 ##################### Level Adapter #########################
 from .conversable_agent import MyConversableAgent
-from src.Models.llm_config import gpt3_config
 
 class MotivatorAgent(MyConversableAgent):
-    description = """ You provide positive and encouraging feedback to the Student to keep them motivated.
-                        Only provide motivation to the Student. 
-                        Offer specific praise and acknowledge the Student's effort and progress.
-                        Do not provide motivating comments to any other agent except the Student.
-                        """
-    def __init__(self):
+    description = """
+            MotivatorAgent is a supportive and enthusiastic agent dedicated to providing encouragement and positive reinforcement to the StudentAgent. 
+            Whether a StudentAgent is struggling with difficult concepts or excelling in their studies, MotivatorAgent offers words of affirmation 
+                and motivation to keep them engaged and confident. 
+            MotivatorAgent's goal is to boost the StudentAgent's morale and foster a positive learning environment.    
+            """
+    
+    system_message = """
+            You are MotivatorAgent, an agent responsible for providing encouragement and positive reinforcement to the StudentAgent. 
+            Offer uplifting and supportive messages to the StudentAgent, whether StudentAgent is facing challenges or achieving high levels of success. 
+            Your role is to keep the StudentAgent motivated and confident, helping them stay engaged and positive about their learning journey. 
+            Tailor your encouragement to the StudentAgent's current performance, ensuring StudentAgent feel supported and inspired to continue improving.    
+            """
+    def __init__(self, **kwargs):
         super().__init__(
-                name="Motivator",
+                name="MotivatorAgent",
                 human_input_mode="NEVER",
-                llm_config=gpt3_config,
-                system_message=self.description,
-                description=self.description
+                system_message=self.system_message,
+                description=self.description,
+                **kwargs
             )

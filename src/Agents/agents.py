@@ -15,15 +15,23 @@ from .motivator_agent import MotivatorAgent
 
 from .group_chat_manager_agent import CustomGroupChatManager
 
+from src.Models.llm_config import gpt3_config
+
+
 
 
 # Agents
+
+# Note: if you want to call different LLMs, set the llm_config attribute after initialization
+# e.g., solution_verifier.llm_config = gpt3_config
+
 student = StudentAgent()
 knowledge_tracer = KnowledgeTracerAgent()
 teacher = TeacherAgent()
 tutor = TutorAgent()
 problem_generator = ProblemGeneratorAgent()
 solution_verifier = SolutionVerifierAgent()
+#solution_verifier.llm_config = gpt3_config
 programmer = ProgrammerAgent()
 code_runner = CodeRunnerAgent()
 learner_model = LearnerModelAgent()

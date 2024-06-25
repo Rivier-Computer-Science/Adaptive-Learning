@@ -1,24 +1,25 @@
 ##################### Programmer #########################
 from .conversable_agent import MyConversableAgent
-from src.Models.llm_config import gpt3_config
 
 class ProgrammerAgent(MyConversableAgent):
-    description = """You write python/shell code to solve math problem. Wrap the code in a code block that specifies the script type. 
-                    The user can't modify your code. So do not suggest incomplete code which requires others to modify. 
-                    Don't use a code block if it's not intended to be executed by the Code Runner.
-                    Don't include multiple code blocks in one response. Do not ask others to copy and paste the result. 
-                    As the Code Runner to run the code. 
-                    Check the execution result. 
-                    If the result indicates there is an error, fix the error and output the code again. 
-                    Suggest the full code instead of partial code or code changes. 
-                    If the error can't be fixed or if the task is not solved even after the code is executed successfully, 
-                    analyze the problem, revisit your assumption, collect additional info you need, and think of a different approach to try.
-                """
-    def __init__(self):
+    description = """
+        ProgrammerAgent is an expert Python programmer capable of writing clean, efficient, and well-documented code. 
+        Specializing in problem-solving and algorithm development, ProgrammerAgent assists users by crafting Python scripts tailored to their specific needs. 
+        Whether it's data manipulation, algorithm design, or any other programming task, ProgrammerAgent ensures the code is optimized for execution by CodeRunnerAgent, another agent responsible for running the code.
+        """
+    
+    system_message = """
+        You are ProgrammerAgent, a skilled Python programmer. 
+        Your role is to write Python code that will be executed by CodeRunnerAgent. 
+        When a user provides a problem or a task, you need to understand the requirements, write the appropriate Python code, and ensure it is well-documented and efficient. 
+        Make sure the code is easy to understand and optimized for performance. 
+        Provide any necessary comments and explanations to help the user understand the logic behind the code.
+         """
+    def __init__(self, **kwargs):
         super().__init__(
-                name="Programmer",
+                name="ProgrammerAgent",
                 human_input_mode="NEVER",
-                llm_config=gpt3_config,
-                system_message=self.description,
-                description=self.description
+                system_message=self.system_message,
+                description=self.description,
+                **kwargs
             )

@@ -4,14 +4,20 @@
 import autogen
 import asyncio
 from src import globals
+from src.Models.llm_config import gpt3_config, gpt4_config
 
 from .base_agent import MyBaseAgent
 
 class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
     def __init__(self, **kwargs):
+        llm_config = kwargs.get('llm_config', None)
+        if llm_config is None:
+             kwargs['llm_config'] = gpt3_config
+
         super().__init__(**kwargs)
+
+        self.is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("exit")
         #self.response_event = asyncio.Event()  # Add an event object
-        self.description = self.system_message
         self.chat_interface = None
  
     async def a_get_human_input(self, prompt: str) -> str:

@@ -5,6 +5,40 @@
 (math) jglossner@jglossner-Alienware-Aurora-R7:~/TestGit/Adaptive-Learning$ python -m src.UI.panel_gui_unconstrained
 ```
 
+## Autogen
+In Microsoft's AutoGen, the description and system_message fields serve distinct purposes in defining an Agent's behavior:
+
+### System Message (system_message):
+
+    Core Instructions: This field provides the fundamental instructions that guide the Agent's overall behavior and responses. It sets the tone, establishes the Agent's role, and outlines the primary goals it should aim for in conversations.
+    Technical Focus: Primarily intended for technical guidance, the system_message often includes details like API usage, specific tasks, or constraints on the Agent's actions.
+    Legacy Usage: In older versions of AutoGen, the system_message was used by GroupChat to determine which Agent should respond in a conversation.
+
+### Description (description):
+
+    High-Level Summary: This field offers a concise, human-readable summary of the Agent's role, expertise, or personality. It's designed to be easily understood by users and other Agents.
+    GroupChat Orchestration: In newer AutoGen versions (0.2.2 onwards), GroupChat primarily uses the description field to decide which Agent is most suitable to respond in a multi-agent conversation.
+    Simplified Communication: The description facilitates clearer communication between Agents and users, as it provides a quick overview of what an Agent is capable of.
+
+### Key Differences and When to Use Each:
+
+    Purpose:
+        system_message: Focuses on technical instructions and core behavior.
+        description: Provides a high-level summary for easy understanding and GroupChat selection.
+    Audience:
+        system_message: Primarily intended for developers and system administrators.
+        description: Intended for both developers/administrators and end-users interacting with the Agents.
+    GroupChat:
+        Older AutoGen versions: GroupChat uses system_message.
+        Newer AutoGen versions (0.2.2+): GroupChat primarily uses description.
+
+### Recommendation:
+
+In most cases, it's recommended to use both fields:
+
+    Provide detailed technical instructions in the system_message.
+    Offer a clear, concise summary of the Agent's capabilities in the description to facilitate effective communication and GroupChat orchestration.
+
 
 ## Hugging Face
 
