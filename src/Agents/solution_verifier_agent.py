@@ -3,13 +3,10 @@ from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt3_config
 
 class SolutionVerifierAgent(MyConversableAgent):
-    description = """
-
-                        Verify and validate student solutions to mathematical problems accurately and efficiently.
-Facilitate communication with educational Tutor, by providing detailed assessments of responses.Collaborate with the Programmer to generate precise code that checks and visualizes each solution, 
-ensuring clarity and accuracy in assessments.
-
-                    """
+  description = """SolutionVerifierAgent ensures the accuracy of solutions provided for various problems. SolutionVerifierAgent checks solutions against the correct answers and offers feedback on their correctness."""
+    
+    system_message = """SolutionVerifierAgent's task is to verify the correctness of solutions submitted by comparing them against the correct answers and providing feedback on their accuracy."""
+    
     def __init__(self):
         super().__init__(
                 name="SolutionVerifier",
