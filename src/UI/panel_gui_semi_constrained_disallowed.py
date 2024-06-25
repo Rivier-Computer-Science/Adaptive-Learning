@@ -18,33 +18,19 @@ os.environ["AUTOGEN_USE_DOCKER"] = "False"
 globals.input_future = None
     
 
-allowed_agent_transitions = {
-    student: [tutor],
-    tutor: [student, teacher, problem_generator, solution_verifier, motivator],
-    teacher: [student, tutor, learner_model],
-    knowledge_tracer: [student, problem_generator, learner_model, level_adapter],
-    problem_generator: [tutor],
-    solution_verifier: [programmer],
-    programmer: [code_runner],
-    code_runner: [tutor, solution_verifier],
-    learner_model: [knowledge_tracer, level_adapter],
-    level_adapter: [tutor, problem_generator, learner_model],
-    motivator: [tutor]
+disallowed_agent_transitions = {
+    student: [solution_verifier, programmer, code_runner, learner_model, level_adapter, motivator],
+    tutor: [programmer, code_runner],
+    teacher: [knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter, motivator],
+    knowledge_tracer: [teacher, tutor, motivator],
+    problem_generator: [teacher, solution_verifier, programmer, code_runner, motivator],
+    solution_verifier: [student, teacher, problem_generator, learner_model, level_adapter, motivator],
+    programmer: [student, tutor, teacher, knowledge_tracer, learner_model, level_adapter, motivator],
+    code_runner: [student, teacher, tutor, knowledge_tracer, problem_generator, learner_model, level_adapter, motivator],
+    learner_model: [student, teacher, problem_generator, solution_verifier, programmer, code_runner],
+    level_adapter: [student, teacher, solution_verifier, programmer, code_runner, motivator],
+    motivator: [tutor, teacher, knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter]
 }
-
-# allowed_agent_transitions = {
-#     student: [tutor, teacher],
-#     tutor: [student, teacher, problem_generator, solution_verifier, motivator, knowledge_tracer],
-#     teacher: [tutor, learner_model, problem_generator],
-#     knowledge_tracer: [student, problem_generator, learner_model, level_adapter],
-#     problem_generator: [student, learner_model, solution_verifier],
-#     solution_verifier: [programmer],
-#     programmer: [code_runner],
-#     code_runner: [solution_verifier],
-#     learner_model: [knowledge_tracer, level_adapter, problem_generator],
-#     level_adapter: [tutor, problem_generator, learner_model],
-#     motivator: [tutor]
-# }
 
 
 
@@ -53,8 +39,8 @@ groupchat = autogen.GroupChat(agents=list(agents_dict.values()),
                               messages=[],
                               max_round=40,
                               send_introductions=True,
-                              speaker_transitions_type="allowed",
-                              allowed_or_disallowed_speaker_transitions=allowed_agent_transitions,
+                              speaker_transitions_type="disallowed",
+                              allowed_or_disallowed_speaker_transitions=disallowed_agent_transitions,
                                )
 manager = CustomGroupChatManager(groupchat=groupchat)
 

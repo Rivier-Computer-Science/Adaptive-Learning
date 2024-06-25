@@ -20,7 +20,6 @@ class LevelAdapterAgent(MyConversableAgent):
             name="LevelAdapterAgent",
             system_message=self.system_message,
             description=self.description,
-            code_execution_config=False,
             human_input_mode="NEVER",
             **kwargs
          )

@@ -17,7 +17,7 @@ class SolutionVerifierAgent(MyConversableAgent):
     def __init__(self, **kwargs):
         super().__init__(
                 name="SolutionVerifierAgent",
-                human_input_mode="ALWAYS",
+                human_input_mode="NEVER",
                 system_message=self.system_message,
                 description=self.description,
                 **kwargs
