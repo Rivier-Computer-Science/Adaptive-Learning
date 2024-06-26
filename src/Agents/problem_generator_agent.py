@@ -1,20 +1,23 @@
-##################### Problem Generator #########################
 from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt3_config
 
+# Adjust import as per your actual structure
+
 class ProblemGeneratorAgent(MyConversableAgent):
-    description = """
-                        You generate math problems at the appropriate level for the Student. 
-                        You ask the Level Adapter for the level of difficulty and generate a question.
-                        You display the question to the Student.
-                        You ask the Student to provide human input to answer the question.
-                        You only talk with the Student and Level Adapter. 
-                 """
+    description = """ProblemGenerator is designed to generate mathematical problems based on the current curriculum and the student's learning level.
+                ProblemGenerator ensures that the problems generated are appropriate and challenging."""
+                    
+    system_message = """ProblemGenerator will generate mathematical problems based on the current curriculum and the student's learning level.
+                        ProblemGenerator ensures that the problems generated are appropriate and challenging."""
+    
+
     def __init__(self):
         super().__init__(
-                name="ProblemGenerator",
-                human_input_mode="NEVER",
-                llm_config=gpt3_config,
-                system_message=self.description,
-                description=self.description
-            )    
+            name="ProblemGenerator",
+            is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("exit"),
+            system_message=self.system_message,
+            description=self.description,
+            code_execution_config=False,
+            human_input_mode="NEVER",
+            llm_config=gpt3_config  # Ensure gpt3_config is correctly defined or imported
+        )
