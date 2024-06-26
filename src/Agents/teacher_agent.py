@@ -19,10 +19,13 @@ class TeacherAgent(MyConversableAgent):
             Your goal is to make mathematics accessible and enjoyable for the StudentAgent.
             """
     def __init__(self, **kwargs):
+        description = kwargs.pop('description', self.description)
+        system_message = kwargs.pop('system_message', self.system_message)
+        human_input_mode = kwargs.pop('human_input_mode', "NEVER")        
         super().__init__(
                 name="TeacherAgent",
-                human_input_mode="NEVER",
-                system_message=self.system_message,
-                description=self.description,
+                human_input_mode=human_input_mode,
+                system_message=system_message,
+                description=description,
                 **kwargs
             )

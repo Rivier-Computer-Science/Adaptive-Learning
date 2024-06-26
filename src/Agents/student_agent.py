@@ -14,11 +14,14 @@ class StudentAgent(MyConversableAgent):
             Maintain clarity and accuracy in all communications to enhance the human's learning experience
             """
     def __init__(self, **kwargs):
+        description = kwargs.pop('description', self.description)
+        system_message = kwargs.pop('system_message', self.system_message)
+        human_input_mode = kwargs.pop('human_input_mode', "ALWAYS")        
         super().__init__(
             name="StudentAgent",
-            human_input_mode="ALWAYS",
-            system_message=self.system_message,
-            description=self.description,
+            human_input_mode=human_input_mode,
+            system_message=system_message,
+            description=description,
             **kwargs
         )
             

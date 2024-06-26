@@ -34,11 +34,14 @@ You are an AutoGen agent designed to run Python code snippets and visualize the 
 
 """
     def __init__(self, **kwargs):
+        description = kwargs.pop('description', self.description)
+        system_message = kwargs.pop('system_message', self.system_message)
+        human_input_mode = kwargs.pop('human_input_mode', "NEVER")
         super().__init__(
             name="CodeRunnerAgent",
             code_execution_config={"work_dir": "coding"},
-            human_input_mode="NEVER",
-            system_message=self.system_message,
-            description=self.description,
+            human_input_mode=human_input_mode,
+            system_message=system_message,
+            description=description,
             **kwargs
         )

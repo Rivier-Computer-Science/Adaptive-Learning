@@ -17,12 +17,17 @@ class LearnerModelAgent(MyConversableAgent):
                 should be generated based on your assessment. 
             Your goal is to ensure that the StudentAgent's learning experience is tailored to their current abilities, promoting effective and personalized learning.
             """
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs): 
+        description = kwargs.pop('description', self.description)
+        system_message = kwargs.pop('system_message', self.system_message)
+        human_input_mode = kwargs.pop('human_input_mode', "NEVER")
+        
         super().__init__(
             name="LearnerModelAgent",            
-            system_message=self.system_message,
-            description=self.description,
+            system_message=system_message,
+            description=description,
             code_execution_config=False,
-            human_input_mode="NEVER",
+            human_input_mode=human_input_mode,
             **kwargs
          )
+ 

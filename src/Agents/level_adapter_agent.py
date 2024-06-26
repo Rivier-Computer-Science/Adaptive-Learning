@@ -16,10 +16,13 @@ class LevelAdapterAgent(MyConversableAgent):
             Your goal is to provide a balanced and adaptive learning experience, helping the StudentAgent to progressively improve without becoming frustrated or bored.
             """
     def __init__(self, **kwargs):
+        description = kwargs.pop('description', self.description)
+        system_message = kwargs.pop('system_message', self.system_message)
+        human_input_mode = kwargs.pop('human_input_mode', "NEVER")        
         super().__init__(
             name="LevelAdapterAgent",
-            system_message=self.system_message,
-            description=self.description,
-            human_input_mode="NEVER",
+            system_message=system_message,
+            description=description,
+            human_input_mode=human_input_mode,
             **kwargs
          )
