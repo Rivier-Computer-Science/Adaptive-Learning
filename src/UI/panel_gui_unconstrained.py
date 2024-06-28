@@ -70,6 +70,7 @@ def create_app():
     for agent in groupchat.agents:
         agent.chat_interface = chat_interface
         agent.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
+        agent.get_progress()
 
     # Create the Panel app object with the chat interface
     app = pn.template.BootstrapTemplate(title=globals.APP_NAME)
