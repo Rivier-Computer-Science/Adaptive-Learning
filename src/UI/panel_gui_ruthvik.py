@@ -3,10 +3,7 @@
 # Ruthvik - your goal is to modify only this file and get the Agents to respond
 #           in some logical manner
 #
-#           Pick any reasonable prompt like help me learn Algebra
-#
 ###############################################################################
-
 
 import autogen
 import panel as pn
@@ -22,7 +19,6 @@ from src.UI.avatar import avatar
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
 globals.input_future = None
-
 
 ############################################################################################
 #
@@ -44,25 +40,31 @@ from ..Agents.level_adapter_agent import LevelAdapterAgent
 from ..Agents.motivator_agent import MotivatorAgent
 from ..Agents.group_chat_manager_agent import CustomGroupChatManager
 
-
 # Agents
 #####################################################################################
 # I've set all the Agents to the prompts found to be "best" in Sprint-2
 # 
-# Below are examplex of how to override defaults in this file instead of agent file
+# Below are examples of how to override defaults in this file instead of agent file
 #
 # I believe these are the only 3 you will need to change
 #
 # If you find otherwise, you will need to directly update the agents
-#    becasue I only created constructors for these additional parameters
+#    because I only created constructors for these additional parameters
 #
 # See the README.md file for description vs system_message
 ##########################################################################
 
 #######################################
-# Student was not completed in Sprint-2
+# Student Agent
 #######################################
-student = StudentAgent()
+student_description = """You are a Student who is eager to learn and solve problems. You interact with the Tutor, Teacher, and other educational agents to seek help, ask questions, and solve problems. You provide feedback about your understanding and progress."""
+student_system_message = """As a Student, you will ask questions, request explanations, and solve problems presented by other agents. You will provide feedback on your understanding and learning progress."""
+
+student = StudentAgent(
+    human_input_mode='ALWAYS',
+    description=student_description,
+    system_message=student_system_message
+)
 
 ###################
 # Knowledge Tracer
@@ -126,13 +128,20 @@ sv_system_message = """SolutionVerifierAgent's task is to verify the correctness
 solution_verifier = SolutionVerifierAgent(
     human_input_mode='ALWAYS',
     description=sv_description,
-    system_message=sv_description     
+    system_message=sv_system_message     
 )
 
 ###########################################
-# Programmer was not completed in Sprint-2
+# Programmer Agent
 ###########################################
-programmer = ProgrammerAgent()
+programmer_description = """You are a Programmer who assists in writing, debugging, and understanding code. You work with the Code Runner to execute and verify the correctness of code. You provide coding solutions and explanations when requested."""
+programmer_system_message = """As a Programmer, you will write, debug, and explain code. You will work with the Code Runner to execute code and ensure its correctness. Provide coding solutions and explanations as requested."""
+
+programmer = ProgrammerAgent(
+    human_input_mode='ALWAYS',
+    description=programmer_description,
+    system_message=programmer_system_message
+)
 
 ###################
 # Code Runner
@@ -186,9 +195,6 @@ learner_model = LearnerModelAgent(
     description=lm_description,
     system_message=lm_system_message
 )
-
-
-
 
 agents_dict = {
     "student": student,
@@ -264,10 +270,6 @@ else:  # Unconstrained
                               send_introductions=True,
                               )
 
-
-
-
-
 manager = CustomGroupChatManager(groupchat=groupchat)
 
 ####################################################################################
@@ -281,7 +283,6 @@ def create_app():
     # --- Panel Interface ---
     pn.extension(design="material")
 
-
     async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         if not globals.initiate_chat_task_created:
             asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))  
@@ -290,7 +291,6 @@ def create_app():
                 globals.input_future.set_result(contents)
             else:
                 print("No input being awaited.")
-
 
     chat_interface = pn.chat.ChatInterface(callback=callback)
 
@@ -322,9 +322,6 @@ def create_app():
     
     return app
 
-
 if __name__ == "__main__":
     app = create_app()
-    #pn.serve(app, debug=True)
     pn.serve(app)
- 
