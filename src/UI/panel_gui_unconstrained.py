@@ -11,16 +11,15 @@ from src import globals
 from src.Agents.agents import *
 from src.UI.avatar import avatar
 
-# Determine the directory where the script is located
 script_dir = os.path.dirname(os.path.abspath(__file__))
-# Define the path to the progress.json file relative to the script location
 progress_file_path = os.path.join(script_dir, '../../progress.json')
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
 globals.input_future = None
 
-agents = list(agents_dict.values())  # All agents
+agents = list(agents_dict.values())
+agents = [student, tutor]
 
 groupchat = autogen.GroupChat(agents=agents,
                               messages=[],
@@ -30,7 +29,6 @@ groupchat = autogen.GroupChat(agents=agents,
 
 manager = CustomGroupChatManager(groupchat=groupchat)
 
-# Load chat history from progress.json if it exists
 if os.path.exists(progress_file_path):
     try:
         with open(progress_file_path, 'r') as f:
@@ -62,19 +60,24 @@ def create_app():
 
         content = messages[-1]['content']
 
+        # Capture and store messages in _chat_messages
+        recipient._chat_messages.setdefault(recipient, []).append({
+            'content': content,
+            'name': messages[-1].get('name', sender.name),
+            'role': messages[-1].get('role', 'user')
+        })
+
         if all(key in messages[-1] for key in ['name']):
             chat_interface.send(content, user=messages[-1]['name'], avatar=avatar[messages[-1]['name']], respond=False)
         else:
             chat_interface.send(content, user=recipient.name, avatar=avatar[recipient.name], respond=False)
 
-        return False, None  # required to ensure the agent communication flow continues
+        return False, None
 
-    # Register chat interface with ConversableAgent
     for agent in groupchat.agents:
         agent.chat_interface = chat_interface
         agent.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
 
-    # Create the Panel app object with the chat interface
     app = pn.template.BootstrapTemplate(title=globals.APP_NAME)
     app.main.append(
         pn.Column(
@@ -83,7 +86,6 @@ def create_app():
     )
     chat_interface.send("Welcome to the Adaptive Math Tutor! How can I help you today?", user="System", respond=False)
 
-    # Send previous chat history
     for message in chat_history:
         if 'name' in message and 'role' in message:
             chat_interface.send(message['content'], user=message['name'], avatar=avatar[message['name']], respond=False)

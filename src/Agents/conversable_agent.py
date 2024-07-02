@@ -2,13 +2,12 @@ import autogen
 import asyncio
 import json
 import os
+from datetime import datetime
 from src import globals
 from src.Models.llm_config import gpt3_config
-from datetime import datetime
 
 llm = gpt3_config
 
-# Ensure MyBaseAgent is defined or imported correctly.
 try:
     from .base_agent import MyBaseAgent
 except ImportError:
@@ -33,6 +32,7 @@ class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
         super().__init__(**kwargs)
 
         self._chat_interface = None  # Initialize the private variable
+        self._chat_messages = {}
 
     async def a_get_human_input(self, prompt: str) -> str:
         self.chat_interface.send(prompt, user="System", respond=False)
@@ -45,7 +45,6 @@ class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
         input_value = globals.input_future.result()
         globals.input_future = None
 
-        # Check if the input is a termination message
         if input_value.rstrip().endswith("exit"):
             print("Exit message detected. Saving progress...")
             self.save_progress()
@@ -62,16 +61,16 @@ class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
                 message['timestamp'] = datetime.now().isoformat()  # Add timestamp
                 serializable_chat_messages.append(message)
 
+        print(f"Serializable chat messages: {serializable_chat_messages}")  # Debug: Print the messages to be saved
+
         progress_file_path = os.path.join(os.path.dirname(__file__), '../../progress.json')
 
-        # Read existing messages if the file exists
         try:
             with open(progress_file_path, 'r') as f:
                 existing_messages = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             existing_messages = []
 
-        # Filter out messages that already exist in the file
         existing_message_contents = {msg['content'] for msg in existing_messages}
         new_messages = [msg for msg in serializable_chat_messages if msg['content'] not in existing_message_contents]
 
@@ -83,19 +82,18 @@ class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
         print(f"Progress saved. Total messages in file: {len(combined_messages)}")
 
     def get_progress(self):
-        if not hasattr(self, '_chat_messages'):
-            print("Loading chat history from progress.json...")
-            progress_file_path = os.path.join(os.path.dirname(__file__), '../../progress.json')
-            try:
-                with open(progress_file_path, 'r') as f:
-                    loaded_messages = json.load(f)
-                    self._chat_messages = {self: loaded_messages}
-            except FileNotFoundError:
-                print("progress.json not found. Starting new session.")
-                self._chat_messages = {self: []}
-            except json.JSONDecodeError:
-                print("Error decoding JSON from progress.json. Starting new session.")
-                self._chat_messages = {self: []}
+        print("Loading chat history from progress.json...")
+        progress_file_path = os.path.join(os.path.dirname(__file__), '../../progress.json')
+        try:
+            with open(progress_file_path, 'r') as f:
+                loaded_messages = json.load(f)
+                self._chat_messages = {self: loaded_messages}
+        except FileNotFoundError:
+            print("progress.json not found. Starting new session.")
+            self._chat_messages = {self: []}
+        except json.JSONDecodeError:
+            print("Error decoding JSON from progress.json. Starting new session.")
+            self._chat_messages = {self: []}
 
     @property
     def chat_interface(self):
