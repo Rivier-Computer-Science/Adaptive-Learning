@@ -3,36 +3,43 @@
 # Teacher Algebra Use Case Description
 #
 # Use-Case Name: Teacher Algebra
-# 
+# Use Case Type: Primary
 # Primary Actor: Teacher Agent
 #
 # Stakeholders and Interests
 #   - Other Agents: Student, Tutor, Knowledge Tracer, Problem Generator, 
 #                   Solution Verifier, Learner Model, Level Adapter, Motivator
 #
-# Description: This use-case describes the interactions of a Teacher Agent primarily
-#      with a Student but also with other Agents
+# Description: This use-case describes TeacherAgent is responsible for creating 
+# and delivering educational content. When given a subject, the TeacherAgent prepares 
+# teaching materials and delivers content in a format that suits the student's preferences.
 # 
-# Trigger: A Student asks for help from a Teacher Agent
-#
+# Trigger: The TeacherAgent's interaction with the student is more structured and planned, 
+# focusing on teaching specific subjects or topics in a systematic way
+# Type: External
 # Relationships:  Note - TBD. Will be filled in later. There are lots of them.
-#    Association:
-#    Include: 
-#    Extend:
-#    Generalization:
+#    Association: Student, Teacher
+#    Include: Provide Personalized Lessons, Assess Understanding, Recommend Resources
+#    Extend: Address Student Questions
+#    Generalization:  None
 #
 # Normal Flow of Events:
-#
-# 1. A Student requests help with Algebra
-# 2. The Teacher Agent responds asking what area the student is having trouble with
-#    If the Student responds I'm not sure, execute S-1
-#
+# 1. The student requests help with algebra or the scheduled algebra lesson begins.
+# 2. The teacher agent greets the student and asks for any specific topics or problems they need help with.
+# 3. The student specifies a topic or problem.
+# 4. The teacher agent provides an explanation of the topic or step-by-step solution to the problem.
+# 5. The teacher agent checks for understanding by asking follow-up questions.
+# 6. The student responds to the follow-up questions.
+# 7. The teacher agent provides feedback based on the student's responses.
+# 8. The teacher agent recommends additional resources if necessary.
+# 9. The session ends with a summary of what was covered and suggestions for further study.
 #
 # SubFlows:
-# S-1: Trace Knowledge
-#
+# S-1: If the student does not specify a topic or problem, the teacher agent provides a general overview of key algebra concepts.
 #
 # Alternate/Exceptional Flows:
+# A-1: If the student is unable to understand the explanation, the teacher agent provides alternative explanations or examples.
+# A-2: If the student encounters technical issues, the teacher agent provides instructions to resolve them or reschedules the session.
 #
 ###############################################################################
 
