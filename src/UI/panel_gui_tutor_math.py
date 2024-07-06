@@ -1,8 +1,8 @@
 ###############################################################################
 #
-# Tutor {subject} Use Case Description
+# Tutor Math Use Case Description
 #
-# Use-Case Name: Tutor {subject}
+# Use-Case Name: Tutor Math
 # 
 # Primary Actor: Tutor Agent
 #
@@ -17,7 +17,7 @@
 #   - Motivator: Encourages and supports the student.
 #
 # Description: This use-case describes the interactions of a Tutor Agent primarily
-#              with a Student but also with other Agents to facilitate learning in {subject}.
+#              with a Student but also with other Agents to facilitate learning in Math.
 # 
 # Trigger: A Student asks for help from a Tutor Agent.
 #
@@ -28,7 +28,7 @@
 #
 # Normal Flow of Events:
 #
-# 1. A Student requests help with {subject}.
+# 1. A Student requests help with Math.
 # 2. The Tutor Agent responds asking what area the student is having trouble with.
 # 3. If the Student responds "I'm not sure," execute Sub-Flow S-1.
 # 4. The Knowledge Tracer tests the Student's knowledge.
