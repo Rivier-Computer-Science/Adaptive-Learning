@@ -13,50 +13,54 @@ globals.input_future = None
 
 ###############################################################################
 #
-# Test/Interrogate Algebra Use Case Description
+# Test/Interrogate Subject Use Case Description
 #
-# Use-Case Name: Test/Interrogate Algebra
-# ID: 5.3
+# Use-Case Name: Test/Interrogate Subject
+# ID: 5.4
 # Importance Level: Medium
-# Primary Actor: Teacher Agent
+# Primary Actor: Tutor Agent
 # Use Case Type: Interactive
 #
 # Stakeholders and Interests:
-#   - Primary Actor: Initiates the test/interrogation process to assess algebra knowledge.
+#   - Primary Actor: Tutor Agent initiates the interrogation process to assess the student's knowledge level.
 #   - Student Agent: Receives questions and provides responses.
-#   - Knowledge Tracer Agent: Monitors and logs student performance during the test/interrogation.
+#   - Knowledge Tracer Agent: Tracks and logs the student's performance.
 #
 # Brief Description:
-# This use case involves the Teacher Agent testing or interrogating a Student Agent on the topic of algebra. The Teacher Agent presents material, asks questions, evaluates responses, and may adjust the difficulty level based on the Student Agent's performance.
+# This use case involves the Tutor Agent retrieving the student's previous learning level, asking the KnowledgeTracker to determine the student's level, and instructing the Teacher Agent to present material accordingly. The Tutor Agent then assesses the student's mastery of the material through various means.
 #
 # Trigger:
-# The Teacher Agent decides to assess the Student Agent's knowledge on the subject of algebra.
+# The Tutor Agent decides to assess the student's knowledge on a particular subject.
 #
 # Type:
-# Interactive - involves direct interaction between Teacher Agent and Student Agent.
+# Interactive - involves direct interaction between Tutor Agent and other agents.
 #
 # Relationships:
-#   - Association: Teacher interacts with Student.
+#   - Association: Tutor interacts with Teacher and Student.
 #   - Include: Knowledge Tracer monitors and logs student performance.
 #
 # Normal Flow of Events:
-# 1. Teacher Agent selects algebra as the subject to test.
-# 2. Tutor Agent retrieves previous learning levels from the Knowledge Tracer Agent.
-# 3. Tutor Agent asks Teacher Agent to present algebraic material at the Student Agent's level.
-# 4. Teacher Agent presents algebraic material in lecture format.
-# 5. Teacher Agent presents algebraic material in video format using educational resources like Khan Academy.
-# 6. Tutor Agent asks Teacher Agent to determine the Student Agent's mastery of the material.
-# 7. Teacher Agent waits for input on when to introduce new algebraic material.
+# 1. Tutor Agent retrieves previous learning level from JSON file.
+# 2. Tutor asks KnowledgeTracker to determine Student level.
+# 3. Tutor asks Teacher to present material at Student's level.
+# 4. Teacher presents material in lecture format.
+# 5. Teacher presents material in video format using sites such as Khan Academy.
+# 6. Teacher asks Tutor to determine the Student's mastery of material.
+# 7. Teacher waits for input on when to teach new material.
+# 8. Tutor asks ProblemGenerator to create a problem on the subject at Student's level.
 #
 # SubFlows:
-# S-1: If Student Agent demonstrates insufficient mastery, Tutor Agent may request further review of existing material.
+# S-1: Tutor asks KnowledgeTracker to determine Student level.
+# S-2: ProblemGenerator asks LearnerModel for Student's learning level.
+# S-3: SolutionVerifier asks Programmer to write a program to solve the problem.
+# S-4: Programmer asks CodeRunner to run the code.
 #
 # Alternate/Exceptional Flows:
-# - If the Student Agent consistently struggles with presented material, Teacher Agent may adjust the material format or difficulty level.
+# - If the Student Agent consistently struggles with presented material, the Teacher Agent may adjust the material format or difficulty level.
 #
 ###############################################################################
 
-# Note: Implementation details and agent interactions should be detailed in the panel_gui_test_interrogate_algebra.py file.
+# Note: Implementation details and agent interactions should be detailed in the panel_gui_test_interrogate_subject.py file.
 # Follow the provided guidelines for file structure and agent descriptions overriding.
 
 
