@@ -29,15 +29,17 @@
 #Include: Assessment, Feedback, Progress Tracking
 #Extend: Personalized Recommendations
 
+
+
 #Normal Flow of Events:
-#1. Student access the LLM dashboard UI .
+#1. Student access the LLM dashboard UI by running panel_gui_trace_knowledge_on_math.py file .
 #2. Student asks questions related to "Trace Knowledge on Math".
-#3. The LLM dashboard presents an assessment covering various Math topics.
+#3. The Knowledge Tracer Agent presents an assessment covering various Math topics.
 #4. Student completes the assessment.
-#5. The LLM dashboard analyzes the results and provides feedback.
-#6. The LLM dashboard highlights areas of strength and weakness.
-#7. The LLM dashboard offers resources for improvement in weak areas.
-#8. Student reviews the feedback and resources.
+#5. The Knowledge Tracer Agent analyzes the results and provides feedback.
+#6. The Knowledge Tracer Agent highlights areas of strength and weakness.
+#7. The Knowledge Tracer Agent offers resources for improvement in weak areas.
+#8. Student reviews the feedback and resources
 
 #SubFlows:
 #S-1: If the student scores above a certain threshold, they receive a badge of mastery.
