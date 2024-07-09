@@ -98,16 +98,20 @@ from ..Agents.group_chat_manager_agent import CustomGroupChatManager
 #######################################
 # Student was not completed in Sprint-2
 #######################################
-student_description = """You are a Student.
-                 Your primary goal is to learn and understand new concepts.
-                 You actively listen to the Teacher, ask relevant questions, and seek additional information when needed.
-                 You are curious, attentive, and eager to grasp the material presented.
+student_description = """StudentAgent aims to learn and understand new concepts.
+                 StudentAgent actively listens to the Teacher, asks relevant questions, and seeks additional information when needed.
+                 StudentAgent is curious, attentive, and eager to grasp the material presented.
                  """
+
+student_system_message = """StudentAgent's task is to actively engage in learning by listening to the Teacher, asking relevant questions, and seeking additional information to fully understand new concepts.
+                 """
+
 student = StudentAgent(
     human_input_mode='ALWAYS',
     description=student_description,
-    system_message=student_description     
+    system_message=student_system_message     
 )
+
 
 ###################
 # Knowledge Tracer
@@ -126,14 +130,17 @@ knowledge_tracer = KnowledgeTracerAgent(
 ###################
 # Teacher
 ###################
-t_description =   """You are a Teacher.
-                 When asked by the Student to learn new material, you present clear and concise lecture-type material.
+t_description = """TeacherAgent presents new material in a clear and concise manner, focusing on delivering lecture-type content when asked by the Student.
                  """
+t_system_message = """TeacherAgent's task is to provide clear and concise lecture-type material when the Student asks to learn new concepts.
+                 """
+
 teacher = TeacherAgent(
     human_input_mode='NEVER',
     description=t_description,
-    system_message=t_description     
+    system_message=t_system_message     
 )
+
 
 ###################
 # Tutor
