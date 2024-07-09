@@ -270,7 +270,7 @@ if TRANSITIONS == 'DISALLOWED':
     disallowed_agent_transitions = {
         student: [solution_verifier, programmer, code_runner, learner_model, level_adapter, motivator],
         tutor: [programmer, code_runner],
-        teacher: [knowledge_tracer, problem_generator, programmer, code_runner, learner_model, level_adapter, motivator],
+        teacher: [knowledge_tracer, programmer, code_runner, learner_model, level_adapter, motivator],
         knowledge_tracer: [teacher, tutor, motivator],
         problem_generator: [teacher, solution_verifier, programmer, code_runner, motivator],
         solution_verifier: [student, teacher, problem_generator, learner_model, level_adapter, motivator],
@@ -292,7 +292,7 @@ elif TRANSITIONS == 'ALLOWED':
     allowed_agent_transitions = {
         student: [tutor],
         tutor: [student, teacher, problem_generator, solution_verifier, motivator],
-        teacher: [student, tutor, learner_model,solution_verifier],
+        teacher: [student, tutor, problem_generator,learner_model,solution_verifier],
         knowledge_tracer: [student, problem_generator, learner_model, level_adapter],
         problem_generator: [tutor],
         solution_verifier: [programmer],
