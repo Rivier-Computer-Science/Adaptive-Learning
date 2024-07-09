@@ -5,9 +5,6 @@ from src import globals
 
 
 class CustomGroupChatManager(autogen.GroupChatManager):
-    def __init__(self, *args, **kwargs): 
-        super().__init__(*args, **kwargs)  
-
     def __init__(self, termination_string="exit", filename="chat_history.json", *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.termination_string = termination_string
