@@ -15,7 +15,7 @@
 # teaching materials and delivers content in a format that suits the student's preferences.
 # 
 # Trigger: The TeacherAgent's interaction with the student is more structured and planned, 
-# focusing on teaching specific subjects or topics in a systematic way
+# focusing on teaching specific subjects or topics in a systematic way.
 # Type: External
 # Relationships:  Note - TBD. Will be filled in later. There are lots of them.
 #    Association: Student, Teacher
@@ -98,7 +98,20 @@ from ..Agents.group_chat_manager_agent import CustomGroupChatManager
 #######################################
 # Student was not completed in Sprint-2
 #######################################
-student = StudentAgent()
+student_description = """StudentAgent aims to learn and understand new concepts.
+                 StudentAgent actively listens to the Teacher, asks relevant questions, and seeks additional information when needed.
+                 StudentAgent is curious, attentive, and eager to grasp the material presented.
+                 """
+
+student_system_message = """StudentAgent's task is to actively engage in learning by listening to the Teacher, asking relevant questions, and seeking additional information to fully understand new concepts.
+                 """
+
+student = StudentAgent(
+    human_input_mode='ALWAYS',
+    description=student_description,
+    system_message=student_system_message     
+)
+
 
 ###################
 # Knowledge Tracer
@@ -117,14 +130,17 @@ knowledge_tracer = KnowledgeTracerAgent(
 ###################
 # Teacher
 ###################
-t_description =   """You are a Teacher.
-                 When asked by the Student to learn new material, you present clear and concise lecture-type material.
+t_description = """TeacherAgent presents new material in a clear and concise manner, focusing on delivering lecture-type content when asked by the Student.
                  """
+t_system_message = """TeacherAgent's task is to provide clear and concise lecture-type material when the Student asks to learn new concepts.
+                 """
+
 teacher = TeacherAgent(
     human_input_mode='NEVER',
     description=t_description,
-    system_message=t_description     
+    system_message=t_system_message     
 )
+
 
 ###################
 # Tutor
@@ -168,7 +184,16 @@ solution_verifier = SolutionVerifierAgent(
 ###########################################
 # Programmer was not completed in Sprint-2
 ###########################################
-programmer = ProgrammerAgent()
+p_description = """You are a Programmer.
+                 Your role is to write, debug, and optimize code based on the given requirements.
+                 You approach problems methodically, breaking them down into manageable tasks.
+                 You continuously seek to improve the efficiency and functionality of the software you develop.
+                 """
+programmer = ProgrammerAgent(
+    human_input_mode='NEVER',
+    description=p_description,
+    system_message=p_description     
+)
 
 ###################
 # Code Runner
@@ -252,7 +277,7 @@ if TRANSITIONS == 'DISALLOWED':
     disallowed_agent_transitions = {
         student: [solution_verifier, programmer, code_runner, learner_model, level_adapter, motivator],
         tutor: [programmer, code_runner],
-        teacher: [knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter, motivator],
+        teacher: [solution_verifier,knowledge_tracer, programmer, code_runner, learner_model, level_adapter, motivator],
         knowledge_tracer: [teacher, tutor, motivator],
         problem_generator: [teacher, solution_verifier, programmer, code_runner, motivator],
         solution_verifier: [student, teacher, problem_generator, learner_model, level_adapter, motivator],
@@ -274,7 +299,7 @@ elif TRANSITIONS == 'ALLOWED':
     allowed_agent_transitions = {
         student: [tutor],
         tutor: [student, teacher, problem_generator, solution_verifier, motivator],
-        teacher: [student, tutor, learner_model],
+        teacher: [student, tutor, problem_generator,learner_model],
         knowledge_tracer: [student, problem_generator, learner_model, level_adapter],
         problem_generator: [tutor],
         solution_verifier: [programmer],
@@ -354,7 +379,7 @@ def create_app():
             chat_interface
         )
     )
-    chat_interface.send("Welcome to the Adaptive Math Tutor! How can I help you today?", user="System", respond=False)
+    chat_interface.send("Welcome to the Adaptive Math Teacher! How can I help you today?", user="System", respond=False)
     
     return app
 
