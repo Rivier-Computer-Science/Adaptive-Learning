@@ -4,10 +4,10 @@ import json
 import os
 from datetime import datetime
 from src import globals
-from src.Models.llm_config import gpt4_config
+from src.Models.llm_config import gpt3_config
 from src.Agents.base_agent import MyBaseAgent
 
-llm = gpt4_config
+llm = gpt3_config
 
 
 class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
