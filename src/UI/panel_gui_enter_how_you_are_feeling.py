@@ -260,7 +260,7 @@ agents_dict = {
 #  Define Agent Transitions: Unconstrained, Allowed, or Disallowed
 #
 ####################################################################################################
-TRANSITIONS = 'Allowed'      # Set TRANSITIONS for type
+TRANSITIONS = 'Unconstrained'      # Set TRANSITIONS for type
 if TRANSITIONS == 'DISALLOWED':
 
     disallowed_agent_transitions = {
