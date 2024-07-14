@@ -1,41 +1,56 @@
 ###############################################################################
 #
-# Tutor Algebra Use Case Description
+# Test/Interrogate Subject Use Case Description
 #
-# Use-Case Name: Tutor Algebra
-# 
+# Use-Case Name: Test/Interrogate Subject
+# ID: 5.4
+# Importance Level: Medium
 # Primary Actor: Tutor Agent
+# Use Case Type: Interactive
 #
-# Stakeholders and Interests
-#   - Other Agents: Student, Teacher, Knowledge Tracer, Problem Generator, 
-#                   Solution Verifier, Learner Model, Level Adapter, Motivator
+# Stakeholders and Interests:
+#   - Primary Actor: Tutor Agent initiates the interrogation process to assess the student's knowledge level.
+#   - Student Agent: Receives questions and provides responses.
+#   - Knowledge Tracer Agent: Tracks and logs the student's performance.
 #
-# Description: This use-case describes the interactions of a Tutor Agent primarily
-#      with a Student but also with other Agents
-# 
-# Trigger: A Student asks for help from a Tutor Agent
+# Brief Description:
+# This use case involves the Tutor Agent retrieving the student's previous learning level, asking the KnowledgeTracker to determine the student's level, and instructing the Teacher Agent to present material accordingly. The Tutor Agent then assesses the student's mastery of the material through various means.
 #
-# Relationships:  Note - TBD. Will be filled in later. There are lots of them.
-#    Association:
-#    Include: 
-#    Extend:
-#    Generalization:
+# Trigger:
+# The Tutor Agent decides to assess the student's knowledge on a particular subject.
+#
+# Type:
+# Interactive - involves direct interaction between Tutor Agent and other agents.
+#
+# Relationships:
+#   - Association: Tutor interacts with Teacher and Student.
+#   - Include: Knowledge Tracer monitors and logs student performance.
 #
 # Normal Flow of Events:
-#
-# 1. A Student requests help with Algebra
-# 2. The Tutor Agent responds asking what area the student is having trouble with
-#    If the Student responds I'm not sure, execute S-1
-#
+# 1. Tutor Agent retrieves previous learning level from JSON file.
+# 2. Tutor asks KnowledgeTracker to determine Student level.
+# 3. Tutor asks Teacher to present material at Student's level.
+# 4. Teacher presents material in lecture format.
+# 5. Teacher presents material in video format using sites such as Khan Academy.
+# 6. Teacher asks Tutor to determine the Student's mastery of material.
+# 7. Teacher waits for input on when to teach new material.
+# 8. Tutor asks ProblemGenerator to create a problem on the subject at Student's level.
 #
 # SubFlows:
-# S-1: Trace Knowledge
-#
+# S-1: Tutor asks KnowledgeTracker to determine Student level.
+# S-2: ProblemGenerator asks LearnerModel for Student's learning level.
+# S-3: SolutionVerifier asks Programmer to write a program to solve the problem.
+# S-4: Programmer asks CodeRunner to run the code.
 #
 # Alternate/Exceptional Flows:
+# - If the Student Agent consistently struggles with presented material, the Teacher Agent may adjust the material format or difficulty level.
 #
 ###############################################################################
 
+# Note: Implementation details and agent interactions should be detailed in the panel_gui_test_interrogate_subject.py file.
+# Follow the provided guidelines for file structure and agent descriptions overriding.
+
+############################################################################################
 
 import autogen
 import panel as pn
@@ -239,7 +254,7 @@ agents_dict = {
 #  Define Agent Transitions: Unconstrained, Allowed, or Disallowed
 #
 ####################################################################################################
-TRANSITIONS = 'DISALLOWED'      # Set TRANSITIONS for type
+TRANSITIONS = 'UNCONSTRAINED'      # Set TRANSITIONS for type
 if TRANSITIONS == 'DISALLOWED':
 
     disallowed_agent_transitions = {
@@ -251,45 +266,75 @@ if TRANSITIONS == 'DISALLOWED':
         solution_verifier: [student, teacher, problem_generator, learner_model, level_adapter, motivator],
         programmer: [student, tutor, teacher, knowledge_tracer, learner_model, level_adapter, motivator],
         code_runner: [student, teacher, tutor, knowledge_tracer, problem_generator, learner_model, level_adapter, motivator],
-        learner_model: [student, tutor, problem_generator, solution_verifier, programmer, code_runner, level_adapter, motivator],
-        level_adapter: [teacher, knowledge_tracer, tutor, problem_generator, solution_verifier, programmer, code_runner, learner_model, motivator],
-        motivator: [student, teacher, knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter]
+        learner_model: [student, teacher, problem_generator, solution_verifier, programmer, code_runner],
+        level_adapter: [student, teacher, solution_verifier, programmer, code_runner, motivator],
+        motivator: [tutor, teacher, knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter]
     }
+    groupchat = autogen.GroupChat(agents=list(agents_dict.values()), 
+                                messages=[],
+                                max_round=40,
+                                send_introductions=True,
+                                speaker_transitions_type="disallowed",
+                                allowed_or_disallowed_speaker_transitions=disallowed_agent_transitions,
+                                )
+    
+elif TRANSITIONS == 'ALLOWED':
+    allowed_agent_transitions = {
+        student: [tutor],
+        tutor: [student, teacher, problem_generator, solution_verifier, motivator],
+        teacher: [student, tutor, learner_model],
+        knowledge_tracer: [student, problem_generator, learner_model, level_adapter],
+        problem_generator: [tutor],
+        solution_verifier: [programmer],
+        programmer: [code_runner],
+        code_runner: [tutor, solution_verifier],
+        learner_model: [knowledge_tracer, level_adapter],
+        level_adapter: [tutor, problem_generator, learner_model],
+        motivator: [tutor]
+    }
+    groupchat = autogen.GroupChat(agents=list(agents_dict.values()), 
+                              messages=[],
+                              max_round=40,
+                              send_introductions=True,
+                              speaker_transitions_type="allowed",
+                              allowed_or_disallowed_speaker_transitions=allowed_agent_transitions,
+                               )
 
-    allowed_or_disallowed_speaker_transitions = disallowed_agent_transitions
+else:  # Unconstrained
+    agents = list(agents_dict.values()) # All agents
+    groupchat = autogen.GroupChat(agents=agents, 
+                              messages=[],
+                              max_round=40,
+                              send_introductions=True,
+                              )
 
-    ##############################################################
-    #  Create Agent Interactions
-    ##############################################################
-groupchat = autogen.GroupChat(
-    agents=list(agents_dict.values()),
-    messages=[],
-    max_round=40,
-    send_introductions=True,
-    speaker_transitions_type='unconstrained',
-    allowed_or_disallowed_speaker_transitions=allowed_or_disallowed_speaker_transitions
-)
+
+
+
 
 manager = CustomGroupChatManager(groupchat=groupchat)
 
-##########################################################################################################
+####################################################################################
 #
-#  Define Application Code
+# Application Code
 #
-##########################################################################################################
+####################################################################################
 
 # --- Panel Interface ---
 def create_app():
+    # --- Panel Interface ---
     pn.extension(design="material")
+
 
     async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         if not globals.initiate_chat_task_created:
-            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))
+            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))  
         else:
             if globals.input_future and not globals.input_future.done():
                 globals.input_future.set_result(contents)
             else:
                 print("No input being awaited.")
+
 
     chat_interface = pn.chat.ChatInterface(callback=callback)
 
@@ -321,6 +366,9 @@ def create_app():
     
     return app
 
+
 if __name__ == "__main__":
     app = create_app()
+    #pn.serve(app, debug=True)
     pn.serve(app)
+ 
