@@ -4,11 +4,11 @@
 import autogen
 import asyncio
 from src import globals
-from src.Models.llm_config import gpt3_config, gpt4_config
+from src.Models.llm_config import gpt4_config
 
 from .base_agent import MyBaseAgent
 
-llm = gpt3_config
+llm = gpt4_config
 
 class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
     def __init__(self, **kwargs):
