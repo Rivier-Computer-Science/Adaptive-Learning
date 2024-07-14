@@ -1,28 +1,27 @@
 import autogen
 import asyncio
 import json
+import os 
 from src import globals
 
 
 class CustomGroupChatManager(autogen.GroupChatManager):
     def __init__(self, *args, **kwargs): 
-        super().__init__(*args, **kwargs)  
+        super().__init__(*args, **kwargs)
 
     def __init__(self, termination_string="exit", filename="chat_history.json", *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.termination_string = termination_string
         self.filename = filename
     
-
     def get_messages_from_json(self):
         try:
             with open(self.filename, "r") as f:
-                chat_history_string = f.read()
-                return self.messages_from_string(chat_history_string)
-                # self.resume(chat_history_string)  # Resume the chat using the saved history
-                # print("Resuming chat from previous session...")
+                chat_history_data = json.load(f)
+                return chat_history_data
         except FileNotFoundError:
             print("No previous chat history found. Starting a new conversation.")
+            return []
 
 
     def on_new_message(self, messages):
@@ -46,3 +45,12 @@ class CustomGroupChatManager(autogen.GroupChatManager):
         globals.initiate_chat_task_created = True
         await asyncio.sleep(1) 
         await agent.a_initiate_chat(recipient, message=message)
+
+    def handle_exit_command(self, messages):
+        try:
+            os.remove(self.filename)  # Delete the existing chat history file
+        except FileNotFoundError:
+            pass  # If file doesn't exist, continue
+
+        chat_history_string = self.messages_to_string(messages)  # Convert messages to string
+        self._save_chat_to_file(chat_history_string)  # Save current chat history to a new file    

@@ -29,7 +29,17 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 progress_file_path = os.path.join(script_dir, '../../progress.json')
 
 # Initialize agents
-student = StudentAgent()
+student = StudentAgent(
+    human_input_mode='ALWAYS', 
+    description = """ 
+            You are StudentAgent, a system proxy for a human user. 
+            Your primary role is to facilitate communication between the human and the educational system. 
+            When the human provides input or requests information, you will relay these to the appropriate agent. 
+            Maintain clarity and accuracy in all communications to enhance the human's learning experience
+            """,
+    system_message = "Student"
+)    
+
 knowledge_tracer = KnowledgeTracerAgent(
     human_input_mode='ALWAYS',
     description="""You are a Knowledge Tracer.
@@ -128,9 +138,11 @@ def create_app():
                 print("No input being awaited.")
 
     chat_interface = pn.chat.ChatInterface(callback=callback)
+    chat_interface.messages = []  # Ensure messages attribute is initialized correctly
 
     def print_messages(recipient, messages, sender, config):
         content = messages[-1]['content']
+        chat_interface.messages.append(content)  # Append new message to messages attribute
         chat_interface.send(content, user=messages[-1].get('name', recipient.name), avatar=avatar.get(messages[-1]['name'], None), respond=False)
         return False, None
 
@@ -146,11 +158,12 @@ def create_app():
     )
 
     # Load chat history on startup
-    chat_history_messages = manager.get_messages_from_json()
+    chat_history_messages = manager.get_messages_from_json()  # Corrected method call
     if chat_history_messages:
         manager.resume(chat_history_messages)
         for message in chat_history_messages:
             if 'exit' not in message:
+                chat_interface.messages.append(message["content"])  # Append chat history to messages attribute
                 chat_interface.send(
                     message["content"],
                     user=message.get("role", None),
@@ -162,7 +175,6 @@ def create_app():
         chat_interface.send("Welcome to the Adaptive Math Tutor! How can I help you today?", user="System", respond=False)
 
     return app
-
 
 if __name__ == "__main__":
     app = create_app()
