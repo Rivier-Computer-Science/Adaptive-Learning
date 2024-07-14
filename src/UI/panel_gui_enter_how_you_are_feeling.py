@@ -1,3 +1,24 @@
+# Use-Case: 5.7 Enter How You Are Feeling
+# This use-case allows students to enter and track their emotional state or feelings.
+# The system uses this information to provide personalized feedback, adjust tasks, or offer supportive resources.
+
+# Main Flow:
+# 1. Student logs into the LMS.
+# 2. System prompts the student to enter how they are feeling.
+# 3. Student selects or types their current emotional state.
+# 4. System records the emotional state with a timestamp.
+# 5. Based on the emotional state, the system provides feedback, adjusts tasks, or offers supportive resources.
+# 6. Student acknowledges the feedback and proceeds with their learning tasks.
+
+# Sub-Flows:
+# 4.1. If the student's emotional state is positive, the system provides encouragement and proceeds with normal task flow.
+# 4.2. If the student's emotional state is negative, the system offers supportive resources or adjusts the difficulty of tasks.
+# 4.3. If the student does not provide an emotional state, the system reminds them to enter it later but allows them to proceed.
+
+# Agents:
+# - Student: The learner who enters their emotional state and interacts with the LMS.
+# - System: The LMS that prompts for, records, and responds to the student's emotional state.
+
 ###############################################################################
 #
 # Tutor Algebra Use Case Description
@@ -251,45 +272,75 @@ if TRANSITIONS == 'DISALLOWED':
         solution_verifier: [student, teacher, problem_generator, learner_model, level_adapter, motivator],
         programmer: [student, tutor, teacher, knowledge_tracer, learner_model, level_adapter, motivator],
         code_runner: [student, teacher, tutor, knowledge_tracer, problem_generator, learner_model, level_adapter, motivator],
-        learner_model: [student, tutor, problem_generator, solution_verifier, programmer, code_runner, level_adapter, motivator],
-        level_adapter: [teacher, knowledge_tracer, tutor, problem_generator, solution_verifier, programmer, code_runner, learner_model, motivator],
-        motivator: [student, teacher, knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter]
+        learner_model: [student, teacher, problem_generator, solution_verifier, programmer, code_runner],
+        level_adapter: [student, teacher, solution_verifier, programmer, code_runner, motivator],
+        motivator: [tutor, teacher, knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter]
     }
+    groupchat = autogen.GroupChat(agents=list(agents_dict.values()), 
+                                messages=[],
+                                max_round=40,
+                                send_introductions=True,
+                                speaker_transitions_type="disallowed",
+                                allowed_or_disallowed_speaker_transitions=disallowed_agent_transitions,
+                                )
+    
+elif TRANSITIONS == 'ALLOWED':
+    allowed_agent_transitions = {
+        student: [tutor],
+        tutor: [student, teacher, problem_generator, solution_verifier, motivator],
+        teacher: [student, tutor, learner_model],
+        knowledge_tracer: [student, problem_generator, learner_model, level_adapter],
+        problem_generator: [tutor],
+        solution_verifier: [programmer],
+        programmer: [code_runner],
+        code_runner: [tutor, solution_verifier],
+        learner_model: [knowledge_tracer, level_adapter],
+        level_adapter: [tutor, problem_generator, learner_model],
+        motivator: [tutor]
+    }
+    groupchat = autogen.GroupChat(agents=list(agents_dict.values()), 
+                              messages=[],
+                              max_round=40,
+                              send_introductions=True,
+                              speaker_transitions_type="allowed",
+                              allowed_or_disallowed_speaker_transitions=allowed_agent_transitions,
+                               )
 
-    allowed_or_disallowed_speaker_transitions = disallowed_agent_transitions
+else:  # Unconstrained
+    agents = list(agents_dict.values()) # All agents
+    groupchat = autogen.GroupChat(agents=agents, 
+                              messages=[],
+                              max_round=40,
+                              send_introductions=True,
+                              )
 
-    ##############################################################
-    #  Create Agent Interactions
-    ##############################################################
-groupchat = autogen.GroupChat(
-    agents=list(agents_dict.values()),
-    messages=[],
-    max_round=40,
-    send_introductions=True,
-    speaker_transitions_type='unconstrained',
-    allowed_or_disallowed_speaker_transitions=allowed_or_disallowed_speaker_transitions
-)
+
+
+
 
 manager = CustomGroupChatManager(groupchat=groupchat)
 
-##########################################################################################################
+####################################################################################
 #
-#  Define Application Code
+# Application Code
 #
-##########################################################################################################
+####################################################################################
 
 # --- Panel Interface ---
 def create_app():
+    # --- Panel Interface ---
     pn.extension(design="material")
+
 
     async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         if not globals.initiate_chat_task_created:
-            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))
+            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))  
         else:
             if globals.input_future and not globals.input_future.done():
                 globals.input_future.set_result(contents)
             else:
                 print("No input being awaited.")
+
 
     chat_interface = pn.chat.ChatInterface(callback=callback)
 
@@ -321,6 +372,9 @@ def create_app():
     
     return app
 
+
 if __name__ == "__main__":
     app = create_app()
+    #pn.serve(app, debug=True)
     pn.serve(app)
+ 
