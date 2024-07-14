@@ -261,7 +261,7 @@ agents_dict = {
 #
 ####################################################################################################
 TRANSITIONS = 'Unconstrained'      # Set TRANSITIONS for type
-if TRANSITIONS == 'DISALLOWED':
+if TRANSITIONS == 'Allowed':
 
     disallowed_agent_transitions = {
         student: [solution_verifier, programmer, code_runner, learner_model, level_adapter, motivator],
