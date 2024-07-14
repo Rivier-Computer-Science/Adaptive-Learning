@@ -9,12 +9,6 @@ from .base_agent import MyBaseAgent
 
 llm = gpt4_config
 
-try:
-    from .base_agent import MyBaseAgent
-except ImportError:
-    class MyBaseAgent:
-        pass  # Define the base class or add necessary methods/attributes
-
 class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
     def __init__(self, **kwargs):
         llm_config = kwargs.get('llm_config', None)
