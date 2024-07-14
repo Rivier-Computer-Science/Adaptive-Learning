@@ -1,38 +1,44 @@
 ###############################################################################
 #
-# Tutor Algebra Use Case Description
+# Motivate Student Use Case Description
 #
-# Use-Case Name: Tutor Algebra
+# Use-Case Name: Motivate Student
+# ID: 5.4
+# Importance Level: Medium
+# Primary Actor: Motivator Agent
+# Use Case Type: Supportive
 # 
-# Primary Actor: Tutor Agent
+# Stakeholders and Interests:
+#   -Primary Actor: Provides encouragement and positive reinforcement to the Student Agent to enhance motivation and engagement.
+#   -Student Agent: Receives motivational messages and feedback to stay engaged and motivated.
+#   -Tutor Agent: Collaborates with the Motivator Agent to ensure the Student Agent remains motivated throughout the learning process.
+#   -Knowledge Tracer Agent: Monitors the impact of motivational messages on the Student Agent's performance and engagement.
 #
-# Stakeholders and Interests
-#   - Other Agents: Student, Teacher, Knowledge Tracer, Problem Generator, 
-#                   Solution Verifier, Learner Model, Level Adapter, Motivator
+# Brief Description:
+# This use case involves the Motivator Agent providing encouragement and positive feedback to the Student Agent. The goal is to keep the Student Agent motivated and engaged in the learning process. The Tutor Agent collaborates with the Motivator Agent to ensure effective motivational strategies, while the Knowledge Tracer Agent monitors the impact of these strategies.
 #
-# Description: This use-case describes the interactions of a Tutor Agent primarily
-#      with a Student but also with other Agents
-# 
-# Trigger: A Student asks for help from a Tutor Agent
+# Trigger:
+# The Motivator Agent identifies a need to enhance the Student Agent's motivation, either periodically or in response to observed disengagement.
 #
-# Relationships:  Note - TBD. Will be filled in later. There are lots of them.
-#    Association:
-#    Include: 
-#    Extend:
-#    Generalization:
+# Type:
+# Supportive - involves providing motivation and positive reinforcement to the Student Agent.
+#
+# Relationships:
+#   -Association: Motivator Agent interacts with the Student Agent and collaborates with the Tutor and Knowledge Tracer Agents.
+#   -Include: Knowledge Tracer monitors the impact of motivational messages.
 #
 # Normal Flow of Events:
-#
-# 1. A Student requests help with Algebra
-# 2. The Tutor Agent responds asking what area the student is having trouble with
-#    If the Student responds I'm not sure, execute S-1
-#
+# 1.The Motivator Agent assesses the Student Agent's current engagement and motivation levels.
+# 2.The Motivator Agent sends a motivational message or positive feedback to the Student Agent.
+# 3. The Student Agent receives the motivational message and acknowledges it.
+# 4. The Tutor Agent provides additional support and encouragement as needed.
+# 5. The Knowledge Tracer Agent monitors the Student Agent's response and logs changes in engagement and performance.
 #
 # SubFlows:
-# S-1: Trace Knowledge
+# S-1: Student Agent responds positively to motivational messages, showing increased engagement and improved performance.
 #
-#
-# Alternate/Exceptional Flows:
+#Alternate/Exceptional Flows:
+#  -If the Student Agent does not respond positively to motivational messages, the Tutor Agent collaborates with the Motivator Agent to adjust the motivational strategy and try different approaches.
 #
 ###############################################################################
 
@@ -251,45 +257,75 @@ if TRANSITIONS == 'DISALLOWED':
         solution_verifier: [student, teacher, problem_generator, learner_model, level_adapter, motivator],
         programmer: [student, tutor, teacher, knowledge_tracer, learner_model, level_adapter, motivator],
         code_runner: [student, teacher, tutor, knowledge_tracer, problem_generator, learner_model, level_adapter, motivator],
-        learner_model: [student, tutor, problem_generator, solution_verifier, programmer, code_runner, level_adapter, motivator],
-        level_adapter: [teacher, knowledge_tracer, tutor, problem_generator, solution_verifier, programmer, code_runner, learner_model, motivator],
-        motivator: [student, teacher, knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter]
+        learner_model: [student, teacher, problem_generator, solution_verifier, programmer, code_runner],
+        level_adapter: [student, teacher, solution_verifier, programmer, code_runner, motivator],
+        motivator: [tutor, teacher, knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter]
     }
+    groupchat = autogen.GroupChat(agents=list(agents_dict.values()), 
+                                messages=[],
+                                max_round=40,
+                                send_introductions=True,
+                                speaker_transitions_type="disallowed",
+                                allowed_or_disallowed_speaker_transitions=disallowed_agent_transitions,
+                                )
+    
+elif TRANSITIONS == 'ALLOWED':
+    allowed_agent_transitions = {
+        student: [tutor],
+        tutor: [student, teacher, problem_generator, solution_verifier, motivator],
+        teacher: [student, tutor, learner_model],
+        knowledge_tracer: [student, problem_generator, learner_model, level_adapter],
+        problem_generator: [tutor],
+        solution_verifier: [programmer],
+        programmer: [code_runner],
+        code_runner: [tutor, solution_verifier],
+        learner_model: [knowledge_tracer, level_adapter],
+        level_adapter: [tutor, problem_generator, learner_model],
+        motivator: [tutor]
+    }
+    groupchat = autogen.GroupChat(agents=list(agents_dict.values()), 
+                              messages=[],
+                              max_round=40,
+                              send_introductions=True,
+                              speaker_transitions_type="allowed",
+                              allowed_or_disallowed_speaker_transitions=allowed_agent_transitions,
+                               )
 
-    allowed_or_disallowed_speaker_transitions = disallowed_agent_transitions
+else:  # Unconstrained
+    agents = list(agents_dict.values()) # All agents
+    groupchat = autogen.GroupChat(agents=agents, 
+                              messages=[],
+                              max_round=40,
+                              send_introductions=True,
+                              )
 
-    ##############################################################
-    #  Create Agent Interactions
-    ##############################################################
-groupchat = autogen.GroupChat(
-    agents=list(agents_dict.values()),
-    messages=[],
-    max_round=40,
-    send_introductions=True,
-    speaker_transitions_type='unconstrained',
-    allowed_or_disallowed_speaker_transitions=allowed_or_disallowed_speaker_transitions
-)
+
+
+
 
 manager = CustomGroupChatManager(groupchat=groupchat)
 
-##########################################################################################################
+####################################################################################
 #
-#  Define Application Code
+# Application Code
 #
-##########################################################################################################
+####################################################################################
 
 # --- Panel Interface ---
 def create_app():
+    # --- Panel Interface ---
     pn.extension(design="material")
+
 
     async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         if not globals.initiate_chat_task_created:
-            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))
+            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))  
         else:
             if globals.input_future and not globals.input_future.done():
                 globals.input_future.set_result(contents)
             else:
                 print("No input being awaited.")
+
 
     chat_interface = pn.chat.ChatInterface(callback=callback)
 
@@ -321,6 +357,9 @@ def create_app():
     
     return app
 
+
 if __name__ == "__main__":
     app = create_app()
+    #pn.serve(app, debug=True)
     pn.serve(app)
+ 

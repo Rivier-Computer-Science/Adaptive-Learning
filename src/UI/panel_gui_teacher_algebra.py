@@ -1,38 +1,45 @@
 ###############################################################################
 #
-# Tutor Algebra Use Case Description
+# Teacher Algebra Use Case Description
 #
-# Use-Case Name: Tutor Algebra
-# 
-# Primary Actor: Tutor Agent
+# Use-Case Name: Teacher Algebra
+# Use Case Type: Primary
+# Primary Actor: Teacher Agent
 #
 # Stakeholders and Interests
-#   - Other Agents: Student, Teacher, Knowledge Tracer, Problem Generator, 
+#   - Other Agents: Student, Tutor, Knowledge Tracer, Problem Generator, 
 #                   Solution Verifier, Learner Model, Level Adapter, Motivator
 #
-# Description: This use-case describes the interactions of a Tutor Agent primarily
-#      with a Student but also with other Agents
+# Description: This use-case describes TeacherAgent is responsible for creating 
+# and delivering educational content. When given a subject, the TeacherAgent prepares 
+# teaching materials and delivers content in a format that suits the student's preferences.
 # 
-# Trigger: A Student asks for help from a Tutor Agent
-#
+# Trigger: The TeacherAgent's interaction with the student is more structured and planned, 
+# focusing on teaching specific subjects or topics in a systematic way.
+# Type: External
 # Relationships:  Note - TBD. Will be filled in later. There are lots of them.
-#    Association:
-#    Include: 
-#    Extend:
-#    Generalization:
+#    Association: Student, Teacher
+#    Include: Provide Personalized Lessons, Assess Understanding, Recommend Resources
+#    Extend: Address Student Questions
+#    Generalization:  None
 #
 # Normal Flow of Events:
-#
-# 1. A Student requests help with Algebra
-# 2. The Tutor Agent responds asking what area the student is having trouble with
-#    If the Student responds I'm not sure, execute S-1
-#
+# 1. The student requests help with algebra or the scheduled algebra lesson begins.
+# 2. The teacher agent greets the student and asks for any specific topics or problems they need help with.
+# 3. The student specifies a topic or problem.
+# 4. The teacher agent provides an explanation of the topic or step-by-step solution to the problem.
+# 5. The teacher agent checks for understanding by asking follow-up questions.
+# 6. The student responds to the follow-up questions.
+# 7. The teacher agent provides feedback based on the student's responses.
+# 8. The teacher agent recommends additional resources if necessary.
+# 9. The session ends with a summary of what was covered and suggestions for further study.
 #
 # SubFlows:
-# S-1: Trace Knowledge
-#
+# S-1: If the student does not specify a topic or problem, the teacher agent provides a general overview of key algebra concepts.
 #
 # Alternate/Exceptional Flows:
+# A-1: If the student is unable to understand the explanation, the teacher agent provides alternative explanations or examples.
+# A-2: If the student encounters technical issues, the teacher agent provides instructions to resolve them or reschedules the session.
 #
 ###############################################################################
 
@@ -91,7 +98,20 @@ from ..Agents.group_chat_manager_agent import CustomGroupChatManager
 #######################################
 # Student was not completed in Sprint-2
 #######################################
-student = StudentAgent()
+student_description = """StudentAgent aims to learn and understand new concepts.
+                 StudentAgent actively listens to the Teacher, asks relevant questions, and seeks additional information when needed.
+                 StudentAgent is curious, attentive, and eager to grasp the material presented.
+                 """
+
+student_system_message = """StudentAgent's task is to actively engage in learning by listening to the Teacher, asking relevant questions, and seeking additional information to fully understand new concepts.
+                 """
+
+student = StudentAgent(
+    human_input_mode='ALWAYS',
+    description=student_description,
+    system_message=student_system_message     
+)
+
 
 ###################
 # Knowledge Tracer
@@ -110,14 +130,17 @@ knowledge_tracer = KnowledgeTracerAgent(
 ###################
 # Teacher
 ###################
-t_description =   """You are a Teacher.
-                 When asked by the Student to learn new material, you present clear and concise lecture-type material.
+t_description = """TeacherAgent presents new material in a clear and concise manner, focusing on delivering lecture-type content when asked by the Student.
                  """
+t_system_message = """TeacherAgent's task is to provide clear and concise lecture-type material when the Student asks to learn new concepts.
+                 """
+
 teacher = TeacherAgent(
     human_input_mode='NEVER',
     description=t_description,
-    system_message=t_description     
+    system_message=t_system_message     
 )
+
 
 ###################
 # Tutor
@@ -161,7 +184,16 @@ solution_verifier = SolutionVerifierAgent(
 ###########################################
 # Programmer was not completed in Sprint-2
 ###########################################
-programmer = ProgrammerAgent()
+p_description = """You are a Programmer.
+                 Your role is to write, debug, and optimize code based on the given requirements.
+                 You approach problems methodically, breaking them down into manageable tasks.
+                 You continuously seek to improve the efficiency and functionality of the software you develop.
+                 """
+programmer = ProgrammerAgent(
+    human_input_mode='NEVER',
+    description=p_description,
+    system_message=p_description     
+)
 
 ###################
 # Code Runner
@@ -245,51 +277,81 @@ if TRANSITIONS == 'DISALLOWED':
     disallowed_agent_transitions = {
         student: [solution_verifier, programmer, code_runner, learner_model, level_adapter, motivator],
         tutor: [programmer, code_runner],
-        teacher: [knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter, motivator],
+        teacher: [solution_verifier,knowledge_tracer, programmer, code_runner, learner_model, level_adapter, motivator],
         knowledge_tracer: [teacher, tutor, motivator],
         problem_generator: [teacher, solution_verifier, programmer, code_runner, motivator],
         solution_verifier: [student, teacher, problem_generator, learner_model, level_adapter, motivator],
         programmer: [student, tutor, teacher, knowledge_tracer, learner_model, level_adapter, motivator],
         code_runner: [student, teacher, tutor, knowledge_tracer, problem_generator, learner_model, level_adapter, motivator],
-        learner_model: [student, tutor, problem_generator, solution_verifier, programmer, code_runner, level_adapter, motivator],
-        level_adapter: [teacher, knowledge_tracer, tutor, problem_generator, solution_verifier, programmer, code_runner, learner_model, motivator],
-        motivator: [student, teacher, knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter]
+        learner_model: [student, teacher, problem_generator, solution_verifier, programmer, code_runner],
+        level_adapter: [student, teacher, solution_verifier, programmer, code_runner, motivator],
+        motivator: [tutor, teacher, knowledge_tracer, problem_generator, solution_verifier, programmer, code_runner, learner_model, level_adapter]
     }
+    groupchat = autogen.GroupChat(agents=list(agents_dict.values()), 
+                                messages=[],
+                                max_round=40,
+                                send_introductions=True,
+                                speaker_transitions_type="disallowed",
+                                allowed_or_disallowed_speaker_transitions=disallowed_agent_transitions,
+                                )
+    
+elif TRANSITIONS == 'ALLOWED':
+    allowed_agent_transitions = {
+        student: [tutor],
+        tutor: [student, teacher, problem_generator, solution_verifier, motivator],
+        teacher: [student, tutor, problem_generator,learner_model],
+        knowledge_tracer: [student, problem_generator, learner_model, level_adapter],
+        problem_generator: [tutor],
+        solution_verifier: [programmer],
+        programmer: [code_runner],
+        code_runner: [tutor, solution_verifier],
+        learner_model: [knowledge_tracer, level_adapter],
+        level_adapter: [tutor, problem_generator, learner_model],
+        motivator: [tutor]
+    }
+    groupchat = autogen.GroupChat(agents=list(agents_dict.values()), 
+                              messages=[],
+                              max_round=40,
+                              send_introductions=True,
+                              speaker_transitions_type="allowed",
+                              allowed_or_disallowed_speaker_transitions=allowed_agent_transitions,
+                               )
 
-    allowed_or_disallowed_speaker_transitions = disallowed_agent_transitions
+else:  # Unconstrained
+    agents = list(agents_dict.values()) # All agents
+    groupchat = autogen.GroupChat(agents=agents, 
+                              messages=[],
+                              max_round=40,
+                              send_introductions=True,
+                              )
 
-    ##############################################################
-    #  Create Agent Interactions
-    ##############################################################
-groupchat = autogen.GroupChat(
-    agents=list(agents_dict.values()),
-    messages=[],
-    max_round=40,
-    send_introductions=True,
-    speaker_transitions_type='unconstrained',
-    allowed_or_disallowed_speaker_transitions=allowed_or_disallowed_speaker_transitions
-)
+
+
+
 
 manager = CustomGroupChatManager(groupchat=groupchat)
 
-##########################################################################################################
+####################################################################################
 #
-#  Define Application Code
+# Application Code
 #
-##########################################################################################################
+####################################################################################
 
 # --- Panel Interface ---
 def create_app():
+    # --- Panel Interface ---
     pn.extension(design="material")
+
 
     async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         if not globals.initiate_chat_task_created:
-            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))
+            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))  
         else:
             if globals.input_future and not globals.input_future.done():
                 globals.input_future.set_result(contents)
             else:
                 print("No input being awaited.")
+
 
     chat_interface = pn.chat.ChatInterface(callback=callback)
 
@@ -317,10 +379,13 @@ def create_app():
             chat_interface
         )
     )
-    chat_interface.send("Welcome to the Adaptive Math Tutor! How can I help you today?", user="System", respond=False)
+    chat_interface.send("Welcome to the Adaptive Math Teacher! How can I help you today?", user="System", respond=False)
     
     return app
 
+
 if __name__ == "__main__":
     app = create_app()
+    #pn.serve(app, debug=True)
     pn.serve(app)
+ 
