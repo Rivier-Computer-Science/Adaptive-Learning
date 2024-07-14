@@ -4,9 +4,10 @@ import json
 import os
 from datetime import datetime
 from src import globals
-from src.Models.llm_config import gpt3_config
+from src.Models.llm_config import gpt4_config
+from .base_agent import MyBaseAgent
 
-llm = gpt3_config
+llm = gpt4_config
 
 try:
     from .base_agent import MyBaseAgent
