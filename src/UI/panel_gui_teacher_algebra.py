@@ -27,11 +27,11 @@
 # 1. The student requests help with algebra or the scheduled algebra lesson begins.
 # 2. The teacher agent greets the student and asks for any specific topics or problems they need help with.
 # 3. The student specifies a topic or problem.
-# 4. The teacher agent provides an explanation of the topic or step-by-step solution to the problem.
-# 5. The teacher agent checks for understanding by asking follow-up questions.
+# 4. The teacher agent provides lectures to the student on the topic requested.
+# 5. The Tutor agent checks for understanding by asking follow-up questions.
 # 6. The student responds to the follow-up questions.
-# 7. The teacher agent provides feedback based on the student's responses.
-# 8. The teacher agent recommends additional resources if necessary.
+# 7. The Tutor agent provides feedback based on the student's responses.
+# 8. The Tutor agent recommends additional resources if necessary.
 # 9. The session ends with a summary of what was covered and suggestions for further study.
 #
 # SubFlows:
@@ -145,7 +145,8 @@ teacher = TeacherAgent(
 ###################
 # Tutor
 ###################
-tut_description = """  TutorAgent is designed to assist students in real-time with their math problems. It offers solutions and explanations, responding effectively to inquiries to support adaptive learning. TutorAgent's goal is to make learning easier and more interactive for students.
+tut_description = """  The TutorAgent's role is to provide personalized guidance and support to the StudentAgent, aiming to optimize their learning experience through collaborative efforts with other agents.
+
                         """
 tutor = TutorAgent(
     human_input_mode='NEVER',
@@ -156,11 +157,11 @@ tutor = TutorAgent(
 ###################
 # Problem Generator
 ###################
-pg_description = """ProblemGenerator is designed to generate mathematical problems based on the current curriculum and the student's learning level.
-                ProblemGenerator ensures that the problems generated are appropriate and challenging."""
+pg_description = """As the ProblemGeneratorAgent, your role is crucial in creating challenging and relevant questions for the StudentAgent to solve. Focus on generating problems that align with the student's current learning level and curriculum requirements, fostering engagement and enhancing their understanding of the subject matter.
+                   """
                     
-pg_system_message = """ProblemGenerator will generate mathematical problems based on the current curriculum and the student's learning level.
-                        ProblemGenerator ensures that the problems generated are appropriate and challenging."""
+pg_system_message = """ProblemGeneratorAgent's primary task is to generate math problems aligned with the student's current learning level and curriculum requirements. Ensure the problems are varied, engaging, and suitable for the student's educational progress. Collaborate with other agents to enhance the learning experience through well-crafted challenges.
+                      """
 
 problem_generator = ProblemGeneratorAgent(
     human_input_mode='NEVER',
@@ -271,7 +272,7 @@ agents_dict = {
 #  Define Agent Transitions: Unconstrained, Allowed, or Disallowed
 #
 ####################################################################################################
-TRANSITIONS = 'DISALLOWED'      # Set TRANSITIONS for type
+TRANSITIONS = 'UNCONSTRAINED'      # Set TRANSITIONS for type
 if TRANSITIONS == 'DISALLOWED':
 
     disallowed_agent_transitions = {
@@ -345,7 +346,7 @@ def create_app():
 
     async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         if not globals.initiate_chat_task_created:
-            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))  
+            asyncio.create_task(manager.delayed_initiate_chat(teacher, manager, contents))  
         else:
             if globals.input_future and not globals.input_future.done():
                 globals.input_future.set_result(contents)
