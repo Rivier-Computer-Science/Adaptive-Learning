@@ -9,7 +9,7 @@ import logging
 from src import globals
 from src.Agents.agents import *
 from src.Agents.chat_manager_fsms import FSM
-from src.Agents.group_chat_manager_agent import CustomGroupChatManager
+from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
 from src.UI.avatar import avatar
 
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG, 
@@ -17,21 +17,25 @@ from src.UI.avatar import avatar
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+progress_file_path = os.path.join(script_dir, '../../progress.json')
+
 globals.input_future = None
     
 fsm = FSM(agents_dict)
 
 # Create the GroupChat with agents and a manager
-groupchat = autogen.GroupChat(agents=list(agents_dict.values()), 
+groupchat = CustomGroupChat(agents=list(agents_dict.values()), 
                               messages=[],
-                              max_round=20,
+                              max_round=30,
                               send_introductions=True,
                               speaker_selection_method=fsm.next_speaker_selector
                               )
 
 
-manager = CustomGroupChatManager(groupchat=groupchat)
-
+manager = CustomGroupChatManager(groupchat=groupchat,
+                                filename=progress_file_path, 
+                                is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0 )    
 
 
 # --- Panel Interface ---
@@ -76,7 +80,23 @@ def create_app():
             chat_interface
         )
     )
-    chat_interface.send("Welcome to the Adaptive Math Tutor! How can I help you today?", user="System", respond=False)
+
+        #Load chat history on startup 
+    chat_history_messages = manager.get_messages_from_json()
+    if chat_history_messages:
+        manager.resume(chat_history_messages, 'exit')
+        for message in chat_history_messages:
+            if 'exit' not in message:
+                chat_interface.send(
+                    message["content"],
+                    user=message["role"], 
+                    avatar=avatar.get(message["role"], None),  
+                    respond=False
+                )
+        chat_interface.send("Time to continue your studies!", user="System", respond=False)
+    else:
+        chat_interface.send("Welcome to the Adaptive Math Tutor! How can I help you today?", user="System", respond=False)
+
     
     return app
 

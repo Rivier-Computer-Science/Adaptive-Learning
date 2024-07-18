@@ -19,7 +19,7 @@ class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
         is_termination_msg = kwargs.get('is_termination_msg', None)
         human_input_mode = kwargs.get('human_input_mode', None)
         if is_termination_msg is None and human_input_mode == 'ALWAYS':
-             kwargs['is_termination_msg'] = lambda x: x.get("content", "").rstrip().endswith("exit")
+             kwargs['is_termination_msg'] = lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0 
 
         code_execution_config = kwargs.get('code_execution_config', None)
         if code_execution_config is None:
