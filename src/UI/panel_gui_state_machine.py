@@ -7,10 +7,9 @@ import asyncio
 from typing import List, Dict
 import logging
 from src import globals
-# from src.Agents.agents import StudentAgent, KnowledgeTracerAgent, TeacherAgent, TutorAgent,  ProblemGeneratorAgent, SolutionVerifierAgent, \
-#                    ProgrammerAgent, CodeRunnerAgent, LearnerModelAgent, LevelAdapterAgent, MotivatorAgent
 from src.Agents.agents import *
 from src.Agents.chat_manager_fsms import FSM
+from src.Agents.group_chat_manager_agent import CustomGroupChatManager
 from src.UI.avatar import avatar
 
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG, 
@@ -30,21 +29,6 @@ groupchat = autogen.GroupChat(agents=list(agents_dict.values()),
                               speaker_selection_method=fsm.next_speaker_selector
                               )
 
-class CustomGroupChatManager(autogen.GroupChatManager):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)  
-
-    def run(self, *args, **kwargs):
-        try:
-            super().run(*args, **kwargs)  # Call the original run method
-        except Exception as e:
-            print(f"Exception occurred: {e}") 
-            # Log the error, send a message to users, etc.
-
-    async def delayed_initiate_chat(self, agent, recipient, message):
-        globals.initiate_chat_task_created = True
-        await asyncio.sleep(1) 
-        await agent.a_initiate_chat(recipient, message=message)
 
 manager = CustomGroupChatManager(groupchat=groupchat)
 

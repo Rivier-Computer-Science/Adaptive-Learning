@@ -2,7 +2,7 @@
 
 ## Running the Module Version of the code
 ```sh
-(math) jglossner@jglossner-Alienware-Aurora-R7:~/TestGit/Adaptive-Learning$ python -m src.UI.panel_gui_unconstrained
+python -m src.UI.panel_gui_state_machine
 ```
 
 ## Autogen
