@@ -71,7 +71,7 @@ class MyCustomHandler(BaseCallbackHandler):
     
         chat_interface.send(outputs['output'], user=self.agent_name, avatar=avators[self.agent_name], respond=False)
 
-llm= ChatOpenAI(model="gpt-3.5-turbo-0125")
+llm= ChatOpenAI(model="gpt-4o")
 
 writer = Agent(
 
@@ -124,6 +124,7 @@ def StartCrew(prompt):
 
     chat_interface.send("## Final Result\n"+result, user="assistant", respond=False)
 
+sc = StartCrew('')
 
 chat_interface = pn.chat.ChatInterface(callback=callback)
 chat_interface.send("Send a message!", user="System", respond=False)
