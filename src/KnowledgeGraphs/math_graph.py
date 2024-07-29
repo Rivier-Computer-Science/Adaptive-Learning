@@ -2,7 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import os
 import math
-import KnowledgeGraphs.math_taxonomy as mt
+import math_taxonomy as mt
 import scipy
 
 
@@ -51,6 +51,19 @@ class KnowledgeGraph:
         nx.draw(self.graph, with_labels=True)
         plt.show()
 
+    def find_first_node(self):
+        # Find and return the first node with no incoming edges.
+        for node in self.graph.nodes:
+            if self.graph.in_degree(node) == 0:
+                return node  # first node
+        return None  # in case no such node exists
 
+def main():
+    kt = KnowledgeGraph()
+    kt.plot_dag()
+
+
+if __name__ == '__main__':
+    main()
 
 
