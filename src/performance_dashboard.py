@@ -1,53 +1,44 @@
 import matplotlib.pyplot as plt
+import io
+import base64
 from typing import List, Dict
-from src.report_generator import ReportGenerator
-from src.performance_report import PerformanceReport
 
 class PerformanceDashboard:
-    def __init__(self, report_generator: ReportGenerator):
-        self.report_generator = report_generator
+    def __init__(self):
         self.reports = []
 
-    def add_performance_data(self, reports: List[PerformanceReport]):
+    def add_performance_data(self, reports: List[Dict]):
         self.reports.extend(reports)
 
-    def display_dashboard(self):
-        if not self.reports:
-            print("No reports to display.")
-            return
-        
-        print("Performance Reports Dashboard")
-        for report in self.reports:
-            # Access attributes using dot notation
-            print(f"Student ID: {report.student_id}, Accuracy: {report.accuracy}, Time Taken: {report.time_taken}, Improvement: {report.improvement}, Timestamp: {report.timestamp}")
-        
-        self.generate_visualizations(self.reports)
+    def generate_visualizations(self):
+        student_ids = [report['student_id'] for report in self.reports]
+        accuracies = [report['accuracy'] for report in self.reports]
+        times_taken = [report['time_taken'] for report in self.reports]
+        improvements = [report['improvement'] for report in self.reports]
 
-    def generate_visualizations(self, reports: List[PerformanceReport]):
-        student_ids = [report.student_id for report in reports]
-        accuracies = [report.accuracy for report in reports]
-        times_taken = [report.time_taken for report in reports]
-        improvements = [report.improvement for report in reports]
+        fig, axs = plt.subplots(3, 1, figsize=(10, 12))
 
-        plt.figure(figsize=(12, 8))
+        axs[0].bar(student_ids, accuracies, color='blue')
+        axs[0].set_xlabel('Student ID')
+        axs[0].set_ylabel('Accuracy')
+        axs[0].set_title('Accuracy per Student')
 
-        plt.subplot(3, 1, 1)
-        plt.bar(student_ids, accuracies, color='blue')
-        plt.xlabel('Student ID')
-        plt.ylabel('Accuracy')
-        plt.title('Accuracy per Student')
+        axs[1].bar(student_ids, times_taken, color='green')
+        axs[1].set_xlabel('Student ID')
+        axs[1].set_ylabel('Time Taken')
+        axs[1].set_title('Time Taken per Student')
 
-        plt.subplot(3, 1, 2)
-        plt.bar(student_ids, times_taken, color='green')
-        plt.xlabel('Student ID')
-        plt.ylabel('Time Taken')
-        plt.title('Time Taken per Student')
-
-        plt.subplot(3, 1, 3)
-        plt.bar(student_ids, improvements, color='red')
-        plt.xlabel('Student ID')
-        plt.ylabel('Improvement')
-        plt.title('Improvement per Student')
+        axs[2].bar(student_ids, improvements, color='red')
+        axs[2].set_xlabel('Student ID')
+        axs[2].set_ylabel('Improvement')
+        axs[2].set_title('Improvement per Student')
 
         plt.tight_layout()
-        plt.show()
+
+        img = io.BytesIO()
+        plt.savefig(img, format='png')
+        img.seek(0)
+        img_base64 = base64.b64encode(img.getvalue()).decode('utf-8')
+        plt.close(fig)
+        
+        return img_base64
