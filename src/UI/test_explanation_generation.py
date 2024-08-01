@@ -1,20 +1,32 @@
-#TASK1
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+import unittest
+from explanation_algorithm import ExplanationGenerationAlgorithm
 
-from explanation_generator import ExplanationGenerationAlgorithm
+class TestExplanationGeneration(unittest.TestCase):
 
-def main():
-    algo = ExplanationGenerationAlgorithm()
+    def setUp(self):
+        self.algorithm = ExplanationGenerationAlgorithm()
 
-    # Simulated question and answer
-    question = "What is 2+2?"
-    answer = "4"
-    user_level = 1  # Beginner level
+    def test_generate_explanation(self):
+        question = "What is concept1?"
+        answer = "Concept1 is..."
+        user_level = "beginner"
+        expected_explanation = "Explanation for concept1\nExplanation for concept2"
+        result = self.algorithm.generate_explanation(question, answer, user_level)
+        self.assertEqual(result, expected_explanation)
 
-    explanation = algo.generate_explanation(question, answer, user_level)
-    print(f"Explanation: {explanation}")
+    def test_analyze_question_and_answer(self):
+        question = "What is concept1?"
+        answer = "Concept1 is..."
+        expected_concepts = ["concept1", "concept2"]
+        result = self.algorithm.analyze_question_and_answer(question, answer)
+        self.assertEqual(result, expected_concepts)
 
-if __name__ == "__main__":
-    main()
+    def test_select_explanation(self):
+        key_concepts = ["concept1", "concept2"]
+        user_level = "beginner"
+        expected_explanation = "Explanation for concept1\nExplanation for concept2"
+        result = self.algorithm.select_explanation(key_concepts, user_level)
+        self.assertEqual(result, expected_explanation)
+
+if __name__ == '__main__':
+    unittest.main()

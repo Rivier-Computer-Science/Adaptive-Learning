@@ -1,11 +1,8 @@
-import autogen
 import panel as pn
-import openai
-import os
-import time
+import random
 import asyncio
-from typing import List, Dict
-import logging
+from typing import Dict
+import os
 from src import globals
 from src.Agents.agents import *
 from src.Agents.chat_manager_fsms import FSM
@@ -91,26 +88,57 @@ def get_next_question():
 
 def evaluate_response(contents):
     # Dummy function to evaluate if the response is correct
-    # Replace with actual logic to evaluate the student's answer
     return "correct" in contents.lower()
 
+def generate_explanation(question):
+    explanations = {
+        "Easy Question 1": "Explanation for Easy Question 1",
+        "Medium Question 1": "Explanation for Medium Question 1",
+        "Hard Question 1": "Explanation for Hard Question 1"
+    }
+    return explanations.get(question, "No explanation available")
+
+def get_additional_practice(difficulty):
+    # Function to fetch additional practice problems
+    practice_problems = {
+        "easy": ["Easy Practice 1", "Easy Practice 2"],
+        "medium": ["Medium Practice 1", "Medium Practice 2"],
+        "hard": ["Hard Practice 1", "Hard Practice 2"]
+    }
+    return practice_problems.get(difficulty, [])
+
 # --- Panel Interface ---
+async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
+    if not globals.initiate_chat_task_created:
+        asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))
+    else:
+        if globals.input_future and not globals.input_future.done():
+            globals.input_future.set_result(contents)
+            correct = evaluate_response(contents)  # Evaluate if the response is correct
+            adaptive_difficulty.update_performance(correct)
+            current_difficulty = adaptive_difficulty.get_current_difficulty()
+
+            # Display explanation and additional practice problems
+            current_question = get_next_question()
+            explanation = generate_explanation(current_question)
+            practice_problems = get_additional_practice(current_difficulty)
+
+            # Update UI components
+            explanation_pane.object = f"**Explanation:** {explanation}"
+            practice_pane.object = f"**Additional Practice Problems:** {', '.join(practice_problems)}"
+
+            chat_interface.send(f"Current Difficulty Level: {current_difficulty}", user="System", respond=False)
+            chat_interface.send(f"Current Question: {current_question}", user="System", respond=False)
+        else:
+            print("No input being awaited.")
+
 def create_app():
     pn.extension(design="material")
 
-    async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
-        if not globals.initiate_chat_task_created:
-            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))
-        else:
-            if globals.input_future and not globals.input_future.done():
-                globals.input_future.set_result(contents)
-                correct = evaluate_response(contents)  # Evaluate if the response is correct
-                adaptive_difficulty.update_performance(correct)
-                current_difficulty = adaptive_difficulty.get_current_difficulty()
-                chat_interface.send(f"Current Difficulty Level: {current_difficulty}", user="System", respond=False)
-            else:
-                print("No input being awaited.")
-
+    # Create UI components
+    global explanation_pane, practice_pane, chat_interface
+    explanation_pane = pn.pane.Markdown()
+    practice_pane = pn.pane.Markdown()
     chat_interface = pn.chat.ChatInterface(callback=callback)
 
     def print_messages(recipient, messages, sender, config):
@@ -134,7 +162,13 @@ def create_app():
     app = pn.template.BootstrapTemplate(title=globals.APP_NAME)
     app.main.append(
         pn.Column(
-            chat_interface
+            chat_interface,
+            pn.Row(
+                pn.Column(
+                    explanation_pane,
+                    practice_pane
+                )
+            )
         )
     )
 
