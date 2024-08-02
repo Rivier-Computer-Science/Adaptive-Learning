@@ -6,6 +6,7 @@ import time
 import asyncio
 from typing import List, Dict
 import logging
+import random  # Added missing import
 from src import globals
 from src.Agents.agents import *
 from src.Agents.chat_manager_fsms import FSM
@@ -98,6 +99,9 @@ def evaluate_response(contents):
 def create_app():
     pn.extension(design="material")
 
+    # Create a pane to display the current difficulty level
+    difficulty_pane = pn.pane.Markdown(f"**Current Difficulty Level:** {adaptive_difficulty.get_current_difficulty()}", width=300, height=100)
+
     async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         if not globals.initiate_chat_task_created:
             asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))
@@ -107,6 +111,7 @@ def create_app():
                 correct = evaluate_response(contents)  # Evaluate if the response is correct
                 adaptive_difficulty.update_performance(correct)
                 current_difficulty = adaptive_difficulty.get_current_difficulty()
+                difficulty_pane.object = f"**Current Difficulty Level:** {current_difficulty}"  # Update the difficulty display
                 chat_interface.send(f"Current Difficulty Level: {current_difficulty}", user="System", respond=False)
             else:
                 print("No input being awaited.")
@@ -130,10 +135,11 @@ def create_app():
         agent.chat_interface = chat_interface
         agent.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
 
-    # Create the Panel app object with the chat interface
+    # Create the Panel app object with the chat interface and difficulty pane
     app = pn.template.BootstrapTemplate(title=globals.APP_NAME)
     app.main.append(
         pn.Column(
+            difficulty_pane,
             chat_interface
         )
     )
