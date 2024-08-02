@@ -11,7 +11,8 @@ avatar = {
     code_runner.name: "▶️",        # Play button for code execution
     learner_model.name: "🧠",      # Brain emoji for learner model
     level_adapter.name: "📈",      # Chart with upwards trend for level adaptation
-    motivator.name: "🏆",          # Trophy emoji for motivation
+    motivator.name: "🏆",  
+    gamification.name: "🎮",        # Trophy emoji for motivation
 }
 
 avatar2 = {
