@@ -1,14 +1,16 @@
 import autogen
 import panel as pn
 import os
-import json
-import plotly.graph_objects as go
 import asyncio
+import json
+from collections import defaultdict
+import plotly.graph_objects as go
 from src import globals
 from src.Agents.agents import *
 from src.Agents.chat_manager_fsms import FSM
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
 from src.UI.avatar import avatar
+import re
 
 # Setup for autogen and chat manager
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
@@ -35,94 +37,133 @@ manager = CustomGroupChatManager(
     is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0
 )
 
-def get_chat_history():
-    try:
-        print('Getting JSON file:', progress_file_path)
-        with open(progress_file_path, "r") as f:
-            data = json.load(f)
-            print(data)  # Debug print
-            return data
-    except FileNotFoundError:
-        print("No previous chat history found.")
-        return []
+# Define patterns for identifying questions and answers
+QUESTION_PATTERN = re.compile(r"Solve for x:")
+ANSWER_PATTERN = re.compile(r"x\s*=\s*\d+")
+
+# Example topic patterns to identify subjects
+TOPIC_PATTERNS = {
+    'Algebra': re.compile(r"(linear|quadratic)"),
+    'Geometry': re.compile(r"pythagorean|triangle")
+}
 
 def analyze_student_performance(chat_history):
-    performance_data = defaultdict(int)
-    topic_counts = defaultdict(int)
+    """
+    Analyze student performance based on chat history.
     
-    for message in chat_history:
-        print(message)  # Debug print
-        role = message.get('role', '')
-        content = message.get('content', '').lower()
+    Args:
+        chat_history (list): List of chat messages.
         
-        if role == 'student':
-            performance_data['questions_asked'] += 1
-            if 'math' in content:
-                topic_counts['Math'] += 1
-            elif 'science' in content:
-                topic_counts['Science'] += 1
-            elif 'english' in content:
-                topic_counts['English'] += 1
-    
-    print(performance_data)  # Debug print
-    print(topic_counts)  # Debug print
-    
-    return {
-        'total_questions_asked': performance_data['questions_asked'],
-        'topic_counts': dict(topic_counts)
-    }
+    Returns:
+        dict: Performance data for each topic.
+    """
+    performance_data = defaultdict(lambda: defaultdict(int))  # Nested defaultdict for topics and metrics
+    total_questions = defaultdict(int)
+    correct_answers = defaultdict(int)
 
-def create_bar_chart(performance_data):
-    fig = go.Figure()
-    fig.add_trace(go.Bar(
-        x=list(performance_data['topic_counts'].keys()),
-        y=list(performance_data['topic_counts'].values())
-    ))
+    for message in chat_history:
+        if message['role'] == 'user':
+            content = message.get('content', '')
+
+            # Determine the topic based on the message content
+            current_topic = None
+            for topic, pattern in TOPIC_PATTERNS.items():
+                if pattern.search(content.lower()):
+                    current_topic = topic
+                    break
+
+            if current_topic:
+                # Check if it's a question
+                if QUESTION_PATTERN.search(content):
+                    total_questions[current_topic] += 1
+                # Check if it's an answer
+                elif ANSWER_PATTERN.search(content):
+                    correct_answers[current_topic] += 1
+
+    for topic in TOPIC_PATTERNS.keys():
+        performance_data[topic]['Total Questions'] = total_questions[topic]
+        performance_data[topic]['Correct Answers'] = correct_answers[topic]
+        performance_data[topic]['Accuracy (%)'] = (
+            (correct_answers[topic] / total_questions[topic]) * 100
+            if total_questions[topic] > 0 else 0
+        )
+
+    return performance_data
+
+def create_performance_chart(performance_data):
+    """
+    Create a Plotly chart to visualize performance data.
     
+    Args:
+        performance_data (dict): Performance data for each topic.
+        
+    Returns:
+        pn.pane.Plotly: Plotly chart pane.
+    """
+    fig = go.Figure()
+
+    for metric in ['Total Questions', 'Correct Answers', 'Accuracy (%)']:
+        x_values = []
+        y_values = []
+        for topic, metrics in performance_data.items():
+            x_values.append(topic)
+            y_values.append(metrics[metric])
+        
+        fig.add_trace(go.Bar(
+            x=x_values,
+            y=y_values,
+            name=metric
+        ))
+
     fig.update_layout(
-        title='Student Performance by Subject',
-        xaxis_title='Subjects',
-        yaxis_title='Number of Questions'
+        title='Student Performance Report',
+        xaxis_title='Topics',
+        yaxis_title='Values',
+        barmode='group'
     )
     
-    print(fig)  # Debug print
-    return pn.pane.Plotly(fig, width=600, height=400)
+    return pn.pane.Plotly(fig, width=1000, height=600)
 
-def generate_performance_report(performance_data):
-    return f"""
-    ## Student Performance Report
-
-    - **Total Questions Asked**: {performance_data['total_questions_asked']}
-    
-    ### Questions by Subject:
-    - Math: {performance_data['topic_counts'].get('Math', 0)}
-    - Science: {performance_data['topic_counts'].get('Science', 0)}
-    - English: {performance_data['topic_counts'].get('English', 0)}
-    """
-
-async def update_report(event):
-    chat_history_messages = get_chat_history()
-    performance_data = analyze_student_performance(chat_history_messages)
-    report_pane.object = generate_performance_report(performance_data)
-    bar_chart_pane.object = create_bar_chart(performance_data)
-
+# Panel Interface
 def create_app():
     pn.extension(design="material")
 
+    performance_chart = pn.pane.Plotly(width=1000, height=600)  # Adjusted width and height
+    
+    async def update_performance_chart():
+        chat_history_messages = manager.get_messages_from_json()
+        print("Chat History:", chat_history_messages)  # Debug print
+        
+        performance_data = analyze_student_performance(chat_history_messages)
+        print("Performance Data:", performance_data)  # Debug print
+        
+        new_chart = create_performance_chart(performance_data)
+        if new_chart is not None:
+            performance_chart.object = new_chart.object
+            performance_chart.param.trigger('object')  # Explicitly trigger the update
+            print("Chart Updated")  # Debug print
+        else:
+            print("Failed to create chart")  # Debug print
+
+    refresh_button = pn.widgets.Button(name='Refresh Performance Report', button_type='primary')
+    refresh_button.on_click(lambda event: asyncio.create_task(update_performance_chart()))
+
     async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         if not globals.initiate_chat_task_created:
-            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))
+            await manager.delayed_initiate_chat(tutor, manager, contents)
         else:
             if globals.input_future and not globals.input_future.done():
                 globals.input_future.set_result(contents)
             else:
                 print("No input being awaited.")
+        
+        # Ensure this runs asynchronously
+        await update_performance_chart()
 
-    chat_interface = pn.chat.ChatInterface(callback=callback)
+    chat_interface = pn.chat.ChatInterface(callback=callback, width=800, height=300)  # Adjusted width and height
 
     def print_messages(recipient, messages, sender, config):
         content = messages[-1]['content']
-        print(f"Sending message: {content}")  # Debug print
         if 'name' in messages[-1]:
             chat_interface.send(content, user=messages[-1]['name'], avatar=avatar.get(messages[-1]['name'], None), respond=False)
         else:
@@ -134,36 +175,10 @@ def create_app():
         agent.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
 
     app = pn.template.BootstrapTemplate(title="Adaptive Learning System")
+    app.main.append(pn.Column(chat_interface, performance_chart, refresh_button))
 
-    global report_pane, bar_chart_pane
-    report_pane = pn.pane.Markdown()
-    refresh_button = pn.widgets.Button(name='Refresh Report')
-    refresh_button.on_click(update_report)
-
-    bar_chart_pane = pn.pane.Plotly()
-    
-    app.main.append(
-        pn.Column(
-            chat_interface,
-            refresh_button,
-            report_pane,
-            bar_chart_pane
-        )
-    )
-
-    chat_history_messages = get_chat_history()
-    if chat_history_messages:
-        for message in chat_history_messages:
-            if 'exit' not in message:
-                chat_interface.send(
-                    message["content"],
-                    user=message["role"],
-                    avatar=avatar.get(message["role"], None),
-                    respond=False
-                )
-        chat_interface.send("Time to continue your studies!", user="System", respond=False)
-    else:
-        chat_interface.send("Welcome to the Adaptive Math Tutor! How can I help you today?", user="System", respond=False)
+    # Load chat history and update the performance chart
+    asyncio.run(update_performance_chart())
 
     return app
 
