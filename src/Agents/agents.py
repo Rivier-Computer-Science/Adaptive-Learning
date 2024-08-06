@@ -1,4 +1,5 @@
 import autogen
+import os
 from .base_agent import MyBaseAgent
 from .conversable_agent import MyConversableAgent
 from .student_agent import StudentAgent
@@ -12,13 +13,14 @@ from .code_runner_agent import CodeRunnerAgent
 from .learner_model_agent import LearnerModelAgent
 from .level_adapter_agent import LevelAdapterAgent
 from .motivator_agent import MotivatorAgent
+from .gamification_agent import GamificationAgent
 
 from .group_chat_manager_agent import CustomGroupChatManager
 
 from src.Models.llm_config import gpt3_config
 
 
-
+os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
 # Agents
 student = StudentAgent()
@@ -32,7 +34,7 @@ code_runner = CodeRunnerAgent()
 learner_model = LearnerModelAgent()
 level_adapter = LevelAdapterAgent()
 motivator = MotivatorAgent()
-
+gamification = GamificationAgent(name="GamificationAgent")
 
 
 # agents_list = [student, knowledge_tracer, teacher, tutor, problem_generator, solution_verifier,
@@ -48,7 +50,8 @@ agents_dict = {
     "code_runner": code_runner,
     "learner_model": learner_model,
     "level_adapter": level_adapter,
-    "motivator": motivator
+    "motivator": motivator,
+    "gamification": gamification
 }
 
 

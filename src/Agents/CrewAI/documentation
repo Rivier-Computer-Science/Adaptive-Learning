@@ -1,0 +1,60 @@
+Crew AI Integration Documentation
+Overview
+This documentation provides an overview of the integration of Crew AI into the Adaptive Math Tutor application. Crew AI has been integrated to replace the previous Autogen system for dialog management and enhance the tutor's capability to handle diverse and dynamic queries.
+
+Integration Summary
+Crew AI has been integrated into the Adaptive Math Tutor application to leverage its advanced natural language processing capabilities. This integration aims to improve the tutor's ability to handle various types of questions dynamically without predefined responses.
+
+Features
+Dynamic Query Handling: Crew AI can handle a wide range of student queries dynamically, providing relevant and context-aware responses.
+Enhanced Dialog Management: Replaces Autogen with Crew AI for more effective dialog management and response generation.
+Updated Dialog Flows: Dialog flows have been modified to utilize Crew AI's capabilities.
+Integration Steps
+API Integration:
+
+Added Crew AI API integration to the tutor application.
+Implemented the StartCrew function to interact with Crew AI.
+Dialog Flow Updates:
+
+Modified existing dialog flows to utilize Crew AI’s natural language understanding.
+Removed predefined question-answer pairs to support dynamic response handling.
+Testing:
+
+Conducted thorough testing to ensure seamless integration with Crew AI.
+Validated that Crew AI handles various types of queries effectively.
+Configuration
+Ensure the following configuration settings are in place for Crew AI:
+
+API Endpoint: [Provide the endpoint URL]
+API Key: [Provide the API key or authentication method]
+Configuration Parameters: [List any configuration parameters required for Crew AI]
+Testing Procedures
+To validate the Crew AI integration, follow these procedures:
+
+Test Dynamic Handling:
+
+Simulate a variety of student queries and verify that Crew AI provides accurate and contextually relevant responses.
+Test Dialog Flows:
+
+Ensure that updated dialog flows operate smoothly with Crew AI and effectively handle different types of interactions.
+Troubleshooting
+Common Issues and Solutions:
+
+Issue: Crew AI is not responding to queries.
+
+Solution: Check API connectivity and ensure the API key is correctly configured.
+Issue: Responses are not contextually relevant.
+
+Solution: Review and adjust dialog flow configurations and ensure that Crew AI parameters are correctly set.
+Training
+
+
+for crew ai installtion I used the below commands
+
+First, install Crew AI:
+
+pip install crewai
+Then, install additional tools required by Crew AI:
+
+pip install 'crewai[tools]'
+Note: If you already have an OpenAI API key, you do not need to use the OPENAI_API_KEY environment variable. Ensure that your API key is correctly configured in the application if needed.
