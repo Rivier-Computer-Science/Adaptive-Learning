@@ -2,7 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import os
 import math
-import math_taxonomy as mt
+import src.KnowledgeGraphs.math_taxonomy as mt
 import scipy
 
 

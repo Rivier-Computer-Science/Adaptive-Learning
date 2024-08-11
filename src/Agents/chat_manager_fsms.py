@@ -46,6 +46,9 @@
     # Teacher: Start the next lesson at the Student's request
 
 from typing import Dict
+from src.KnowledgeGraphs.math_graph import KnowledgeGraph
+import src.KnowledgeGraphs.math_taxonomy as mt
+
 
 class FSM:
     def __init__(self, agents: Dict):
@@ -99,3 +102,76 @@ class FSM:
         else:  # Default to tutor for managing other cases
             print("state not found. Defaulting to Tutor")
             return self.agents["tutor"]
+        
+
+class FSMGraphTracer:
+    def __init__(self, agents: Dict):
+        self.agents = agents
+        self.current_state = "Initial"
+        
+        # Enumberate the agents just to make less typing
+        self.student = self.agents["student"]
+        self.knowledge_tracer = self.agents["knowledge_tracer"]
+        self.problem_generator = self.agents["problem_generator"]
+        self.solution_verifier = self.agents["solution_verifier"]
+
+        # Build knowledge graph
+        # self.node_name = None
+        # self.kg =   KnowledgeGraph()
+        # self.kg.build_dag_from_dict(mt.subsubsub_topics)
+
+        # Replace the subsubsub_topics "key" with an integer denoting level of difficulty
+        # Each dictionary value is a list. Flatten it and increment the key
+        # TODO: Update this code in graph_builder.py
+        self.skill_level = 0
+        self.kg = {}
+        i = 0  # Start with a counter at 0
+        for key, value_list in mt.subsubsub_topics.items():
+            for value in value_list:
+                self.kg[i] = value  
+                i += 1 
+
+    
+    def next_speaker_selector(self):
+        print(f"Current state: {self.current_state}") 
+
+        if self.current_state == "Initial":
+            # pick a graph edge
+            
+            # print(self.node_name)
+            self.knowledge_tracer.send(f"I will begin to test you on {self.kg[self.skill_level]}", recipient=self.student, request_reply=False, silent=False)
+            self.current_state = "GenerateQuestion"
+            return self.knowledge_tracer
+        
+        if self.current_state == "GenerateQuestion":
+           self.knowledge_tracer.send(f"Please generate a very easy question for the student on {self.kg[self.skill_level]}", recipient=self.problem_generator, request_reply=True)
+           self.pg_response = self.problem_generator.last_message()["content"]
+           #print("pg_response=  ", self.pg_response)
+           
+           self.current_state = "AwaitStudentAnswer"
+           return self.problem_generator
+        
+        if self.current_state == "AwaitStudentAnswer":
+            self.student_response = input()
+            self.current_state = "VerifySolution"
+            return self.solution_verifier
+        
+        if self.current_state == "VerifySolution":
+            self.knowledge_tracer.send(f"{self.student_response} is the Students response to {self.pg_response}. Is the Student's answer correct? Answer yes or no", recipient=self.solution_verifier, request_reply=True)
+            self.verifier_answer = self.solution_verifier.last_message()["content"]
+            self.was_correct = True if "Yes" in self.verifier_answer else False            
+            self.current_state = "AdaptLevel"
+            return self.knowledge_tracer
+        
+        if self.current_state == "AdaptLevel":
+            if self.was_correct:
+                self.skill_level += 1
+                print("The next topic is", self.kg[self.skill_level])
+            else:
+                print("Better to practice a little more")
+            self.current_state = "GenerateQuestion"
+            return self.knowledge_tracer
+        
+
+        else:
+            return None
