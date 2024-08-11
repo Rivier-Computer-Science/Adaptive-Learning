@@ -27,15 +27,16 @@ fsm = FSM(agents_dict)
 # Create the GroupChat with agents and a manager
 groupchat = CustomGroupChat(agents=list(agents_dict.values()), 
                               messages=[],
-                              max_round=30,
+                              max_round=50,
                               send_introductions=True,
                               speaker_selection_method=fsm.next_speaker_selector
                               )
 
 
+# default is_termination_msg is autogen is TERMINATE
+# is_termination_msg=lambda x: x.get("content", "").strip() == globals.IS_TERMINATION_MSG
 manager = CustomGroupChatManager(groupchat=groupchat,
-                                filename=progress_file_path, 
-                                is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0 )    
+                                filename=progress_file_path)    
 
 
 # --- Panel Interface ---
@@ -44,7 +45,7 @@ def create_app():
     pn.extension(design="material")
 
 
-    async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
+    async def panel_callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         if not globals.initiate_chat_task_created:
             asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))  
         else:
@@ -54,7 +55,7 @@ def create_app():
                 print("No input being awaited.")
 
 
-    chat_interface = pn.chat.ChatInterface(callback=callback)
+    chat_interface = pn.chat.ChatInterface(callback=panel_callback)
 
     def print_messages(recipient, messages, sender, config):
         print(f"Messages from: {sender.name} sent to: {recipient.name} | num messages: {len(messages)} | message: {messages[-1]}")
@@ -71,6 +72,7 @@ def create_app():
     # Register chat interface with ConversableAgent
     for agent in groupchat.agents:
         agent.chat_interface = chat_interface
+        agent.group_chat_manager = manager
         agent.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
 
     # Create the Panel app object with the chat interface
@@ -81,12 +83,12 @@ def create_app():
         )
     )
 
-        #Load chat history on startup 
+    #Load chat history on startup and echo it to the panel screen
     chat_history_messages = manager.get_messages_from_json()
     if chat_history_messages:
-        manager.resume(chat_history_messages, 'exit')
+        manager.resume(chat_history_messages, globals.IS_TERMINATION_MSG)
         for message in chat_history_messages:
-            if 'exit' not in message:
+            if globals.IS_TERMINATION_MSG not in message:
                 chat_interface.send(
                     message["content"],
                     user=message["role"], 
