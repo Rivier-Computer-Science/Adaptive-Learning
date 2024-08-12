@@ -15,8 +15,6 @@ from .level_adapter_agent import LevelAdapterAgent
 from .motivator_agent import MotivatorAgent
 from .gamification_agent import GamificationAgent
 
-from .group_chat_manager_agent import CustomGroupChatManager
-
 from src.Models.llm_config import gpt3_config
 
 
@@ -54,7 +52,21 @@ agents_dict = {
     "gamification": gamification
 }
 
+agents_dict_by_name = {
+    "StudentAgent": student,
+    "KnowledgeTracerAgent": knowledge_tracer,
+    "TeacherAgent": teacher,
+    "TutorAgent": tutor,
+    "ProblemGeneratorAgent": problem_generator,
+    "SolutionVerifierAgent": solution_verifier,
+    "ProgrammerAgent": programmer,
+    "CodeRunnerAgent": code_runner,
+    "LearnerModelAgent": learner_model,
+    "LevelAdapterAgent": level_adapter,
+    "MotivatorAgent": motivator,
+    "GamificationAgent": gamification
 
+}
 
  
 

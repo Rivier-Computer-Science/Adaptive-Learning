@@ -4,12 +4,18 @@ import json
 import os
 from typing import Optional, List, Dict
 from src import globals
+from src.Agents.agents import agents_dict_by_name
 
 
 
 class CustomGroupChat(autogen.GroupChat):
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
+
+    def get_messages(self):
+        return self.messages
+    
+
 
 
 class CustomGroupChatManager(autogen.GroupChatManager):
@@ -25,7 +31,7 @@ class CustomGroupChatManager(autogen.GroupChatManager):
             reset_config=autogen.GroupChat.reset,
             ignore_async_in_sync_chat=True,
         )
-
+        
         self.filename = filename
 
     async def a_run_chat(self, *args, **kwargs):
@@ -44,7 +50,18 @@ class CustomGroupChatManager(autogen.GroupChatManager):
         try:
             print('Getting JSON file:', filename)
             with open(filename, "r") as f:
-                return self.messages_from_string(f.read())
+                self.messages_from_json = self.messages_from_string(f.read())
+                # Strip termination message and restore chat history
+                if self.messages_from_json:
+                    if self.messages_from_json[-1].get("content","").strip()==globals.IS_TERMINATION_MSG:
+                        self.messages_from_json.pop()
+                    # Resume the chat from where it leaft off
+                    # FIXME: Resume is not working correctly.
+                    # self.resume(self.messages_from_json, globals.IS_TERMINATION_MSG)
+                    # Append the chats
+                    for msg in self.messages_from_json:
+                        self._groupchat.append(message=msg, speaker=agents_dict_by_name[msg['name']])                    
+                return self.messages_from_json
         except FileNotFoundError:
             print("No previous chat history found. Starting a new conversation.")
             return []  # Return an empty list
@@ -74,3 +91,4 @@ class CustomGroupChatManager(autogen.GroupChatManager):
         globals.initiate_chat_task_created = True
         await asyncio.sleep(1) 
         await agent.a_initiate_chat(recipient, message=message)
+
