@@ -1,187 +1,170 @@
-import autogen
-import panel as pn
 import os
-import asyncio
 import json
-from collections import defaultdict
+import asyncio
+from datetime import datetime
+from typing import Dict
+import panel as pn
 import plotly.graph_objects as go
+
+# Import necessary modules from your project
 from src import globals
 from src.Agents.agents import *
 from src.Agents.chat_manager_fsms import FSM
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
 from src.UI.avatar import avatar
-import re
 
-# Setup for autogen and chat manager
+# Initialize environment and file paths
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
-
 script_dir = os.path.dirname(os.path.abspath(__file__))
-progress_file_path = os.path.join(script_dir, '../../progress.json')
 
+# Create a separate folder for reports
+report_folder = os.path.join(script_dir, 'reports')
+os.makedirs(report_folder, exist_ok=True)
+
+# Define file paths
+progress_file_path = os.path.join(report_folder, 'progress.json')
+report_file_path = os.path.join(report_folder, 'performance_report.json')
+chart_file_path = os.path.join(report_folder, 'performance_chart.png')
+
+# Initialize global variables
 globals.input_future = None
 
+# Set up FSM and GroupChat
 fsm = FSM(agents_dict)
-
-# Create the GroupChat with agents and a manager
 groupchat = CustomGroupChat(
-    agents=list(agents_dict.values()),
+    agents=list(agents_dict.values()), 
     messages=[],
     max_round=30,
     send_introductions=True,
     speaker_selection_method=fsm.next_speaker_selector
 )
-
 manager = CustomGroupChatManager(
     groupchat=groupchat,
-    filename=progress_file_path,
-    is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0
+    filename=progress_file_path, 
+    is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0 
 )
 
-# Define patterns for identifying questions and answers
-QUESTION_PATTERN = re.compile(r"Solve for x:")
-ANSWER_PATTERN = re.compile(r"x\s*=\s*\d+")
+# Define report generation functions
+def collect_data() -> Dict:
+    # Placeholder for data collection logic
+    data = {
+        "student_id": "123",
+        "student_name": "John Doe",
+        "problems_attempted": 50,
+        "correct_answers": 40,
+        "time_taken": "1 hour 30 minutes",
+        "mistakes": {
+            "algebra": 5,
+            "geometry": 3
+        },
+        "performance_summary": {
+            "overall_accuracy": 80,  # in percentage
+            "average_time_per_problem": "1.8 minutes"
+        }
+    }
+    return data
 
-# Example topic patterns to identify subjects
-TOPIC_PATTERNS = {
-    'Algebra': re.compile(r"(linear|quadratic)"),
-    'Geometry': re.compile(r"pythagorean|triangle")
-}
+def generate_report(data: Dict):
+    try:
+        # Generate JSON report
+        report = {
+            "timestamp": datetime.now().isoformat(),
+            "student_information": {
+                "student_id": data.get("student_id"),
+                "student_name": data.get("student_name")
+            },
+            "performance_summary": data.get("performance_summary"),
+            "detailed_data": {
+                "problems_attempted": data.get("problems_attempted"),
+                "correct_answers": data.get("correct_answers"),
+                "time_taken": data.get("time_taken"),
+                "mistakes": data.get("mistakes")
+            }
+        }
 
-def analyze_student_performance(chat_history):
-    """
-    Analyze student performance based on chat history.
-    
-    Args:
-        chat_history (list): List of chat messages.
+        # Write JSON report to file
+        with open(report_file_path, 'w') as file:
+            json.dump(report, file, indent=4)
         
-    Returns:
-        dict: Performance data for each topic.
-    """
-    performance_data = defaultdict(lambda: defaultdict(int))  # Nested defaultdict for topics and metrics
-    total_questions = defaultdict(int)
-    correct_answers = defaultdict(int)
+        print(f"Dynamic report generated and saved to {report_file_path}")
+    except Exception as e:
+        print(f"Error generating report: {e}")
 
-    for message in chat_history:
-        if message['role'] == 'user':
-            content = message.get('content', '')
-
-            # Determine the topic based on the message content
-            current_topic = None
-            for topic, pattern in TOPIC_PATTERNS.items():
-                if pattern.search(content.lower()):
-                    current_topic = topic
-                    break
-
-            if current_topic:
-                # Check if it's a question
-                if QUESTION_PATTERN.search(content):
-                    total_questions[current_topic] += 1
-                # Check if it's an answer
-                elif ANSWER_PATTERN.search(content):
-                    correct_answers[current_topic] += 1
-
-    for topic in TOPIC_PATTERNS.keys():
-        performance_data[topic]['Total Questions'] = total_questions[topic]
-        performance_data[topic]['Correct Answers'] = correct_answers[topic]
-        performance_data[topic]['Accuracy (%)'] = (
-            (correct_answers[topic] / total_questions[topic]) * 100
-            if total_questions[topic] > 0 else 0
-        )
-
-    return performance_data
-
-def create_performance_chart(performance_data):
-    """
-    Create a Plotly chart to visualize performance data.
-    
-    Args:
-        performance_data (dict): Performance data for each topic.
-        
-    Returns:
-        pn.pane.Plotly: Plotly chart pane.
-    """
-    fig = go.Figure()
-
-    for metric in ['Total Questions', 'Correct Answers', 'Accuracy (%)']:
-        x_values = []
-        y_values = []
-        for topic, metrics in performance_data.items():
-            x_values.append(topic)
-            y_values.append(metrics[metric])
-        
+def create_performance_chart(data: Dict):
+    try:
+        # Create performance chart
+        fig = go.Figure()
         fig.add_trace(go.Bar(
-            x=x_values,
-            y=y_values,
-            name=metric
+            x=['Overall Accuracy', 'Average Time per Problem'],
+            y=[data['performance_summary']['overall_accuracy'], 
+               float(data['performance_summary']['average_time_per_problem'].split()[0])],
+            name='Performance Metrics'
         ))
+        fig.update_layout(
+            title='Student Performance Overview',
+            xaxis_title='Metrics',
+            yaxis_title='Values'
+        )
+        # Save the chart as an image file
+        fig.write_image(chart_file_path)
+        print(f"Performance chart saved to {chart_file_path}")
+    except Exception as e:
+        print(f"Error creating performance chart: {e}")
 
-    fig.update_layout(
-        title='Student Performance Report',
-        xaxis_title='Topics',
-        yaxis_title='Values',
-        barmode='group'
-    )
-    
-    return pn.pane.Plotly(fig, width=1000, height=600)
-
-# Panel Interface
+# Define Panel interface and app creation
 def create_app():
     pn.extension(design="material")
 
-    performance_chart = pn.pane.Plotly(width=1000, height=600)  # Adjusted width and height
-    
-    async def update_performance_chart():
-        chat_history_messages = manager.get_messages_from_json()
-        print("Chat History:", chat_history_messages)  # Debug print
-        
-        performance_data = analyze_student_performance(chat_history_messages)
-        print("Performance Data:", performance_data)  # Debug print
-        
-        new_chart = create_performance_chart(performance_data)
-        if new_chart is not None:
-            performance_chart.object = new_chart.object
-            performance_chart.param.trigger('object')  # Explicitly trigger the update
-            print("Chart Updated")  # Debug print
-        else:
-            print("Failed to create chart")  # Debug print
-
-    refresh_button = pn.widgets.Button(name='Refresh Performance Report', button_type='primary')
-    refresh_button.on_click(lambda event: asyncio.create_task(update_performance_chart()))
-
     async def callback(contents: str, user: str, instance: pn.chat.ChatInterface):
         if not globals.initiate_chat_task_created:
-            await manager.delayed_initiate_chat(tutor, manager, contents)
+            asyncio.create_task(manager.delayed_initiate_chat(tutor, manager, contents))
         else:
             if globals.input_future and not globals.input_future.done():
                 globals.input_future.set_result(contents)
             else:
                 print("No input being awaited.")
-        
-        # Ensure this runs asynchronously
-        await update_performance_chart()
 
-    chat_interface = pn.chat.ChatInterface(callback=callback, width=800, height=300)  # Adjusted width and height
+    chat_interface = pn.chat.ChatInterface(callback=callback)
 
     def print_messages(recipient, messages, sender, config):
+        print(f"Messages from: {sender.name} sent to: {recipient.name} | num messages: {len(messages)} | message: {messages[-1]}")
+
         content = messages[-1]['content']
-        if 'name' in messages[-1]:
-            chat_interface.send(content, user=messages[-1]['name'], avatar=avatar.get(messages[-1]['name'], None), respond=False)
-        else:
-            chat_interface.send(content, user=recipient.name, avatar=avatar.get(recipient.name, None), respond=False)
+        user_name = messages[-1].get('name', recipient.name)
+        chat_interface.send(content, user=user_name, avatar=avatar.get(user_name, None), respond=False)
         return False, None
 
     for agent in groupchat.agents:
         agent.chat_interface = chat_interface
         agent.register_reply([autogen.Agent, None], reply_func=print_messages, config={"callback": None})
 
-    app = pn.template.BootstrapTemplate(title="Adaptive Learning System")
-    app.main.append(pn.Column(chat_interface, performance_chart, refresh_button))
+    app = pn.template.BootstrapTemplate(title=globals.APP_NAME)
+    app.main.append(pn.Column(chat_interface))
 
-    # Load chat history and update the performance chart
-    asyncio.run(update_performance_chart())
+    chat_history_messages = manager.get_messages_from_json()
+    if chat_history_messages:
+        manager.resume(chat_history_messages, 'exit')
+        for message in chat_history_messages:
+            if 'exit' not in message:
+                chat_interface.send(
+                    message["content"],
+                    user=message["role"], 
+                    avatar=avatar.get(message["role"], None),
+                    respond=False
+                )
+        chat_interface.send("Time to continue your studies!", user="System", respond=False)
+    else:
+        chat_interface.send("Welcome to the Adaptive Math teacher! How can I help you today?", user="System", respond=False)
 
     return app
 
 if __name__ == "__main__":
+    # Collect data and generate the report
+    data = collect_data()
+    print("Data collected:", data)  # Debug statement
+    generate_report(data)
+    create_performance_chart(data)
+    
+    # Start the Panel app
     app = create_app()
     pn.serve(app)
