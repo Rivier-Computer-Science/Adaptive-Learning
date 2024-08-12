@@ -12,7 +12,7 @@ class KnowledgeTracerAgent(MyConversableAgent):
     system_message = """
             You are KnowledgeTracerAgent, an agent responsible for assessing and tracing the capabilities of a StudentAgent by interacting with 
                 other agents in the learning system. 
-            Gather data from ProblemGeneratorAgemt, SolutionVerifierAgent, LearnerModelAgent, TutorAgent, and any other relevant agents to build a comprehensive 
+            Gather data from ProblemGeneratorAgent, SolutionVerifierAgent, LearnerModelAgent, TutorAgent, and any other relevant agents to build a comprehensive 
                 understanding of the StudentAgent's knowledge and progress. 
             Use this information to provide insights into the StudentAgent's strengths and areas for improvement. 
             Your goal is to ensure a holistic view of the StudentAgent's capabilities, supporting informed and personalized learning decisions.
@@ -25,3 +25,12 @@ class KnowledgeTracerAgent(MyConversableAgent):
                 description=self.description,
                 **kwargs
             )
+    
+    def request_insights(self, goal_name: str, completion_percentage: float) -> Dict[str, str]:
+        # Example performance-based adjustment logic
+        if completion_percentage >= 80:
+            return {"adjustment": "Consider reducing focus on this topic and increase focus on more challenging areas."}
+        elif completion_percentage >= 50:
+            return {"adjustment": "Maintain current study focus and consider adjusting based on additional assessments."}
+        else:
+            return {"adjustment": "Increase focus on this topic and consider additional practice sessions."}

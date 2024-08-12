@@ -27,3 +27,12 @@ class TutorAgent(MyConversableAgent):
                 description=self.description,
                 **kwargs
             )
+    
+    def request_recommendations(self, goal_name: str, completion_percentage: float) -> Dict[str, str]:
+        # Example recommendation logic
+        if completion_percentage >= 80:
+            return {"recommendation": "Consider exploring advanced topics or additional practice problems."}
+        elif completion_percentage >= 50:
+            return {"recommendation": "Focus on practice problems related to your current goal."}
+        else:
+            return {"recommendation": "Review basic concepts and seek additional help on weak areas."}
