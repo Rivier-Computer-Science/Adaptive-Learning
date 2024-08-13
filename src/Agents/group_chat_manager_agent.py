@@ -57,10 +57,11 @@ class CustomGroupChatManager(autogen.GroupChatManager):
                         self.messages_from_json.pop()
                     # Resume the chat from where it leaft off
                     # FIXME: Resume is not working correctly.
+                    # See: https://github.com/microsoft/autogen/discussions/2301
                     # self.resume(self.messages_from_json, globals.IS_TERMINATION_MSG)
                     # Append the chats
                     for msg in self.messages_from_json:
-                        self._groupchat.append(message=msg, speaker=agents_dict_by_name[msg['name']])                    
+                        self.groupchat.append(message=msg, speaker=agents_dict_by_name[msg['name']])                    
                 return self.messages_from_json
         except FileNotFoundError:
             print("No previous chat history found. Starting a new conversation.")
@@ -72,7 +73,7 @@ class CustomGroupChatManager(autogen.GroupChatManager):
             filename = self.filename
         
         # Get previous history
-        old_messages = self.get_messages_from_json(filename)
+        # old_messages = self.get_messages_from_json(filename)
         
         # Check if the file exists and delete it
         if os.path.exists(filename):
@@ -80,7 +81,8 @@ class CustomGroupChatManager(autogen.GroupChatManager):
             print(f"Deleted existing file: {filename}")
 
         # Save the chat history to the file
-        chat_history = old_messages + self.groupchat.messages  # merge the lists
+        #chat_history = old_messages + self.groupchat.messages  # merge the lists
+        chat_history = self.groupchat.messages
         with open(filename, 'w') as f:
             json.dump(chat_history, f, indent=4)
         print(f"Chat history saved to: {filename}")
@@ -90,5 +92,7 @@ class CustomGroupChatManager(autogen.GroupChatManager):
     async def delayed_initiate_chat(self, agent, recipient, message):
         globals.initiate_chat_task_created = True
         await asyncio.sleep(1) 
-        await agent.a_initiate_chat(recipient, message=message)
+        await agent.a_initiate_chat(recipient=recipient, 
+                                    clear_history = False,
+                                    message=message)
 
