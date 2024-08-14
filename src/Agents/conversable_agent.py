@@ -27,21 +27,20 @@ class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
 
         super().__init__(**kwargs)
 
-        #self.response_event = asyncio.Event()  # Add an event object
-        self.chat_interface = None
-        self.group_chat_manager = None
+        self.groupchat_manager = None
+        self.reactive_chat = None
  
     async def a_get_human_input(self, prompt: str) -> str:
-                self.chat_interface.send(prompt, user="System", respond=False) 
+        self.groupchat_manager.chat_interface.send(prompt, user="System", respond=False) 
 
-                if globals.input_future is None or globals.input_future.done():
-                    globals.input_future = asyncio.Future()
+        if globals.input_future is None or globals.input_future.done():
+            globals.input_future = asyncio.Future()
 
-                await globals.input_future
+        await globals.input_future
 
-                input_value = globals.input_future.result()
-                globals.input_future = None
-                return input_value
+        input_value = globals.input_future.result()
+        globals.input_future = None
+        return input_value
 
     async def a_receive(self, message, sender=None, request_reply=True, silent=False):
         # Process the incoming message
@@ -55,27 +54,32 @@ class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
                 self.handle_termination()
 
     def handle_termination(self):
-        if self.group_chat_manager:
+        if self.groupchat_manager:
             # Notify the GroupChatManager to save the chat history
-            self.group_chat_manager.save_chat_history()
+            self.groupchat_manager.save_chat_history()
             print("Termination detected. Chat history saved.")
         else:
             print("GroupChatManager not available to save chat history.")
 
+    def autogen_reply_func(self, recipient, messages, sender, config):
+        print(f"Messages from: {sender.name} sent to: {recipient.name} | num messages: {len(messages)} | message: {messages[-1]}")
 
+        last_content = messages[-1]['content']        
+
+        ###############################
+        # Update panel tabs
+        #############################
+        self.reactive_chat.update_learn_tab(recipient=recipient, messages=messages, sender=sender, config=config)
+        self.reactive_chat.update_dashboard()                          
+        self.reactive_chat.update_progress(contents=last_content,user=recipient.name)
+        #Note: do not call update_model_tab. The button takes care of that.
+                
+        return False, None
 
     @property
-    def chat_interface(self):
-        return self._chat_interface
-    
-    @chat_interface.setter
-    def chat_interface(self, chat_interface):
-        self._chat_interface = chat_interface
-
-    @property
-    def group_chat_manager(self):
+    def groupchat_manager(self):
         return self._group_chat_manager
     
-    @chat_interface.setter
-    def group_chat_manager(self, group_chat_manager):
+    @groupchat_manager.setter
+    def groupchat_manager(self, group_chat_manager):
         self._group_chat_manager = group_chat_manager

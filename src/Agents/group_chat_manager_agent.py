@@ -3,9 +3,10 @@ import asyncio
 import json
 import os
 from typing import Optional, List, Dict
+import panel as pn
 from src import globals
 from src.Agents.agents import agents_dict_by_name
-
+from src.UI.avatar import avatar
 
 
 class CustomGroupChat(autogen.GroupChat):
@@ -33,6 +34,7 @@ class CustomGroupChatManager(autogen.GroupChatManager):
         )
         
         self.filename = filename
+        self.chat_interface = None
 
     async def a_run_chat(self, *args, **kwargs):
         try: 
@@ -88,6 +90,23 @@ class CustomGroupChatManager(autogen.GroupChatManager):
         print(f"Chat history saved to: {filename}")
 
 
+    # TODO: Consider moving the writes to the chat panel to reactive_chat
+    def get_chat_history_and_initialize_chat(self, filename: str = None, chat_interface: pn.chat.ChatInterface = None):
+        chat_history_messages = self.get_messages_from_json(filename=filename)
+        # Send the chat history to the panel interface
+        if chat_history_messages:        
+            for message in chat_history_messages:
+                if globals.IS_TERMINATION_MSG not in message:
+                    chat_interface.send(
+                        message["content"],
+                        user=message["role"], 
+                        avatar=avatar.get(message["role"], None),  
+                        respond=False
+                    )
+            chat_interface.send("Time to continue your studies!", user="System", respond=False)
+        else:
+            chat_interface.send("Welcome to the Adaptive Math Tutor! How can I help you today?", user="System", respond=False)
+
  
     async def delayed_initiate_chat(self, agent, recipient, message):
         globals.initiate_chat_task_created = True
@@ -96,3 +115,10 @@ class CustomGroupChatManager(autogen.GroupChatManager):
                                     clear_history = False,
                                     message=message)
 
+    @property
+    def chat_interface(self) ->  pn.chat.ChatInterface:
+        return self._chat_interface
+    
+    @chat_interface.setter
+    def chat_interface(self, chat_interface: pn.chat.ChatInterface):
+        self._chat_interface = chat_interface
