@@ -122,3 +122,5 @@ class CustomGroupChatManager(autogen.GroupChatManager):
     @chat_interface.setter
     def chat_interface(self, chat_interface: pn.chat.ChatInterface):
         self._chat_interface = chat_interface
+
+

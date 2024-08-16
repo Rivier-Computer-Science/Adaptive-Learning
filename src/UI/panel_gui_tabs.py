@@ -18,17 +18,19 @@ from src.UI.avatar import avatar
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
+
+##############################################
+# Main Adaptive Learning Application
+############################################## 
+globals.input_future = None
 script_dir = os.path.dirname(os.path.abspath(__file__))
 progress_file_path = os.path.join(script_dir, '../../progress.json')
-
-globals.input_future = None
-    
+   
 fsm = FSM(agents_dict)
 
-# Create the GroupChat with agents and a manager
 groupchat = CustomGroupChat(agents=list(agents_dict.values()), 
                               messages=[],
-                              max_round=30,
+                              max_round=globals.MAX_ROUNDS,
                               send_introductions=True,
                               speaker_selection_method=fsm.next_speaker_selector
                               )
@@ -37,8 +39,6 @@ groupchat = CustomGroupChat(agents=list(agents_dict.values()),
 manager = CustomGroupChatManager(groupchat=groupchat,
                                 filename=progress_file_path, 
                                 is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0 )    
-
-
 
 # Begin GUI components
 reactive_chat = ReactiveChat(groupchat_manager=manager)
@@ -55,6 +55,8 @@ for agent in groupchat.agents:
 #Load chat history on startup
 manager.get_chat_history_and_initialize_chat(filename=progress_file_path, chat_interface=reactive_chat.learn_tab_interface) 
 reactive_chat.update_dashboard()    #Call after history loaded
+
+
 
 # --- Panel Interface ---
 def create_app():    

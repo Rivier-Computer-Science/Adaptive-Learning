@@ -71,8 +71,9 @@ class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
         #############################
         self.reactive_chat.update_learn_tab(recipient=recipient, messages=messages, sender=sender, config=config)
         self.reactive_chat.update_dashboard()                          
-        self.reactive_chat.update_progress(contents=last_content,user=recipient.name)
+        self.reactive_chat.update_progress(contents=last_content,user=recipient.name)        
         #Note: do not call update_model_tab. The button takes care of that.
+
                 
         return False, None
 
@@ -83,3 +84,7 @@ class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
     @groupchat_manager.setter
     def groupchat_manager(self, group_chat_manager):
         self._group_chat_manager = group_chat_manager
+
+
+
+     

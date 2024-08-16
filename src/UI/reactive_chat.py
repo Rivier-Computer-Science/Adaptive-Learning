@@ -4,18 +4,19 @@ import param
 import panel as pn
 import asyncio
 import re
+import autogen as autogen
 from src.UI.avatar import avatar
 import src.Agents.agents as agents
 from src import globals as globals
 
 class ReactiveChat(param.Parameterized):
-    def __init__(self, groupchat_manager, **params):
+    def __init__(self, groupchat_manager=None, **params):
         super().__init__(**params)
         
         pn.extension(design="material")
 
         self.groupchat_manager = groupchat_manager
-
+ 
         # Learn tab
         self.LEARN_TAB_NAME = "LearnTab"
         self.learn_tab_interface = pn.chat.ChatInterface(callback=self.a_learn_tab_callback, name=self.LEARN_TAB_NAME)
@@ -36,7 +37,6 @@ class ReactiveChat(param.Parameterized):
         self.button_update_learner_model = pn.widgets.Button(name='Update Learner Model', button_type='primary')
         self.button_update_learner_model.on_click(self.handle_button_update_model)
         self.is_model_tab = False
-        #self.learner_model_interface.send("What is the student's current capabilities", user="System", respond=True)
 
         # TODO: Consider whether groupchat_manager or this class should manage the chat_interface
         #       Currently, I have placed it in CustomGroupChatManager
@@ -86,7 +86,7 @@ class ReactiveChat(param.Parameterized):
             else:
                 print("################ WRONG ANSWER #################")
 
-    ########## tab4: Learner Model
+    ########## Model Tab
     async def handle_button_update_model(self, event=None):
         self.groupchat_manager.chat_interface = self.model_tab_interface
         await self.a_update_model()
@@ -113,20 +113,32 @@ class ReactiveChat(param.Parameterized):
             response = agents.learner_model.last_message(agent=agents.learner_model)["content"]
             self.learn_tab_interface.send(response, user=agents.learner_model.name,avatar=avatar[agents.learner_model.name])
     
+
     ########## Create the "windows" and draw the tabs
     def draw_view(self):         
         tabs = pn.Tabs(  
-            ("Learn", pn.Column(self.learn_tab_interface)),
-            ("Dashboard", pn.Column(self.dashboard_view)),
+            ("Learn", pn.Column(self.learn_tab_interface)
+                    ),
+            ("Dashboard", pn.Column(self.dashboard_view)
+                    ),
             ("Progress", pn.Column(
                     self.progress_text,
                     pn.Row(                        
                         self.progress_bar,
-                        self.progress_info
-                    ))),
+                        self.progress_info))
+                    ),
             ("Model", pn.Column(
                       pn.Row(self.button_update_learner_model),
-                      pn.Row(self.model_tab_interface)))            
+                      pn.Row(self.model_tab_interface))
+                    ),     
         )
         return tabs
+
+    @property
+    def groupchat_manager(self) ->  autogen.GroupChatManager:
+        return self._groupchat_manager
+    
+    @groupchat_manager.setter
+    def groupchat_manager(self, groupchat_manager: autogen.GroupChatManager):
+        self._groupchat_manager = groupchat_manager
 
