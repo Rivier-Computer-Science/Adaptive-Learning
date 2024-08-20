@@ -7,7 +7,18 @@ model = load_model('saved_model.h5')
 df = pd.read_csv('data/synthetic_student_data.csv')
 
 # Preprocess validation data (similar to train.py)
-# ...
+activity_type_mapping = {'quiz': 0, 'homework': 1, 'lecture': 2}
+df['activity_type'] = df['activity_type'].map(activity_type_mapping)
+
+sequences = []
+labels = []
+for student_id, group in df.groupby('student_id'):
+    sequence = group[['activity_type', 'outcome', 'time_spent']].values
+    sequences.append(sequence)
+    labels.append(group['outcome'].iloc[-1])
+
+X_val = pad_sequences(sequences, dtype='float32', padding='post')
+y_val = labels
 
 # Evaluate the model
 y_pred = model.predict(X_val)
