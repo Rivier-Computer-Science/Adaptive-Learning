@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 
-# Define parameters
+# Parameters for synthetic data generation
 num_students = 10000
 num_activities = 200
 activity_types = ['quiz', 'homework', 'lecture']
@@ -11,8 +11,7 @@ end_date = datetime(2023, 6, 30)
 
 # Function to generate random dates
 def random_date(start, end):
-    return start + timedelta(
-        seconds=np.random.randint(0, int((end - start).total_seconds())))
+    return start + timedelta(seconds=np.random.randint(0, int((end - start).total_seconds())))
 
 # Initialize student profiles
 students = [{'student_id': i, 'initial_skill': np.random.uniform(0, 1)} for i in range(num_students)]
@@ -29,17 +28,13 @@ for student in students:
         time_spent = np.random.uniform(5, 60)
         data.append({
             'student_id': student_id,
-            'timestamp': date,
             'activity_type': activity_type,
-            'activity_id': np.random.randint(0, num_activities),
-            'outcome': score if activity_type == 'quiz' else 'completed',
-            'time_spent': time_spent
+            'outcome': 1 if score > 0.5 else 0,
+            'time_spent': time_spent,
+            'date': date
         })
-        date = random_date(date, end_date)
-        current_skill += np.random.normal(0, 0.01)  # Simulate learning over time
+        date += timedelta(days=np.random.randint(1, 5))
 
-# Create DataFrame
+# Create a DataFrame
 df = pd.DataFrame(data)
-
-# Save to CSV
 df.to_csv('data/synthetic_student_data.csv', index=False)
