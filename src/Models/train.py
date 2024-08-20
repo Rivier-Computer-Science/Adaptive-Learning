@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import train_test_split
-from src.model import create_model
+from model import create_model
 
 # Load and preprocess data
 df = pd.read_csv('data/synthetic_student_data.csv')
@@ -25,9 +25,10 @@ sequences = pad_sequences(sequences, dtype='float32', padding='post')
 # Train/test split
 X_train, X_val, y_train, y_val = train_test_split(sequences, labels, test_size=0.2, random_state=42)
 
-# Create model
+# Create and train the model
 input_shape = (X_train.shape[1], X_train.shape[2])
 model = create_model(input_shape)
+model.fit(X_train, np.array(y_train), epochs=10, batch_size=64, validation_data=(X_val, np.array(y_val)))
 
-# Train model
-model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=10, batch_size=32)
+# Save the model
+model.save('saved_model.h5')
