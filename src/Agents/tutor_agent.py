@@ -1,5 +1,6 @@
 ##################### Tutor #########################
 from .conversable_agent import MyConversableAgent
+from typing import Dict
 
 class TutorAgent(MyConversableAgent):
     description = """

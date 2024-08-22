@@ -1,6 +1,6 @@
 ##################### Knowledge Tracer #########################
 from .conversable_agent import MyConversableAgent
-
+from typing import Dict
 class KnowledgeTracerAgent(MyConversableAgent):
     description =   """
             KnowledgeTracerAgent is a comprehensive and adaptive agent designed to assess and trace the capabilities of a StudentAgent by interacting 

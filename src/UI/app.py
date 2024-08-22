@@ -47,9 +47,10 @@ manager = CustomGroupChatManager(
 # Define report generation functions
 def collect_data() -> Dict:
     # Placeholder for data collection logic
+    # Here you can add logic to dynamically fetch or calculate data based on chat history or other sources
     data = {
         "student_id": "123",
-        "student_name": "John Doe",
+        "student_name": "surendra Reddy",
         "problems_attempted": 50,
         "correct_answers": 40,
         "time_taken": "1 hour 30 minutes",
@@ -141,9 +142,23 @@ def create_app():
     app = pn.template.BootstrapTemplate(title=globals.APP_NAME)
     app.main.append(pn.Column(chat_interface))
 
+    # Load and handle chat history dynamically
     chat_history_messages = manager.get_messages_from_json()
+    
     if chat_history_messages:
+        last_message = chat_history_messages[-1]
+        last_user = last_message.get('role', 'Teacher')
+        
+        # Personalized greeting based on last message
+        if last_message.get('content'):
+            greeting = f"Welcome back, {last_user}! How can I assist you further today?"
+        else:
+            greeting = f"Welcome back, {last_user}! What would you like to do today?"
+
+        # Resume chat from history
         manager.resume(chat_history_messages, 'exit')
+        
+        # Send past messages and the greeting
         for message in chat_history_messages:
             if 'exit' not in message:
                 chat_interface.send(
@@ -152,9 +167,9 @@ def create_app():
                     avatar=avatar.get(message["role"], None),
                     respond=False
                 )
-        chat_interface.send("Time to continue your studies!", user="System", respond=False)
+        chat_interface.send(greeting, user="System", respond=False)
     else:
-        chat_interface.send("Welcome to the Adaptive Math teacher! How can I help you today?", user="System", respond=False)
+        chat_interface.send("Welcome to the Adaptive Math teacher! How can I assist you today?", user="System", respond=False)
 
     return app
 
