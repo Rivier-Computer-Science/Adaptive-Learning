@@ -1,142 +1,91 @@
 
 
-## Running the Module Version of the code
+# Introduction Multi-Agent Adaptive Learning
+
+This code is from Rivier University's Professional Seminar class (COMP-699) from the Summer of 2024.
+
+It uses [Microsoft's autogen](https://microsoft.github.io/autogen/docs/Getting-Started/) to specialize an agent for each function of an adaptive learning system. The model used is OpenAI's ChatGPT-4o.
+
+It uses [panel](https://panel.holoviz.org/) for the chat interface. It opens in a web browser.
+
+There is a paper accepted for publication in the Rivier Academic Journal describing the system. A link will be provided when it is published.
+
+# Running the Code
+
+Runs in a browser:
+
 ```sh
-(math) jglossner@jglossner-Alienware-Aurora-R7:~/TestGit/Adaptive-Learning$ python -m src.UI.panel_gui_unconstrained
+(adaptive) user@machine:~/Adaptive-Learning$ python -m src.UI.panel_gui_tabs
 ```
 
-## Autogen
-In Microsoft's AutoGen, the description and system_message fields serve distinct purposes in defining an Agent's behavior:
+Runs in the console:
 
-### System Message (system_message):
+```sh
+(adaptive) user@machine:~/Adaptive-Learning$ python -m src.UI.console_knowledge_tracer
+```
 
-    Core Instructions: This field provides the fundamental instructions that guide the Agent's overall behavior and responses. It sets the tone, establishes the Agent's role, and outlines the primary goals it should aim for in conversations.
-    Technical Focus: Primarily intended for technical guidance, the system_message often includes details like API usage, specific tasks, or constraints on the Agent's actions.
-    Legacy Usage: In older versions of AutoGen, the system_message was used by GroupChat to determine which Agent should respond in a conversation.
+## Installing Dependencies
 
-### Description (description):
-
-    High-Level Summary: This field offers a concise, human-readable summary of the Agent's role, expertise, or personality. It's designed to be easily understood by users and other Agents.
-    GroupChat Orchestration: In newer AutoGen versions (0.2.2 onwards), GroupChat primarily uses the description field to decide which Agent is most suitable to respond in a multi-agent conversation.
-    Simplified Communication: The description facilitates clearer communication between Agents and users, as it provides a quick overview of what an Agent is capable of.
-
-### Key Differences and When to Use Each:
-
-    Purpose:
-        system_message: Focuses on technical instructions and core behavior.
-        description: Provides a high-level summary for easy understanding and GroupChat selection.
-    Audience:
-        system_message: Primarily intended for developers and system administrators.
-        description: Intended for both developers/administrators and end-users interacting with the Agents.
-    GroupChat:
-        Older AutoGen versions: GroupChat uses system_message.
-        Newer AutoGen versions (0.2.2+): GroupChat primarily uses description.
-
-### Recommendation:
-
-In most cases, it's recommended to use both fields:
-
-    Provide detailed technical instructions in the system_message.
-    Offer a clear, concise summary of the Agent's capabilities in the description to facilitate effective communication and GroupChat orchestration.
-
-
-## Hugging Face
-
-
-
-This guide will walk you through setting up and running the Llemma7b hugging face model locally. 
-
-# 1. Install Anaconda
-
+Install Anaconda
 - Download and install it from the [official Anaconda website](https://www.anaconda.com/products/individual).
-
-- Create an environment
 
 ```sh
 conda create -n adaptive python=3.12 anaconda
 conda activate adaptive
 ```
 
-# 2. Install PyTorch using conda.
-
-## 2.1 CPU Only
+Install pyautogen 0.2.33+
 
 ```sh
-conda install pytorch torchvision torchaudio cpuonly -c pytorch
+conda config --set pip_interop_entabled True
+pip install openai pyautogen
 ```
 
-## 2.2 GPU (CUDA) Version
+Note that there is also a package called autogen. Do NOT install it. You want pyautogen.
 
-```sh
-conda install pytorch torchvision torchaudio cudatoolkit -c pytorch
-```
-
-If you need a specific version of CUDA.
-
-```sh
-conda install pytorch torchvision torchaudio cudatoolkit=11.7 -c pytorch -c nvidia
-```
-
-## 2.3 See also: [PyTorch installation page](https://pytorch.org/get-started/locally/).
+## OpenAI Environment Configuration
 
 
-## 2.4 Verify the Installation
+- LINUX: export  OPENAI_API_KEY=sk-
+- WINDOWS: set  OPENAI_API_KEY=sk-
 
-1. Open Python in your terminal:
+If you don't have Docker installed, you need to set AUTOGEN_USE_DOCKER=False. Be advised that if you set this to False it allows code to run on your system at whatever privileges you have (e.g., Windows Admin).
 
-```sh
-python
-```
+# Agents
 
-2. Import PyTorch and print the version:
+There are 11 agents used in the adaptive learning system:
 
-```python
-import torch
-print(torch.__version__)
-print(torch.cuda.is_available())  # Check if CUDA is available (optional)
-```
+| **Agents**         | **Role**                                                                 |
+|--------------------|--------------------------------------------------------------------------|
+| Student            | A user proxy for a student who wants to learn mathematics.               |
+| Knowledge Tracer   | Determine the Student's mathematical capabilities.                       |
+| Teacher            | Present new material in multiple formats.                                |
+| Tutor              | Explain answers to a Student. Help a Student to learn new material or review previous materials. |
+| Problem Generator  | Generate math problems at the appropriate level for the Student.         |
+| Solution Verifier  | Check the Student's solutions to math problems.                          |
+| Programmer         | Write python code to solve math problem.                                 |
+| Code Runner        | Execute python code and display the result.                              |
+| Level Adapter      | Determine when to increase or decrease the level of difficulty for a Student. |
+| Learner Model      | A model of the Student's learning level.                                 |
+| Motivator          | Provides positive and encouraging feedback to the Student.               |
 
-If PyTorch is installed correctly, it will display the version number and `True` if CUDA is available (for GPU installations).
+# Agent Communications
 
-# 3. Install Hugging Face using Conda.
+We had hoped to use an unconstrained `autogen.GroupChatManager` to manage agent communications. Try as we may, we could not get agents to stay within their assigned roles. We eventually resorted to a state machine for agent selection using the panel gui. The limitation of this approach means there is a very specific learning path. See the paper for details.
 
-## 3.1 Install Libraries
+The console knowledge tracer program uses direct agent communication.
 
-```sh
-conda install -c conda-forge transformers huggingface_hub tokenizers datasets
-```
+## State Machine in panel UI
 
-## 3.2 Verify the Installation
+![uml_state_machine_v3](~/../pics/uml_state_machine_v3.png)
 
-1. Open Python in your terminal:
+# Panel UI
 
-```sh
-python
-```
+The UI contains multiple tabs in various states of completion. The Learn tab is the main interface. 
 
-2. Import the `transformers` library and print the version:
+![panel_ui](~/../pics/panel_ui.png)
 
-```python
-import transformers
-print(transformers.__version__)
-```
+The Model tab interacts with the LearnerModel agent and provides an assessment of the student's capabilities.
 
-If the library is installed correctly, it will display the version number.
+![learner_model](~/../pics/learner_model.png)
 
-# 4. Download the Llemma 7B model.
-
-## 4.1 Run `verify_installation.py`
-This will automatically download and cache the Llemma 7B model.
-
-```sh
-python verify_installation.py
-```
-
-## 4.2  Example Output
-
-If everything is set up correctly, you should see output similar to this:
-
-```
-Successfully loaded huggingface/lemma-7b
-tensor([[...]], grad_fn=<AddBackward0>)
-```
