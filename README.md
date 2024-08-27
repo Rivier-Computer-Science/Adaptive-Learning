@@ -8,7 +8,11 @@ It uses [Microsoft's autogen](https://microsoft.github.io/autogen/docs/Getting-S
 
 It uses [panel](https://panel.holoviz.org/) for the chat interface. It opens in a web browser.
 
-There is a paper accepted for publication in the Rivier Academic Journal describing the system. A link will be provided when it is published.
+There is [a paper published by the Rivier Academic Journal](https://www2.rivier.edu/journal/ROAJ-Summer-2024/J1324_Glossner%20et%20al_2024.pdf) describing the system. 
+
+It may be cited as:
+Dokku, S., Gumpula, A., Gudati, S., Nagisetty, M., Thimmarayappa, R., Yeruva, J. P., & Glossner, J. (2024). MULTI-AGENT ADAPTIVE LEARNING FOR MATHEMATICS, Rivier Academic Journal, Volumne 19, Number 1, Summer 2024, Rivier University.
+
 
 # Running the Code
 
