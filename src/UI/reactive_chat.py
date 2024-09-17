@@ -9,6 +9,8 @@ from src.UI.avatar import avatar
 import src.Agents.agents as agents
 from src import globals as globals
 
+from src.UI.reactive_chat16 import Leaderboard
+
 class ReactiveChat(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
         super().__init__(**params)
@@ -24,6 +26,9 @@ class ReactiveChat(param.Parameterized):
         # Dashboard tab
         self.dashboard_view = pn.pane.Markdown(f"Total messages: {len(self.groupchat_manager.groupchat.messages)}")
         
+        # Leaderboard tab
+        self.leaderboard = Leaderboard()
+
         # Progress tab
         self.progress_text = pn.pane.Markdown(f"**Student Progress**")
         self.progress = 0
@@ -121,6 +126,7 @@ class ReactiveChat(param.Parameterized):
                     ),
             ("Dashboard", pn.Column(self.dashboard_view)
                     ),
+            ("Leaderboard", self.leaderboard.draw_view()),
             ("Progress", pn.Column(
                     self.progress_text,
                     pn.Row(                        
