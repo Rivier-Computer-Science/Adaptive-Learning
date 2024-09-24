@@ -45,63 +45,75 @@
     # Tutor: Ask the student if they want more test questions
     # Teacher: Start the next lesson at the Student's request
 
+# src/Agents/chat_manager_fsms.py
+
 from typing import Dict
 from src.KnowledgeGraphs.math_graph import KnowledgeGraph
 import src.KnowledgeGraphs.math_taxonomy as mt
-
 
 class FSM:
     def __init__(self, agents: Dict):
         self.agents = agents
         self.current_state = "AwaitingTopic"
-        
-    
-    def next_speaker_selector(self, last_speaker, groupchat):
-        print(f"Current state: {self.current_state}") 
 
+    def next_speaker_selector(self, last_speaker, groupchat):
+        print(f"Current state: {self.current_state}")
+
+        # Transition logic with LLM integration
         if self.current_state == "AwaitingTopic":
             self.current_state = "PresentingLesson"
             return self.agents["teacher"]
-        
+
         elif self.current_state == "PresentingLesson":
             self.current_state = "AwaitingProblem"
             return self.agents["tutor"]
-        
+
         elif self.current_state == "AwaitingProblem":
             self.current_state = "AwaitingAnswer"
             return self.agents["problem_generator"]
-        
+
         elif self.current_state == "AwaitingAnswer":
             self.current_state = "VerifyingAnswer"
             return self.agents["student"]
-        
+
         elif self.current_state == "VerifyingAnswer":
             self.current_state = "VisualizingAnswer"
             return self.agents["solution_verifier"]
-        
+
         elif self.current_state == "VisualizingAnswer":
             self.current_state = "RunningCode"
             return self.agents["programmer"]
-        
+
         elif self.current_state == "RunningCode":
             self.current_state = "UpdatingModel"
             return self.agents["code_runner"]
-        
+
         elif self.current_state == "UpdatingModel":
             self.current_state = "AdaptingLevel"
             return self.agents["learner_model"]
-        
+
         elif self.current_state == "AdaptingLevel":
             self.current_state = "Motivating"
             return self.agents["level_adapter"]
-        
+
         elif self.current_state == "Motivating":
-            self.current_state = "PresentingLesson" #TODO: Need more complicated state machine
-            return self.agents["motivator"]
-                
+            # Check if more questions are desired or move to the next lesson
+            if groupchat.user_requests_more_questions():
+                self.current_state = "AwaitingProblem"
+                return self.agents["tutor"]
+            else:
+                self.current_state = "NextLesson"
+                return self.agents["teacher"]
+
+        elif self.current_state == "NextLesson":
+            self.current_state = "AwaitingProblem"
+            return self.agents["teacher"]
+
         else:  # Default to tutor for managing other cases
-            print("state not found. Defaulting to Tutor")
+            print("State not found. Defaulting to Tutor")
             return self.agents["tutor"]
+
+# Additional classes and methods as needed
         
 
 class FSMGraphTracerConsole:
