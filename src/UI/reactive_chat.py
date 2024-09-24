@@ -9,6 +9,8 @@ from src.UI.avatar import avatar
 import src.Agents.agents as agents
 from src import globals as globals
 
+from src.UI.reactive_chat21 import PromptBasedLearning
+
 class ReactiveChat(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
         super().__init__(**params)
@@ -37,6 +39,8 @@ class ReactiveChat(param.Parameterized):
         self.button_update_learner_model = pn.widgets.Button(name='Update Learner Model', button_type='primary')
         self.button_update_learner_model.on_click(self.handle_button_update_model)
         self.is_model_tab = False
+        
+        self.promptC=PromptBasedLearning(groupchat_manager=groupchat_manager)
 
         # TODO: Consider whether groupchat_manager or this class should manage the chat_interface
         #       Currently, I have placed it in CustomGroupChatManager
@@ -130,7 +134,9 @@ class ReactiveChat(param.Parameterized):
             ("Model", pn.Column(
                       pn.Row(self.button_update_learner_model),
                       pn.Row(self.model_tab_interface))
-                    ),     
+                    ),   
+             ("Prompt-Based Learning", self.promptC.draw_view()),  # New tab added here
+    
         )
         return tabs
 
