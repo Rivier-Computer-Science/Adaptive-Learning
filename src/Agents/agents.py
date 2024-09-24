@@ -14,7 +14,7 @@ from .learner_model_agent import LearnerModelAgent
 from .level_adapter_agent import LevelAdapterAgent
 from .motivator_agent import MotivatorAgent
 from .gamification_agent import GamificationAgent
-
+from .telugu_teaching_agent import TeluguTeachingAgent
 from src.Models.llm_config import gpt3_config
 
 
@@ -33,6 +33,7 @@ learner_model = LearnerModelAgent()
 level_adapter = LevelAdapterAgent()
 motivator = MotivatorAgent()
 gamification = GamificationAgent(name="GamificationAgent")
+telugu_teaching_agent = TeluguTeachingAgent()
 
 
 # agents_list = [student, knowledge_tracer, teacher, tutor, problem_generator, solution_verifier,
@@ -49,7 +50,8 @@ agents_dict = {
     "learner_model": learner_model,
     "level_adapter": level_adapter,
     "motivator": motivator,
-    "gamification": gamification
+    "gamification": gamification,
+    "telugu_teaching_agent": telugu_teaching_agent,
 }
 
 agents_dict_by_name = {
@@ -64,8 +66,8 @@ agents_dict_by_name = {
     "LearnerModelAgent": learner_model,
     "LevelAdapterAgent": level_adapter,
     "MotivatorAgent": motivator,
-    "GamificationAgent": gamification
-
+    "GamificationAgent": gamification,
+    "TeluguTeachingAgent": telugu_teaching_agent,
 }
 
  

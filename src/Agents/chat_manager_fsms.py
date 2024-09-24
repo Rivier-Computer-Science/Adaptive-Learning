@@ -48,12 +48,13 @@
 from typing import Dict
 from src.KnowledgeGraphs.math_graph import KnowledgeGraph
 import src.KnowledgeGraphs.math_taxonomy as mt
-
-
+from src.Agents.telugu_teaching_agent import TeluguTeachingAgent
 class FSM:
     def __init__(self, agents: Dict):
         self.agents = agents
         self.current_state = "AwaitingTopic"
+        self.telugu_agent = TeluguTeachingAgent()
+
         
     
     def next_speaker_selector(self, last_speaker, groupchat):
@@ -78,11 +79,7 @@ class FSM:
         elif self.current_state == "VerifyingAnswer":
             self.current_state = "VisualizingAnswer"
             return self.agents["solution_verifier"]
-        
-        elif self.current_state == "VisualizingAnswer":
-            self.current_state = "RunningCode"
-            return self.agents["programmer"]
-        
+               
         elif self.current_state == "RunningCode":
             self.current_state = "UpdatingModel"
             return self.agents["code_runner"]
@@ -101,7 +98,8 @@ class FSM:
                 
         else:  # Default to tutor for managing other cases
             print("state not found. Defaulting to Tutor")
-            return self.agents["tutor"]
+            self.current_state = "PresentingLesson"
+            return self.agents["teacher"]
         
 
 class FSMGraphTracerConsole:
@@ -114,6 +112,7 @@ class FSMGraphTracerConsole:
         self.knowledge_tracer = self.agents["knowledge_tracer"]
         self.problem_generator = self.agents["problem_generator"]
         self.solution_verifier = self.agents["solution_verifier"]
+        self.telugu_agent = self.agents["telugu_teaching_agent"]
 
         # Build knowledge graph
         # self.node_name = None
@@ -123,21 +122,7 @@ class FSMGraphTracerConsole:
         # Replace the subsubsub_topics "key" with an integer denoting level of difficulty
         # Each dictionary value is a list. Flatten it and increment the key
         # TODO: Update this code in graph_builder.py
-        self.skill_level = 0
-        self.kg = {}
-        i = 0  # Start with a counter at 0
-        for key, value_list in mt.subsubsub_topics.items():
-            for value in value_list:
-                self.kg[i] = value  
-                i += 1 
-        
-        # pick a graph edge - start with Algebra
-        for key, value in self.kg.items():
-            if value.startswith("Algebra"):
-                self.skill_level = key
-                break
-            else:
-                self.skill_level = 0 
+
 
     
     def next_speaker_selector(self):
@@ -157,7 +142,7 @@ class FSMGraphTracerConsole:
            #print("pg_response=  ", self.pg_response)
            
            self.current_state = "AwaitStudentAnswer"
-           return self.problem_generator
+           return self.telugu_agent
         
         if self.current_state == "AwaitStudentAnswer":
             self.student_response = input()
@@ -196,7 +181,7 @@ class FSMGraphTracerGUI:
         self.knowledge_tracer = self.agents["knowledge_tracer"]
         self.problem_generator = self.agents["problem_generator"]
         self.solution_verifier = self.agents["solution_verifier"]
-
+        self.telugu_agent = self.agents["telugu_teaching_agent"]
         # Build knowledge graph
         # self.node_name = None
         # self.kg =   KnowledgeGraph()
@@ -205,21 +190,7 @@ class FSMGraphTracerGUI:
         # Replace the subsubsub_topics "key" with an integer denoting level of difficulty
         # Each dictionary value is a list. Flatten it and increment the key
         # TODO: Update this code in graph_builder.py
-        self.skill_level = 0
-        self.kg = {}
-        i = 0  # Start with a counter at 0
-        for key, value_list in mt.subsubsub_topics.items():
-            for value in value_list:
-                self.kg[i] = value  
-                i += 1 
 
-        # pick a graph edge - start with Algebra
-        for key, value in self.kg.items():
-            if value.startswith("Algebra"):
-                self.skill_level = key
-                break
-            else:
-                self.skill_level = 0 
 
 
 

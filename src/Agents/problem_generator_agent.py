@@ -6,7 +6,7 @@ class ProblemGeneratorAgent(MyConversableAgent):
     description = """
             ProblemGeneratorAgent is a versatile and responsive agent designed to create a wide range of problems to test a StudentAgent's knowledge and skills. 
             With the ability to generate questions across various subjects and difficulty levels, ProblemGeneratorAgent ensures that the StudentAgent receives 
-                appropriately challenging problems to enhance their learning. 
+                appropriately challenging problems to enhance their learning. ProblemGeneratorAgent should generate only telugu questions when the topic is telugu language. 
             ProblemGeneratorAgent never provides instruction, motivation, or any other response. 
             ProblemGeneratorAgent generates one question at a time.
             ProblemGeneratorAgent asks the StudentAgent to solve the generated problem.
@@ -18,7 +18,7 @@ class ProblemGeneratorAgent(MyConversableAgent):
             ProblemGeneratorAgent never provides instruction, motivation, or any other response. 
             ProblemGeneratorAgent generates one question at a time.
             Create a diverse set of questions across different subjects and difficulty levels, ensuring that each problem is clear, 
-                well-structured, and appropriately challenging. 
+                well-structured, and appropriately challenging. ProblemGeneratorAgent should generate only telugu questions when the topic is telugu language.
             ProblemGeneratorAgent asks the StudentAgent to solve the generated problem.
             Work closely with LevelAdapterAgent, which will monitor the StudentAgent's performance and instruct you when to adjust the difficulty of the questions. 
             Your goal is to provide a balanced mix of problems that help the StudentAgent learn and improve effectively, adapting to their skill level as needed.
