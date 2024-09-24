@@ -1,13 +1,17 @@
 
 
-import param
-import panel as pn
 import asyncio
 import re
+
 import autogen as autogen
-from src.UI.avatar import avatar
+import panel as pn
+import param
+
 import src.Agents.agents as agents
 from src import globals as globals
+from src.UI.avatar import avatar
+from src.UI.reactive_chat20 import BookmarkPage
+
 
 class ReactiveChat(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
@@ -16,6 +20,9 @@ class ReactiveChat(param.Parameterized):
         pn.extension(design="material")
 
         self.groupchat_manager = groupchat_manager
+        
+        self.bookmarked_messages=[]
+ 
  
         # Learn tab
         self.LEARN_TAB_NAME = "LearnTab"
@@ -23,6 +30,9 @@ class ReactiveChat(param.Parameterized):
 
         # Dashboard tab
         self.dashboard_view = pn.pane.Markdown(f"Total messages: {len(self.groupchat_manager.groupchat.messages)}")
+        
+        # Initialize BookmarkPage
+        self.bookmark_page = BookmarkPage()
         
         # Progress tab
         self.progress_text = pn.pane.Markdown(f"**Student Progress**")
@@ -60,11 +70,20 @@ class ReactiveChat(param.Parameterized):
     
     def update_learn_tab(self, recipient, messages, sender, config):
         if self.groupchat_manager.chat_interface.name is not self.LEARN_TAB_NAME: return
+        bookmark_button = pn.widgets.ButtonIcon(icon="heart", size="2em", description="favorite")
+        
         last_content = messages[-1]['content'] 
         if all(key in messages[-1] for key in ['name']):
+            bookmark_button.on_click(lambda event: self.bookmark_page.add_bookmark({"message":last_content, "user":messages[-1]['name']}))
+            
             self.learn_tab_interface.send(last_content, user=messages[-1]['name'], avatar=avatar[messages[-1]['name']], respond=False)
+            self.learn_tab_interface.append(pn.Column(bookmark_button))
+        
         else:
+            bookmark_button.on_click(lambda event: self.bookmark_page.add_bookmark({"message":last_content, "user": recipient.name}))
+            
             self.learn_tab_interface.send(last_content, user=recipient.name, avatar=avatar[recipient.name], respond=False)
+            self.learn_tab_interface.append(pn.Column(bookmark_button))
         
     ########## tab2: Dashboard
     def update_dashboard(self):
@@ -131,6 +150,7 @@ class ReactiveChat(param.Parameterized):
                       pn.Row(self.button_update_learner_model),
                       pn.Row(self.model_tab_interface))
                     ),     
+            ("Bookmark", self.bookmark_page.get_view())
         )
         return tabs
 
