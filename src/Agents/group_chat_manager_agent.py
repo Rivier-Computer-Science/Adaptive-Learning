@@ -122,5 +122,25 @@ class CustomGroupChatManager(autogen.GroupChatManager):
     @chat_interface.setter
     def chat_interface(self, chat_interface: pn.chat.ChatInterface):
         self._chat_interface = chat_interface
+        
+    async def handle_agent_communication(self, sender, message):
+        # Logic to route messages between agents based on the current state and sender
+        if sender == "problem_generator":
+            await self.route_to_verifier(message)
+        elif sender == "learner_model":
+            await self.route_to_problem_generator(message)
+        # Add other routes as necessary
+
+    async def route_to_verifier(self, message):
+        # Send message to SolutionVerifier
+        verifier_agent = self.agents.get("solution_verifier")
+        await verifier_agent.receive_message(message)
+
+    async def route_to_problem_generator(self, message):
+        # Send message to ProblemGenerator
+        problem_generator_agent = self.agents.get("problem_generator")
+        await problem_generator_agent.receive_message(message)
+
+
 
 
