@@ -1,9 +1,8 @@
-
-
 import param
 import panel as pn
 import asyncio
 import re
+import pandas as pd
 import autogen as autogen
 from src.UI.avatar import avatar
 import src.Agents.agents as agents
@@ -12,6 +11,7 @@ from src import globals as globals
 class ReactiveChat(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
         super().__init__(**params)
+
         
         pn.extension(design="material")
 
@@ -25,11 +25,14 @@ class ReactiveChat(param.Parameterized):
         self.dashboard_view = pn.pane.Markdown(f"Total messages: {len(self.groupchat_manager.groupchat.messages)}")
         
         # Progress tab
-        self.progress_text = pn.pane.Markdown(f"**Student Progress**")
+        self.progress_text = pn.pane.Markdown(f"Student Progress")
         self.progress = 0
         self.max_questions = 10
         self.progress_bar = pn.widgets.Progress(name='Progress', value=self.progress, max=self.max_questions)        
         self.progress_info = pn.pane.Markdown(f"{self.progress} out of {self.max_questions}", width=60)
+
+        # Question and answer details for tracking
+        self.question_details = pn.widgets.DataFrame(pd.DataFrame(columns=['Question', 'User Response', 'Correct']))
 
         # Model tab. Capabilities for the LearnerModel
         self.MODEL_TAB_NAME = "ModelTab"
@@ -38,18 +41,18 @@ class ReactiveChat(param.Parameterized):
         self.button_update_learner_model.on_click(self.handle_button_update_model)
         self.is_model_tab = False
 
-        # TODO: Consider whether groupchat_manager or this class should manage the chat_interface
-        #       Currently, I have placed it in CustomGroupChatManager
+        # GroupChatManager sets up the chat interface
         self.groupchat_manager.chat_interface = self.learn_tab_interface  # default chat tab
 
     ############ tab1: Learn interface
     async def a_learn_tab_callback(self, contents: str, user: str, instance: pn.chat.ChatInterface):
         '''
             All panel callbacks for the learn tab come through this callback function
-            Because there are two chat panels, we need to save the instance
-            Then, when update is called, check the instance name
         '''                      
         self.groupchat_manager.chat_interface = instance
+        # Store the question in globals if it contains 'solve'
+        if 'solve' or 'Solve' in contents.lower():
+            globals.last_question = contents  # Store the last question
         if not globals.initiate_chat_task_created:
             asyncio.create_task(self.groupchat_manager.delayed_initiate_chat(agents.tutor, self.groupchat_manager, contents))  
         else:
@@ -72,19 +75,41 @@ class ReactiveChat(param.Parameterized):
 
     ########### tab3: Progress
     def update_progress(self, contents, user):
-        # Parse the agent's output for keywords                 
-        if user == "LevelAdapterAgent":            
+        if user == "LevelAdapterAgent":
+        # Check if the response is from the LevelAdapterAgent
             pattern = re.compile(r'\b(correct|correctly|verified|yes|well done|excellent|successfully|that\'s right|good job|excellent|right|good|affirmative)\b', re.IGNORECASE)            
             is_correct = pattern.search(contents)
+        
             if is_correct:
-               print("################ CORRECT ANSWER #################")
-               if self.progress < self.max_questions:  
+                print("################ CORRECT ANSWER #################")
+                if self.progress < self.max_questions:  
                     self.progress += 1
                     self.progress_bar.value = self.progress
-                    self.progress_info.object = f"**{self.progress} out of {self.max_questions}**"
-
+                    self.progress_info.object = f"{self.progress} out of {self.max_questions}"
+                
+                # Assuming the last question is stored in globals.last_question
+                question = globals.last_question
+                self.add_to_question_history(question, contents, True)  # Add correct answer to history
             else:
                 print("################ WRONG ANSWER #################")
+                question = globals.last_question
+                self.add_to_question_history(question, contents, False)  # Add incorrect answer to history
+
+    def add_to_question_history(self, question, user_response, is_correct):
+        '''
+            Add the current question and answer details to the question history table
+            only if the question or response contains the specified keywords.
+        '''
+        # Define regex pattern to check for 'solve', 'answer', or correctness indicators
+        pattern = re.compile(r'\b(solve|answer|correct|correctly|verified|yes|well done|excellent|successfully|that\'s right|good job|right|good|affirmative)\b', re.IGNORECASE)
+
+        # Check if either the question or user response contains the required keywords
+        if pattern.search(str(question)) or pattern.search(str(user_response)):
+            correct_str = 'Yes' if is_correct else 'No'
+            new_row = pd.DataFrame({'Question': [question], 'User Response': [user_response], 'Correct': [correct_str]})
+        
+            # Concatenate the new row with the existing DataFrame
+            self.question_details.value = pd.concat([self.question_details.value, new_row], ignore_index=True)
 
     ########## Model Tab
     async def handle_button_update_model(self, event=None):
@@ -101,8 +126,7 @@ class ReactiveChat(param.Parameterized):
             agents.learner_model.send(m, recipient=agents.learner_model, request_reply=False)
         await agents.learner_model.a_send("What is the student's current capabilities", recipient=agents.learner_model, request_reply=True)
         response = agents.learner_model.last_message(agent=agents.learner_model)["content"]
-        self.model_tab_interface.send(response, user=agents.learner_model.name,avatar=avatar[agents.learner_model.name])
-
+        self.model_tab_interface.send(response, user=agents.learner_model.name, avatar=avatar[agents.learner_model.name])
 
     async def a_model_tab_callback(self, contents: str, user: str, instance: pn.chat.ChatInterface):
         '''
@@ -111,22 +135,20 @@ class ReactiveChat(param.Parameterized):
         self.groupchat_manager.chat_interface = instance
         if user == "System" or user == "User":
             response = agents.learner_model.last_message(agent=agents.learner_model)["content"]
-            self.learn_tab_interface.send(response, user=agents.learner_model.name,avatar=avatar[agents.learner_model.name])
+            self.learn_tab_interface.send(response, user=agents.learner_model.name, avatar=avatar[agents.learner_model.name])
     
-
     ########## Create the "windows" and draw the tabs
     def draw_view(self):         
         tabs = pn.Tabs(  
-            ("Learn", pn.Column(self.learn_tab_interface)
-                    ),
-            ("Dashboard", pn.Column(self.dashboard_view)
-                    ),
+            ("Learn", pn.Column(self.learn_tab_interface)),
+            ("Dashboard", pn.Column(self.dashboard_view)),
             ("Progress", pn.Column(
                     self.progress_text,
                     pn.Row(                        
                         self.progress_bar,
-                        self.progress_info))
-                    ),
+                        self.progress_info),
+                    self.question_details
+                    )),
             ("Model", pn.Column(
                       pn.Row(self.button_update_learner_model),
                       pn.Row(self.model_tab_interface))
@@ -135,10 +157,12 @@ class ReactiveChat(param.Parameterized):
         return tabs
 
     @property
-    def groupchat_manager(self) ->  autogen.GroupChatManager:
+    def groupchat_manager(self) -> autogen.GroupChatManager:
         return self._groupchat_manager
     
     @groupchat_manager.setter
     def groupchat_manager(self, groupchat_manager: autogen.GroupChatManager):
         self._groupchat_manager = groupchat_manager
-
+if __name__ == "main":    
+    app = create_app()
+    pn.serve(app, callback_exception='verbose')
