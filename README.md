@@ -67,6 +67,13 @@ You can also use a .env file if you don't want to export/set every time.
 pip install python-dotenv
 ```
 
+## Speech Recognition Module
+```sh
+pip install SpeechRecognition 
+conda install pyaudio
+```
+
+
 # Agents
 
 There are 11 agents used in the adaptive learning system:
