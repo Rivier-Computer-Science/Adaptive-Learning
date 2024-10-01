@@ -3,6 +3,7 @@ from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt4_config
 from src.KnowledgeGraphs.math_graph import KnowledgeGraph
 import src.KnowledgeGraphs.math_taxonomy as mt
+from src.KnowledgeGraphs.math_taxonomy import subsubsub_topics as mt_topics
 
 class ProblemGeneratorAgent(MyConversableAgent):
     description = """
@@ -35,7 +36,7 @@ class ProblemGeneratorAgent(MyConversableAgent):
             **kwargs
         )
         self.knowledge_graph = KnowledgeGraph()
-        self.knowledge_graph.build_dag_from_dict(mt.topics)
+        self.knowledge_graph.build_dag_from_dict(mt_topics)
 
     def generate_adaptive_question(self, topic):
         """Generate an adaptive question based on the given topic using the knowledge graph."""
