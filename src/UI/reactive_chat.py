@@ -7,6 +7,7 @@ import autogen as autogen
 from src.UI.avatar import avatar
 import src.Agents.agents as agents
 from src import globals as globals
+import pprint
 
 class ReactiveChat(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
@@ -77,8 +78,19 @@ class ReactiveChat(param.Parameterized):
     def update_progress(self, contents, user):
         if user == "LevelAdapterAgent":
         # Check if the response is from the LevelAdapterAgent
-            pattern = re.compile(r'\b(correct|correctly|verified|yes|well done|excellent|successfully|that\'s right|good job|excellent|right|good|affirmative)\b', re.IGNORECASE)            
-            is_correct = pattern.search(contents)
+            pattern = re.compile(r'\b(incorrect|wrong)\b', re.IGNORECASE)            
+            #pattern = re.compile(r'\b(correct|correctly|verified|yes|well done|excellent|successfully|that\'s right|good job|excellent|right|good|affirmative)\b', re.IGNORECASE)            
+            is_correct = not pattern.search(contents)
+            answer_given = globals.last_question
+
+            all_messages = self.groupchat_manager.groupchat.get_messages()
+            last_message = all_messages[-1]["content"]
+
+
+            print("##### UPDATE PROGRESS::contents \n", contents)
+            print('########## DUMP OF ALL MESSAGES from GroupChat manager\n')
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(self.groupchat_manager.groupchat.get_messages())
         
             if is_correct:
                 print("################ CORRECT ANSWER #################")
@@ -87,29 +99,30 @@ class ReactiveChat(param.Parameterized):
                     self.progress_bar.value = self.progress
                     self.progress_info.object = f"{self.progress} out of {self.max_questions}"
                 
-                # Assuming the last question is stored in globals.last_question
-                question = globals.last_question
-                self.add_to_question_history(question, contents, True)  # Add correct answer to history
+                # Assuming the last question is stored in globals.last_question                
+                self.add_to_question_history(answer_given, last_message, True)  # Add correct answer to history
             else:
-                print("################ WRONG ANSWER #################")
-                question = globals.last_question
-                self.add_to_question_history(question, contents, False)  # Add incorrect answer to history
+                print("################ WRONG ANSWER #################")               
+                self.add_to_question_history(answer_given, last_message, False)  # Add incorrect answer to history
 
-    def add_to_question_history(self, question, user_response, is_correct):
+    def add_to_question_history(self, answer_given, question, is_correct):
         '''
             Add the current question and answer details to the question history table
             only if the question or response contains the specified keywords.
         '''
         # Define regex pattern to check for 'solve', 'answer', or correctness indicators
-        pattern = re.compile(r'\b(solve|answer|correct|correctly|verified|yes|well done|excellent|successfully|that\'s right|good job|right|good|affirmative)\b', re.IGNORECASE)
+        # pattern = re.compile(r'\b(solve|answer|correct|correctly|verified|yes|well done|excellent|successfully|that\'s right|good job|right|good|affirmative)\b', re.IGNORECASE)
 
-        # Check if either the question or user response contains the required keywords
-        if pattern.search(str(question)) or pattern.search(str(user_response)):
-            correct_str = 'Yes' if is_correct else 'No'
-            new_row = pd.DataFrame({'Question': [question], 'User Response': [user_response], 'Correct': [correct_str]})
+        # # Check if either the question or user response contains the required keywords
+        # if pattern.search(str(question)) or pattern.search(str(user_response)):
+        #     correct_str = 'Yes' if is_correct else 'No'
+        print("QUESTION: \n", question)
+        print("USER RESPONSE: \n", answer_given)
         
-            # Concatenate the new row with the existing DataFrame
-            self.question_details.value = pd.concat([self.question_details.value, new_row], ignore_index=True)
+        new_row = pd.DataFrame({'Question': [question], 'User Response': [answer_given], 'Correct': [is_correct]})
+        
+        # Concatenate the new row with the existing DataFrame
+        self.question_details.value = pd.concat([self.question_details.value, new_row], ignore_index=True)
 
     ########## Model Tab
     async def handle_button_update_model(self, event=None):
