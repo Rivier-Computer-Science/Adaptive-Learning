@@ -1,6 +1,8 @@
 ##################### Problem Generator #########################
 from .conversable_agent import MyConversableAgent
 from src.Models.llm_config import gpt4_config
+from src.KnowledgeGraphs.math_graph import KnowledgeGraph
+import src.KnowledgeGraphs.math_taxonomy as mt
 
 class ProblemGeneratorAgent(MyConversableAgent):
     description = """
@@ -24,7 +26,7 @@ class ProblemGeneratorAgent(MyConversableAgent):
             Your goal is to provide a balanced mix of problems that help the StudentAgent learn and improve effectively, adapting to their skill level as needed.
             """
     def __init__(self, **kwargs):
-        kwargs['llm_config'] = gpt4_config  # override default
+        kwargs['llm_config'] = gpt4_config  # Use GPT-4 for question generation
         super().__init__(
             name="ProblemGeneratorAgent",
             human_input_mode="NEVER",
@@ -32,50 +34,23 @@ class ProblemGeneratorAgent(MyConversableAgent):
             description=self.description,
             **kwargs
         )
-        
-        # Initialize the question bank and difficulty levels
-        self.question_bank = {}
-        self.difficulty_levels = ['easy', 'medium', 'hard']
+        self.knowledge_graph = KnowledgeGraph()
+        self.knowledge_graph.build_dag_from_dict(mt.topics)
 
-    # New method to generate adaptive questions
-    def generate_adaptive_question(self, subject, difficulty):
-        """
-        Generate an adaptive question based on the given subject and difficulty.
-        """
-        # Use the LLM to generate a question
-        prompt = f"Generate a {difficulty} {subject} question for a student."
-        response = self.generate_response(prompt)
+    def generate_adaptive_question(self, topic):
+        """Generate an adaptive question based on the given topic using the knowledge graph."""
+        difficulty = self.knowledge_graph.get_difficulty(topic)
+        prerequisites = list(self.knowledge_graph.graph.predecessors(topic))
+        next_topics = list(self.knowledge_graph.graph.successors(topic))
         
-        # Store the generated question in the question bank
-        if subject not in self.question_bank:
-            self.question_bank[subject] = {}
-        if difficulty not in self.question_bank[subject]:
-            self.question_bank[subject][difficulty] = []
-        self.question_bank[subject][difficulty].append(response)
-        
-        return response
+        prompt = f"""Generate a difficulty level {difficulty} question about {topic}.
+                     Prerequisites: {', '.join(prerequisites)}
+                     Related upcoming topics: {', '.join(next_topics)}"""
+        return self.generate_response(prompt)
 
-    # New method to get a question from the bank or generate a new one
-    def get_or_generate_question(self, subject, difficulty):
-        """
-        Retrieve a question from the bank or generate a new one if needed.
-        """
-        if subject in self.question_bank and difficulty in self.question_bank[subject] and self.question_bank[subject][difficulty]:
-            # Retrieve a random question from the bank
-            return random.choice(self.question_bank[subject][difficulty])
-        else:
-            # Generate a new question
-            return self.generate_adaptive_question(subject, difficulty)
-
-    # New method to adjust difficulty based on student performance
-    def adjust_difficulty(self, current_difficulty, performance):
-        """
-        Adjust the difficulty level based on student performance.
-        """
-        current_index = self.difficulty_levels.index(current_difficulty)
-        if performance == 'good' and current_index < len(self.difficulty_levels) - 1:
-            return self.difficulty_levels[current_index + 1]
-        elif performance == 'poor' and current_index > 0:
-            return self.difficulty_levels[current_index - 1]
-        else:
-            return current_difficulty
+    def get_next_topic(self, current_topic, performance):
+        """Determine the next topic based on current performance and knowledge graph."""
+        if performance == 'good':
+            next_topics = self.knowledge_graph.get_next_topics(current_topic)
+            return next_topics[0] if next_topics else current_topic
+        return current_topic  # Stay on the same topic if performance is not good
