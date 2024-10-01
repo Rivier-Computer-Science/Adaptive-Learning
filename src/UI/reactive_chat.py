@@ -79,7 +79,6 @@ class ReactiveChat(param.Parameterized):
         if user == "LevelAdapterAgent":
         # Check if the response is from the LevelAdapterAgent
             pattern = re.compile(r'\b(incorrect|wrong)\b', re.IGNORECASE)            
-            #pattern = re.compile(r'\b(correct|correctly|verified|yes|well done|excellent|successfully|that\'s right|good job|excellent|right|good|affirmative)\b', re.IGNORECASE)            
             is_correct = not pattern.search(contents)
             answer_given = globals.last_question
 
@@ -110,12 +109,6 @@ class ReactiveChat(param.Parameterized):
             Add the current question and answer details to the question history table
             only if the question or response contains the specified keywords.
         '''
-        # Define regex pattern to check for 'solve', 'answer', or correctness indicators
-        # pattern = re.compile(r'\b(solve|answer|correct|correctly|verified|yes|well done|excellent|successfully|that\'s right|good job|right|good|affirmative)\b', re.IGNORECASE)
-
-        # # Check if either the question or user response contains the required keywords
-        # if pattern.search(str(question)) or pattern.search(str(user_response)):
-        #     correct_str = 'Yes' if is_correct else 'No'
         print("QUESTION: \n", question)
         print("USER RESPONSE: \n", answer_given)
         
