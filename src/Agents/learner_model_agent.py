@@ -1,8 +1,7 @@
 ##################### Learner Model #########################
 from .conversable_agent import MyConversableAgent
 from src.KnowledgeGraphs.math_graph import KnowledgeGraph
-import src.KnowledgeGraphs.math_taxonomy as mt
-
+from src.KnowledgeGraphs.math_taxonomy import subsubsub_topics as mt_topics
 class LearnerModelAgent(MyConversableAgent):
     description = """
             LearnerModelAgent is an insightful and adaptive agent designed to monitor and assess the current capabilities of the StudentAgent. 
@@ -31,7 +30,7 @@ class LearnerModelAgent(MyConversableAgent):
         )
         self.learner_model = {}
         self.knowledge_graph = KnowledgeGraph()
-        self.knowledge_graph.build_dag_from_dict(mt.topics)
+        self.knowledge_graph.build_dag_from_dict(mt_topics)
 
     def update_model(self, topic, performance):
         """Update the learner model based on the student's performance on a topic."""
