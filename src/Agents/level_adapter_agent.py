@@ -1,7 +1,7 @@
 ##################### Level Adapter #########################
 from .conversable_agent import MyConversableAgent
 from src.KnowledgeGraphs.math_graph import KnowledgeGraph
-import src.KnowledgeGraphs.math_taxonomy as mt
+from src.KnowledgeGraphs.math_taxonomy import subsubsub_topics as mt_topics
 
 class LevelAdapterAgent(MyConversableAgent):
     description = """
@@ -26,7 +26,7 @@ class LevelAdapterAgent(MyConversableAgent):
             **kwargs
         )
         self.knowledge_graph = KnowledgeGraph()
-        self.knowledge_graph.build_dag_from_dict(mt.topics)
+        self.knowledge_graph.build_dag_from_dict(mt_topics)
 
     def adjust_difficulty(self, current_topic, performance):
         """Adjust the topic based on performance and knowledge graph structure."""
