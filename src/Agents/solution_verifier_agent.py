@@ -14,9 +14,17 @@ class SolutionVerifierAgent(MyConversableAgent):
             """
     def __init__(self, **kwargs):
         super().__init__(
-                name="SolutionVerifierAgent",
-                human_input_mode="NEVER",
-                system_message=self.system_message,
-                description=self.description,
-                **kwargs
-            )
+            name="SolutionVerifierAgent",
+            human_input_mode="NEVER",
+            system_message=self.system_message,
+            description=self.description,
+            **kwargs
+        )
+
+    def verify_solution(self, question, student_answer, correct_answer):
+        """Verify the student's answer against the correct answer."""
+        prompt = f"""Question: {question}
+                     Student's answer: {student_answer}
+                     Correct answer: {correct_answer}
+                     Is the student's answer correct? Provide a detailed explanation."""
+        return self.generate_response(prompt)
