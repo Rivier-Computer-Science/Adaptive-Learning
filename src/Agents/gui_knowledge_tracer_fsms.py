@@ -1,4 +1,5 @@
 from typing import Dict
+import pprint
 from src.KnowledgeGraphs.math_graph import KnowledgeGraph
 import src.KnowledgeGraphs.math_taxonomy as mt
 class FSM:
@@ -56,6 +57,7 @@ class FSM:
 class FSMGraphTracerConsole:
     def __init__(self, agents: Dict):
         self.agents = agents
+        self.groupchat_manager = None
         self.current_state = "Initial"
         
         # Enumerate the agents to reduce typing
@@ -79,6 +81,10 @@ class FSMGraphTracerConsole:
                 break
             else:
                 self.skill_level = 0 
+
+    def register_groupchat_manager(self, groupchat_manager):
+        self.groupchat_manager = groupchat_manager
+
     # Modify the next_speaker_selector to accept the required arguments
     def next_speaker_selector(self, last_speaker=None, groupchat=None):
         print(f"Current state: {self.current_state}") 
@@ -89,7 +95,7 @@ class FSMGraphTracerConsole:
         
         if self.current_state == "GenerateQuestion":
             self.knowledge_tracer.send(f"Please generate a very easy question for the student on {self.kg[self.skill_level]}", recipient=self.problem_generator, request_reply=True)
-            self.pg_response = self.problem_generator.last_message()["content"]
+            self.pg_response = self.problem_generator.last_message(agent=self.knowledge_tracer)["content"]
             self.current_state = "AwaitStudentAnswer"
             return self.problem_generator
         
@@ -100,7 +106,10 @@ class FSMGraphTracerConsole:
         
         if self.current_state == "VerifySolution":
             self.knowledge_tracer.send(f"{self.student_response} is the student's response to {self.pg_response}. Is the student's answer correct? Answer yes or no", recipient=self.solution_verifier, request_reply=True)
-            self.verifier_answer = self.solution_verifier.last_message()["content"]
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(self.groupchat_manager.groupchat.get_messages())     
+            self.verifier_answer = self.groupchat_manager.groupchat.get_messages()[-1]['content']
+            #self.verifier_answer = self.solution_verifier.last_message(agent=self.solution_verifier)["content"]
             self.was_correct = "Yes" in self.verifier_answer
             self.current_state = "AdaptLevel"
             return self.knowledge_tracer
@@ -116,9 +125,9 @@ class FSMGraphTracerConsole:
         
         return None
 class FSMGraphTracerGUI:
-    def __init__(self, agents: Dict):
+    def __init__(self, agents: Dict, groupchat_manager=None):
         self.agents = agents
-        self.groupchat_manager = None
+        self.groupchat_manager = groupchat_manager
         self.reactive_chat = None
         self.current_state = "InitialDelayed"
         

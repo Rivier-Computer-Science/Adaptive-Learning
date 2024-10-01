@@ -18,10 +18,39 @@ os.environ["AUTOGEN_USE_DOCKER"] = "False"
 script_dir = os.path.dirname(os.path.abspath(__file__))
 progress_file_path = os.path.join(script_dir, '../../graph.json')
 globals.input_future = None
+
+
+class KnowledgeTracerAgent(MyConversableAgent):
+    description =   """
+            KnowledgeTracerAgent is a comprehensive and adaptive agent designed to assess and trace the capabilities of a StudentAgent by interacting 
+                with various agents within the learning system. 
+            KnowledgeTracerAgent gathers data from agents such as ProblemGeneratorAgent, SolutionVerifierAgent, and LearnerModelAgent to build a detailed understanding 
+                of the StudentAgent's knowledge and progress. 
+            KnowledgeTracerAgent ensures a holistic view of the StudentAgent's capabilities, facilitating informed decisions about their learning path.                    
+            """
+    system_message = """
+            You are KnowledgeTracerAgent, an agent responsible for assessing and tracing the capabilities of a StudentAgent by interacting with 
+                other agents in the learning system. 
+            Gather data from ProblemGeneratorAgent, SolutionVerifierAgent, and LearnerModelAgent, and any other relevant agents to build a comprehensive 
+                understanding of the StudentAgent's knowledge and progress. 
+            Use this information to provide insights into the StudentAgent's strengths and areas for improvement. 
+            Your goal is to ensure a holistic view of the StudentAgent's capabilities, supporting informed and personalized learning decisions.
+            """
+    def __init__(self, **kwargs):
+        super().__init__(
+                name="KnowledgeTracerAgent",
+                human_input_mode="NEVER",
+                system_message=self.system_message,
+                description=self.description,
+                **kwargs
+            )
+
+my_custom_knowledge_tracer_agent = KnowledgeTracerAgent()
+
 # Define the agent dictionary
 agents_dict = {
     "student": student,
-    "knowledge_tracer": knowledge_tracer,
+    "knowledge_tracer": my_custom_knowledge_tracer_agent,
     "problem_generator": problem_generator,
     "solution_verifier": solution_verifier,
 }
@@ -41,6 +70,8 @@ manager = CustomGroupChatManager(
     filename=progress_file_path, 
     is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0
 )
+
+fsm.register_groupchat_manager(manager)
 # Begin GUI components (Reactive Chat)
 reactive_chat = ReactiveChat(groupchat_manager=manager)
 # Register groupchat_manager and reactive_chat GUI interface with ConversableAgents
