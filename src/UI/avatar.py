@@ -1,5 +1,5 @@
 from src.Agents.agents import *
-
+from src.Agents.agents_telugu import telugu_teaching_agent
 avatar = {
     student.name: "✏️",                 # Pencil
     knowledge_tracer.name: "🧠",       # Brain
@@ -13,6 +13,7 @@ avatar = {
     level_adapter.name: "📈",      # Chart with upwards trend for level adaptation
     motivator.name: "🏆",  
     gamification.name: "🎮",        # Trophy emoji for motivation
+    telugu_teaching_agent.name: "🎮",
 }
 
 avatar2 = {
