@@ -11,13 +11,15 @@ import autogen as autogen
 from src.UI.avatar import avatar
 import src.Agents.agents as agents
 from src import globals as globals
+from src.Tools.firebase import Firebase
+import os
 
 # Initialize Firebase
-cred = credentials.Certificate("adaptive-learning-rivier-firebase-adminsdk-6u1pl-d8fc406e6f.json")
-firebase_admin.initialize_app(cred)
+#cred = credentials.Certificate("adaptive-learning-rivier-firebase-adminsdk-6u1pl-d8fc406e6f.json")
+#firebase_admin.initialize_app(cred)
 
 # Firestore database reference
-db = firestore.client()
+#db = firestore.client()
 
 class UserAuth(param.Parameterized):
     email = param.String(default='', label="Email")
@@ -56,7 +58,9 @@ class UserAuth(param.Parameterized):
         # Layout
         self.layout = pn.Column()  # Initialize an empty layout
         self.update_layout()  # Populate it with the correct form based on the current page
-    
+        
+        
+
     def toggle_page(self, event):
         """Toggle between login and signup page."""
         self.is_login_page = not self.is_login_page
@@ -93,26 +97,43 @@ class UserAuth(param.Parameterized):
                 self.signup_button
             ]
     
-    def handle_login(self, event):
+    async def handle_login(self, event):
         """Handle user login using Firebase Auth."""
         try:
             print("login")
+            db = Firebase(
+                service_account_key_path=os.getenv('FIREBASE_SERVICE_ACCOUNT_KEY_PATH'),
+                database_url=os.getenv('FIREBASE_DATABASE_URL'),
+                api_key=os.getenv('FIREBASE_API_KEY')
+            )
+
+            
             # Simulate login by fetching the user from Firestore
             user = auth.get_user_by_email(self.email_input.value)
             print(f"User logged in: {user.email}")
             self.puser["name"]=user.display_name
             self.puser["email"]=user.email
+            
+            await db.wait_until_initialized()
+           
+            await db.sign_in(user.email, user.password)
+
             # Set user session (store UID)
             self.user_uid=user.uid
             print(self.puser)
             self.update_layout()  # Switch to profile page
         except Exception as e:
             print(f"Error: {e}")
-    
-    def handle_signup(self, event):
+      
+    async def handle_signup(self, event):
         """Handle user signup and save details in Firestore."""
         try:
             # Create a new user in Firebase Auth
+            db = Firebase(
+            service_account_key_path=os.getenv('FIREBASE_SERVICE_ACCOUNT_KEY_PATH'),
+            database_url=os.getenv('FIREBASE_DATABASE_URL'),
+            api_key=os.getenv('FIREBASE_API_KEY')
+        )
             user = auth.create_user(
                 email=self.email_input.value,
                 password=self.password_input.value
@@ -124,14 +145,16 @@ class UserAuth(param.Parameterized):
                 display_name='Jane Doe',
                 
             )
-            
+            await db.wait_until_initialized()
+            await db.sign_up(self.email_input.value,self.password_input.value)
+
             # Store additional info in Firestore
-            user_ref = db.collection('users').document(user.uid)
-            user_ref.set({
-                'name': self.name_input.value,
-                'email': self.email_input.value,
-                'gender': self.gender_input.value
-            })
+            # user_ref = db.collection('users').document(user.uid)
+            # user_ref.set({
+            #     'name': self.name_input.value,
+            #     'email': self.email_input.value,
+            #     'gender': self.gender_input.value
+            # })
             
             print(f"User {self.name_input.value} signed up successfully")
             
