@@ -8,7 +8,9 @@ import autogen as autogen
 from src.UI.avatar import avatar
 import src.Agents.agents as agents
 from src import globals as globals
-from src.UI.reactive_chat17 import UserAuth
+
+
+#from src.UI.reactive_chat23 import StudentChat
 
 class ReactiveChat(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
@@ -31,8 +33,7 @@ class ReactiveChat(param.Parameterized):
         self.max_questions = 10
         self.progress_bar = pn.widgets.Progress(name='Progress', value=self.progress, max=self.max_questions)        
         self.progress_info = pn.pane.Markdown(f"{self.progress} out of {self.max_questions}", width=60)
-        
-        self.login_page=UserAuth()
+
         
         # Model tab. Capabilities for the LearnerModel
         self.MODEL_TAB_NAME = "ModelTab"
@@ -134,7 +135,7 @@ class ReactiveChat(param.Parameterized):
                       pn.Row(self.button_update_learner_model),
                       pn.Row(self.model_tab_interface))
                     ),     
-            ("Login Page",self.login_page.draw_view())
+
         )
         return tabs
 
