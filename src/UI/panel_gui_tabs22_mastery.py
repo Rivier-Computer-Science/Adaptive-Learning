@@ -7,13 +7,52 @@ import asyncio
 from typing import List, Dict
 from src import globals
 from src.Agents.agents import *
-from src.Agents.chat_manager_fsms import FSM
+from src.Agents.mastery_agent import MasteryAgent
+from src.Agents.chat_manager_fsms_mastery import FSM
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
 from src.UI.reactive_chat import ReactiveChat
 from src.UI.avatar import avatar
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
+######
+# Instantiate Agents
+#################
+# Agents
+student = StudentAgent()
+mastery = MasteryAgent()
+teacher = TeacherAgent()
+tutor = TutorAgent()
+problem_generator = ProblemGeneratorAgent()
+solution_verifier = SolutionVerifierAgent()
+programmer = ProgrammerAgent()
+code_runner = CodeRunnerAgent()
+learner_model = LearnerModelAgent()
+level_adapter = LevelAdapterAgent()
+motivator = MotivatorAgent()
+gamification = GamificationAgent(name="GamificationAgent")
+
+
+# agents_list = [student, knowledge_tracer, teacher, tutor, problem_generator, solution_verifier,
+#               programmer, code_runner, learner_model, level_adapter, motivator]
+agents_dict = {
+    "student": student,
+    "mastery": mastery,
+    "teacher": teacher,
+    "tutor": tutor,
+    "problem_generator": problem_generator,
+    "solution_verifier": solution_verifier,
+    "programmer": programmer,
+    "code_runner": code_runner,
+    "learner_model": learner_model,
+    "level_adapter": level_adapter,
+    "motivator": motivator,
+    "gamification": gamification
+}
+
+
+
+ 
 
 
 ##############################################
