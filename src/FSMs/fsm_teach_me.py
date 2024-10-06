@@ -2,6 +2,7 @@ import logging
 from transitions import Machine
 from transitions.core import MachineError
 from enum import Enum
+from src.Agents.agents import AgentKeys
 
 # Set up logging configuration
 #logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -23,20 +24,27 @@ class FSMStates(Enum):
     ADAPTING_LEVEL = 'adapting_level'
     MOTIVATING = 'motivating'
 
-class AgentKeys(Enum):
-    TEACHER = 'teacher'
-    TUTOR = 'tutor'
-    STUDENT = 'student'
-    KNOWLEDGE_TRACER = 'knowledge_tracer'
-    PROBLEM_GENERATOR = 'problem_generator'
-    SOLUTION_VERIFIER = 'solution_verifier'
-    PROGRAMMER = 'programmer'
-    CODE_RUNNER = 'code_runner'
-    CODE_RUNNER_VERIFIER = 'code_runner_verifier'  
-    LEARNER_MODEL = 'learner_model'
-    LEVEL_ADAPTER = 'level_adapter'
-    MOTIVATOR = 'motivator'
-    GAMIFICATION = 'gamification'
+
+
+
+def on_enter_updating_model():
+    logging.info("Entering state UPDATING_MODEL")
+    # Add any specific initialization logic here
+
+
+entry_callbacks = {
+    FSMStates.UPDATING_MODEL: on_enter_updating_model,
+    # Add other states if needed...
+}
+
+
+def on_exit_verifying_code():
+    logging.info("Exiting state VERIFYING_CODE")
+
+exit_callbacks = {
+    FSMStates.VERIFYING_CODE: on_exit_verifying_code,
+     # Add mappings for the rest of the states...
+}
 
 class TeachMeFSM:
     def __init__(self, agents):
@@ -50,12 +58,19 @@ class TeachMeFSM:
         # Define states
         states = [state.value for state in FSMStates]
 
-         # Initialize the state machine
-        self.machine = Machine(
-            model=self,
-            states=states,
-            initial=FSMStates.AWAITING_TOPIC.value
-        )
+        self.machine = Machine(model=self, states=states, initial=FSMStates.AWAITING_TOPIC.value)
+
+        # Add states with entry and exit callbacks
+        # Add states with entry and exit callbacks
+        for state in FSMStates:
+            # Prepare the state configuration
+            state_name = state.value  # Get the state name
+            
+            # Add the state with entry and exit callbacks if they exist
+            self.machine.add_state(state_name, 
+                                   on_enter=entry_callbacks.get(state, None), 
+                                   on_exit=exit_callbacks.get(state, None))
+
 
         #####################################################
         # TRANSITIONS
@@ -321,6 +336,7 @@ class TeachMeFSM:
 
     # Handle invalid transitions within next_speaker_selector
     def next_speaker_selector(self, last_speaker, groupchat):
+        logging.info(f"################################ next_speaker_selector(): last_speaker={last_speaker}")
         self.last_speaker = last_speaker
 
         # Try to advance the state machine

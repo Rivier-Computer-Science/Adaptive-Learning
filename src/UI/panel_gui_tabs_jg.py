@@ -12,6 +12,7 @@ from src.FSMs.fsm_teach_me import TeachMeFSM
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
 from src.UI.reactive_chat import ReactiveChat
 from src.UI.avatar import avatar
+from enum import Enum
 
 #logging.basicConfig(filename='debug.log', level=logging.DEBUG, 
 #                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -71,7 +72,7 @@ from src.Agents.code_runner_agent import CodeRunnerAgent
 from src.Agents.learner_model_agent import LearnerModelAgent
 from src.Agents.level_adapter_agent import LevelAdapterAgent
 from src.Agents.motivator_agent import MotivatorAgent
-
+from src.Agents.agents import AgentKeys
 
 
 class CodeRunnerVerifierAgent(MyConversableAgent):  
@@ -112,21 +113,23 @@ learner_model = LearnerModelAgent(llm_config=llm)
 level_adapter = LevelAdapterAgent(llm_config=llm)
 motivator = MotivatorAgent(llm_config=llm)
 
-agents_dict = {
-    "student": student,
-    "knowledge_tracer": knowledge_tracer,
-    "teacher": teacher,
-    "tutor": tutor,
-    "problem_generator": problem_generator,
-    "solution_verifier": solution_verifier,
-    "programmer": programmer,
-    "code_runner": code_runner,
-    "code_runner_verifier": code_runner_verifier,
-    "learner_model": learner_model,
-    "level_adapter": level_adapter,
-    "motivator": motivator,
-}
 
+
+
+agents_dict = {
+    AgentKeys.STUDENT.value: student,
+    AgentKeys.KNOWLEDGE_TRACER.value: knowledge_tracer,
+    AgentKeys.TEACHER.value: teacher,
+    AgentKeys.TUTOR.value: tutor,
+    AgentKeys.PROBLEM_GENERATOR.value: problem_generator,
+    AgentKeys.SOLUTION_VERIFIER.value: solution_verifier,
+    AgentKeys.PROGRAMMER.value: programmer,
+    AgentKeys.CODE_RUNNER.value: code_runner,
+    AgentKeys.CODE_RUNNER_VERIFIER.value: code_runner_verifier,
+    AgentKeys.LEARNER_MODEL.value: learner_model,
+    AgentKeys.LEVEL_ADAPTER.value: level_adapter,
+    AgentKeys.MOTIVATOR.value: motivator,
+}
 
 
 ##############################################
