@@ -7,19 +7,118 @@ import asyncio
 from typing import List, Dict
 import logging
 from src import globals
-from src.Agents.agents import agents_dict
+#from src.Agents.agents import agents_dict
 from src.FSMs.fsm_teach_me import TeachMeFSM
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
 from src.UI.reactive_chat import ReactiveChat
 from src.UI.avatar import avatar
 
-# logging.basicConfig(filename='debug.log', level=logging.DEBUG, 
+#logging.basicConfig(filename='debug.log', level=logging.DEBUG, 
 #                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+logging.basicConfig(level=logging.INFO, 
+                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+#logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
+
+
+###############################################
+# ChatGPT Model
+###############################################
+
+gpt4_config_list = [
+    {
+        'model': "gpt-4o",
+    }
+]
+
+# These parameters attempt to produce precise reproducible results
+temperature = 0
+max_tokens = 500
+top_p = 0.5
+frequency_penalty = 0.1
+presence_penalty = 0.1
+seed = 53
+
+
+gpt4_config = {"config_list": gpt4_config_list, 
+               "temperature": temperature,
+               "max_tokens": max_tokens,
+               "top_p": top_p,
+               "frequency_penalty": frequency_penalty,
+               "presence_penalty": presence_penalty,
+               "seed": seed
+}
+
+llm = gpt4_config
+
+#################################################
+# Define Agents
+#################################################
+from src.Agents.base_agent import MyBaseAgent
+from src.Agents.conversable_agent import MyConversableAgent
+from src.Agents.student_agent import StudentAgent
+from src.Agents.knowledge_tracer_agent import KnowledgeTracerAgent
+from src.Agents.teacher_agent import TeacherAgent
+from src.Agents.tutor_agent import TutorAgent
+from src.Agents.problem_generator_agent import ProblemGeneratorAgent
+from src.Agents.solution_verifier_agent import SolutionVerifierAgent
+from src.Agents.programmer_agent import ProgrammerAgent
+from src.Agents.code_runner_agent import CodeRunnerAgent
+from src.Agents.learner_model_agent import LearnerModelAgent
+from src.Agents.level_adapter_agent import LevelAdapterAgent
+from src.Agents.motivator_agent import MotivatorAgent
+
+
+
+class CodeRunnerVerifierAgent(MyConversableAgent):  
+    description = """
+            CodeRunnerVerifierAgent is a proficient and efficient assistant specialized in making sure that code executed by CodeRunnerAgent completed successfully. 
+            """            
+
+    system_message = """
+            You are CodeRunnerVerifierAgent, a proficient and efficient assistant specialized in making sure that code executed by CodeRunnerAgent completed successfully. 
+            """            
+    def __init__(self, **kwargs):
+        super().__init__(
+            name="CodeRunnerVerifierAgent",
+            human_input_mode="NEVER",
+            system_message=self.system_message,
+            description=self.description,
+            **kwargs
+        )
+
+
+student = StudentAgent(llm_config=llm)
+knowledge_tracer = KnowledgeTracerAgent(llm_config=llm)
+teacher = TeacherAgent(llm_config=llm)
+tutor = TutorAgent(llm_config=llm)
+problem_generator = ProblemGeneratorAgent(llm_config=llm)
+solution_verifier = SolutionVerifierAgent(llm_config=llm)
+programmer = ProgrammerAgent(llm_config=llm)
+code_runner = CodeRunnerAgent(llm_config=llm)
+code_runner_verifier = CodeRunnerVerifierAgent(llm_config=llm)
+learner_model = LearnerModelAgent(llm_config=llm)
+level_adapter = LevelAdapterAgent(llm_config=llm)
+motivator = MotivatorAgent(llm_config=llm)
+
+agents_dict = {
+    "student": student,
+    "knowledge_tracer": knowledge_tracer,
+    "teacher": teacher,
+    "tutor": tutor,
+    "problem_generator": problem_generator,
+    "solution_verifier": solution_verifier,
+    "programmer": programmer,
+    "code_runner": code_runner,
+    "code_runner_verifier": code_runner_verifier,
+    "learner_model": learner_model,
+    "level_adapter": level_adapter,
+    "motivator": motivator,
+}
 
 
 
