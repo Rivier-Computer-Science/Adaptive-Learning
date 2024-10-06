@@ -150,6 +150,7 @@ manager = CustomGroupChatManager(groupchat=groupchat,
                                 filename=progress_file_path, 
                                 is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0 )    
 
+# Allow the fsm to get the groupchat history
 fsm.register_groupchat_manager(manager)
 
 

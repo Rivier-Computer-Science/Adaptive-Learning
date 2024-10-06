@@ -6,6 +6,10 @@ from enum import Enum
 # Set up logging configuration
 #logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
+
+#######################################################
+# STATES
+########################################################
 class FSMStates(Enum):
     AWAITING_TOPIC = 'awaiting_topic'
     PRESENTING_LESSON = 'presenting_lesson'
@@ -14,7 +18,7 @@ class FSMStates(Enum):
     VERIFYING_ANSWER = 'verifying_answer'
     WRITING_PROGRAM = 'writing_program'
     RUNNING_CODE = 'running_code'
-    VERIFYING_CODE = 'verifying_code'  # New state
+    VERIFYING_CODE = 'verifying_code'  
     UPDATING_MODEL = 'updating_model'
     ADAPTING_LEVEL = 'adapting_level'
     MOTIVATING = 'motivating'
@@ -28,7 +32,7 @@ class AgentKeys(Enum):
     SOLUTION_VERIFIER = 'solution_verifier'
     PROGRAMMER = 'programmer'
     CODE_RUNNER = 'code_runner'
-    CODE_RUNNER_VERIFIER = 'code_runner_verifier'  # New agent
+    CODE_RUNNER_VERIFIER = 'code_runner_verifier'  
     LEARNER_MODEL = 'learner_model'
     LEVEL_ADAPTER = 'level_adapter'
     MOTIVATOR = 'motivator'
@@ -46,13 +50,16 @@ class TeachMeFSM:
         # Define states
         states = [state.value for state in FSMStates]
 
-        # Initialize the state machine
+         # Initialize the state machine
         self.machine = Machine(
             model=self,
             states=states,
             initial=FSMStates.AWAITING_TOPIC.value
         )
 
+        #####################################################
+        # TRANSITIONS
+        #####################################################
         # Define transitions
         self.machine.add_transition(
             trigger='advance',
@@ -104,6 +111,17 @@ class TeachMeFSM:
             after='set_code_runner_verifier'
         )
 
+ 
+        # Transition from VERIFYING_CODE to WRITING_PROGRAM if code is incorrect
+        self.machine.add_transition(
+            trigger='advance',
+            source=FSMStates.VERIFYING_CODE.value,
+            dest=FSMStates.WRITING_PROGRAM.value,  
+            unless='code_is_correct',
+            after='increment_attempts'
+        )
+
+ 
         # Transition from VERIFYING_CODE to UPDATING_MODEL if code is correct
         self.machine.add_transition(
             trigger='advance',
@@ -113,15 +131,7 @@ class TeachMeFSM:
             after='set_learner_model'
         )
 
-        # Transition from VERIFYING_CODE to WRITING_PROGRAM if code is incorrect
-        self.machine.add_transition(
-            trigger='advance',
-            source=FSMStates.VERIFYING_CODE.value,
-            dest=FSMStates.WRITING_PROGRAM.value,
-            unless='code_is_correct',
-            after='increment_attempts'
-        )
-
+ 
         self.machine.add_transition(
             trigger='advance',
             source=FSMStates.UPDATING_MODEL.value,
@@ -157,17 +167,19 @@ class TeachMeFSM:
     def on_enter_state(self):
         self.previous_state_enum = self.current_state_enum
         self.current_state_enum = FSMStates(self.state)
+        logging.info(f"Transitioning to state '{self.current_state_enum.name}'")
         if self.previous_state_enum:
             logging.info(f"Transitioned from '{self.previous_state_enum.name}' to '{self.current_state_enum.name}'")
         else:
             logging.info(f"Entered initial state '{self.current_state_enum.name}'")
+
 
     # Action methods
 
     def set_teacher(self):
         try:
             self.next_agent = self.agents[AgentKeys.TEACHER.value]
-            logging.info(f"Next agent set to 'teacher'")
+            logging.info(f"set_teacher(): Next agent set to 'teacher'")
         except KeyError as e:
             logging.error(f"Agent not found: {e}")
         self.on_enter_state()
@@ -175,7 +187,7 @@ class TeachMeFSM:
     def set_tutor(self):
         try:
             self.next_agent = self.agents[AgentKeys.TUTOR.value]
-            logging.info(f"Next agent set to 'tutor'")
+            logging.info(f"set_tutor(): Next agent set to 'tutor'")
         except KeyError as e:
             logging.error(f"Agent not found: {e}")
         self.on_enter_state()
@@ -183,7 +195,7 @@ class TeachMeFSM:
     def set_problem_generator(self):
         try:
             self.next_agent = self.agents[AgentKeys.PROBLEM_GENERATOR.value]
-            logging.info(f"Next agent set to 'problem_generator'")
+            logging.info(f"set_problem_generator(): Next agent set to 'problem_generator'")
         except KeyError as e:
             logging.error(f"Agent not found: {e}")
         self.on_enter_state()
@@ -191,7 +203,7 @@ class TeachMeFSM:
     def set_student(self):
         try:
             self.next_agent = self.agents[AgentKeys.STUDENT.value]
-            logging.info(f"Next agent set to 'student'")
+            logging.info(f"set_student(): Next agent set to 'student'")
         except KeyError as e:
             logging.error(f"Agent not found: {e}")
         self.on_enter_state()
@@ -199,7 +211,7 @@ class TeachMeFSM:
     def set_solution_verifier(self):
         try:
             self.next_agent = self.agents[AgentKeys.SOLUTION_VERIFIER.value]
-            logging.info(f"Next agent set to 'solution_verifier'")
+            logging.info(f"set_solution_verifier(): Next agent set to 'solution_verifier'")
         except KeyError as e:
             logging.error(f"Agent not found: {e}")
         self.on_enter_state()
@@ -207,7 +219,7 @@ class TeachMeFSM:
     def set_programmer(self):
         try:
             self.next_agent = self.agents[AgentKeys.PROGRAMMER.value]
-            logging.info(f"Next agent set to 'programmer'")
+            logging.info(f"set_programmer(): Next agent set to 'programmer'")
         except KeyError as e:
             logging.error(f"Agent not found: {e}")
         self.on_enter_state()
@@ -215,7 +227,7 @@ class TeachMeFSM:
     def set_code_runner(self):
         try:
             self.next_agent = self.agents[AgentKeys.CODE_RUNNER.value]
-            logging.info(f"Next agent set to 'code_runner'")
+            logging.info(f"set_code_runner(): Next agent set to 'code_runner'")
         except KeyError as e:
             logging.error(f"Agent not found: {e}")
         self.on_enter_state()
@@ -223,23 +235,25 @@ class TeachMeFSM:
     def set_code_runner_verifier(self):
         try:
             self.next_agent = self.agents[AgentKeys.CODE_RUNNER_VERIFIER.value]
-            logging.info(f"Next agent set to 'code_runner_verifier'")
+            logging.info(f"set_code_runner_verifier(): Next agent set to 'code_runner_verifier'")
         except KeyError as e:
             logging.error(f"Agent not found: {e}")
+            self.next_agent = None   # DEBUG
         self.on_enter_state()
 
     def set_learner_model(self):
         try:
             self.next_agent = self.agents[AgentKeys.LEARNER_MODEL.value]
-            logging.info(f"Next agent set to 'learner_model'")
+            logging.info(f"set_learner_model(): Next agent set to 'learner_model'")
         except KeyError as e:
             logging.error(f"Agent not found: {e}")
+            self.next_agent = None   # DEBUG
         self.on_enter_state()
 
     def set_level_adapter(self):
         try:
             self.next_agent = self.agents[AgentKeys.LEVEL_ADAPTER.value]
-            logging.info(f"Next agent set to 'level_adapter'")
+            logging.info(f"set_level_adapter(): Next agent set to 'level_adapter'")
         except KeyError as e:
             logging.error(f"Agent not found: {e}")
         self.on_enter_state()
@@ -248,11 +262,11 @@ class TeachMeFSM:
     # Outputs for managing attempts
     def increment_attempts(self):
         self.run_attempts += 1
-        logging.info(f"Run attempts incremented to {self.run_attempts}")
+        logging.info(f"increment_attempts(): Run attempts incremented to {self.run_attempts}")
 
     def reset_attempts(self):
         self.run_attempts = 0
-        logging.info("Run attempts reset to 0")
+        logging.info("reset_attempts(): Run attempts reset to 0")
 
     # Conditions
     # def code_is_correct(self):
@@ -278,6 +292,9 @@ class TeachMeFSM:
         """
         Check if the code run was successful by analyzing the groupchat_manager messages.
         """
+        if not hasattr(self, 'groupchat_manager') or not self.groupchat_manager:
+            logging.error("Groupchat manager not registered or is None.")
+            
         # Get all message history from the groupchat manager
         all_messages = self.groupchat_manager.groupchat.get_messages()
         
@@ -285,12 +302,12 @@ class TeachMeFSM:
         if all_messages:
             last_message = all_messages[-1]
             logging.info(f"Evaluating message from sender '{last_message['name']}': {last_message['content']}")
-            if (last_message['name'] == 'CodeRunnerAgent' and 'exitcode: 0' in last_message['content']):
-                logging.info("Code run succeeded with exit code 0.")
+            if ( "code executed successfully" in last_message['content']):
+                logging.info("!!!!!!!!!!!!!!!!!!!!!!!!!Code run succeeded with exit code 0.")
                 return True
 
         # If no successful message is found, return False
-        logging.info("Code run did not succeed.")
+        logging.info("!!!!!!!!!!!!!!!!!!!!! Code run did not succeed.")
         return False
  
     def code_is_not_correct(self):
@@ -299,7 +316,7 @@ class TeachMeFSM:
     def adapter_agent_says_increase_difficulty(self):
         from random import choice
         decision = choice([True, False])
-        logging.info(f"Adapter agent suggests increasing difficulty: {decision}")
+        logging.info(f"adapter_agent_says_increase_difficulty(): Adapter agent suggests increasing difficulty: {decision}")
         return decision
 
     # Handle invalid transitions within next_speaker_selector
@@ -308,8 +325,9 @@ class TeachMeFSM:
 
         # Try to advance the state machine
         try:
-            logging.info('advance called')
+            logging.info(f"next_speaker_selector(): advance called. last_speaker= '{self.last_speaker}'")
             self.advance()
+            logging.info(f"next_speaker_selector(): advance FINISHED. next_speaker= '{self.next_agent}'")
         except MachineError as e:
             # Handle invalid transitions
             logging.warning(f"Invalid transition attempted: {e}")
@@ -319,9 +337,20 @@ class TeachMeFSM:
                 logging.info("Next agent set to 'tutor'")
             except KeyError as e:
                 logging.error(f"Agent not found when defaulting to tutor: {e}")
+                self.next_agent = None
             self.on_enter_state()
 
+        # Ensure next_agent is valid before returning
+        if not self.next_agent:
+            logging.error("No valid next agent was found. Setting to 'tutor' as fallback.")
+            try:
+                self.next_agent = self.agents[AgentKeys.TUTOR.value]
+            except KeyError as e:
+                logging.error(f"Fallback agent also not found: {e}")
+                self.next_agent = None
+
         return self.next_agent
+
 
     def register_groupchat_manager(self, groupchat_manager):
         self.groupchat_manager = groupchat_manager
