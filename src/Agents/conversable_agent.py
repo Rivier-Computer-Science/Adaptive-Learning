@@ -12,20 +12,15 @@ llm = gpt4_config
 
 class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
     def __init__(self, **kwargs):
-        llm_config = kwargs.get('llm_config', None)
-        if llm_config is None:
-             kwargs['llm_config'] = llm
-
-        #is_termination_msg = kwargs.get('is_termination_msg', None)
+         #is_termination_msg = kwargs.get('is_termination_msg', None)
         # human_input_mode = kwargs.get('human_input_mode', None)
         # if is_termination_msg is None and human_input_mode == 'ALWAYS':
         #      kwargs['is_termination_msg'] = is_termination_msg=lambda x: x.get("content", "").strip() == globals.IS_TERMINATION_MSG
-
-        code_execution_config = kwargs.get('code_execution_config', None)
-        if code_execution_config is None:
-             kwargs['code_execution_config'] = False
-
-        super().__init__(**kwargs)
+       
+        super().__init__(
+            llm_config=kwargs.pop('llm_config', llm),
+            code_execution_config = kwargs.pop('code_execution_config', False),
+            **kwargs)
 
         self.groupchat_manager = None
         self.reactive_chat = None

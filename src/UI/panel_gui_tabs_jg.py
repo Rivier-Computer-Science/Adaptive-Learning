@@ -37,7 +37,7 @@ gpt4_config_list = [
 
 # These parameters attempt to produce precise reproducible results
 temperature = 0
-max_tokens = 500
+max_tokens = 1000
 top_p = 0.5
 frequency_penalty = 0.1
 presence_penalty = 0.1
@@ -98,7 +98,14 @@ teacher = TeacherAgent(llm_config=llm)
 tutor = TutorAgent(llm_config=llm)
 problem_generator = ProblemGeneratorAgent(llm_config=llm)
 solution_verifier = SolutionVerifierAgent(llm_config=llm)
-programmer = ProgrammerAgent(llm_config=llm)
+
+programmer_system_message = """
+        You are ProgrammerAgent, a Python programming expert. 
+        Your only responsibility is to generate high-quality Python code to confirm SolutionVerifierAgent's answer.        
+    """
+programmer = ProgrammerAgent(llm_config=llm, 
+                             system_message = programmer_system_message,
+                             description = programmer_system_message)
 code_runner = CodeRunnerAgent(llm_config=llm)
 code_runner_verifier = CodeRunnerVerifierAgent(llm_config=llm)
 learner_model = LearnerModelAgent(llm_config=llm)
