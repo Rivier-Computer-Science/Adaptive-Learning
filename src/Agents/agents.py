@@ -16,9 +16,25 @@ from .motivator_agent import MotivatorAgent
 from .gamification_agent import GamificationAgent
 
 from src.Models.llm_config import gpt3_config
-
+from enum import Enum
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
+
+class AgentKeys(Enum):
+    TEACHER = 'teacher'
+    TUTOR = 'tutor'
+    STUDENT = 'student'
+    KNOWLEDGE_TRACER = 'knowledge_tracer'
+    PROBLEM_GENERATOR = 'problem_generator'
+    SOLUTION_VERIFIER = 'solution_verifier'
+    PROGRAMMER = 'programmer'
+    CODE_RUNNER = 'code_runner'
+    CODE_RUNNER_VERIFIER = 'code_runner_verifier'  
+    LEARNER_MODEL = 'learner_model'
+    LEVEL_ADAPTER = 'level_adapter'
+    MOTIVATOR = 'motivator'
+    GAMIFICATION = 'gamification'
+
 
 # Agents
 student = StudentAgent()
@@ -35,21 +51,20 @@ motivator = MotivatorAgent()
 gamification = GamificationAgent(name="GamificationAgent")
 
 
-# agents_list = [student, knowledge_tracer, teacher, tutor, problem_generator, solution_verifier,
-#               programmer, code_runner, learner_model, level_adapter, motivator]
+
 agents_dict = {
-    "student": student,
-    "knowledge_tracer": knowledge_tracer,
-    "teacher": teacher,
-    "tutor": tutor,
-    "problem_generator": problem_generator,
-    "solution_verifier": solution_verifier,
-    "programmer": programmer,
-    "code_runner": code_runner,
-    "learner_model": learner_model,
-    "level_adapter": level_adapter,
-    "motivator": motivator,
-    "gamification": gamification
+    AgentKeys.STUDENT.value: student,
+    AgentKeys.KNOWLEDGE_TRACER.value: knowledge_tracer,
+    AgentKeys.TEACHER.value: teacher,
+    AgentKeys.TUTOR.value: tutor,
+    AgentKeys.PROBLEM_GENERATOR.value: problem_generator,
+    AgentKeys.SOLUTION_VERIFIER.value: solution_verifier,
+    AgentKeys.PROGRAMMER.value: programmer,
+    AgentKeys.CODE_RUNNER.value: code_runner,
+    AgentKeys.LEARNER_MODEL.value: learner_model,
+    AgentKeys.LEVEL_ADAPTER.value: level_adapter,
+    AgentKeys.MOTIVATOR.value: motivator,
+    AgentKeys.GAMIFICATION.value: gamification
 }
 
 agents_dict_by_name = {
