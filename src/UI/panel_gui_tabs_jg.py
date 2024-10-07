@@ -10,12 +10,15 @@ from src import globals
 #from src.Agents.agents import agents_dict
 from src.FSMs.fsm_teach_me import TeachMeFSM
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
-from src.UI.reactive_chat import ReactiveChat
+from src.UI.reactive_chat_jg import ReactiveChat
 from src.UI.avatar import avatar
 from enum import Enum
+from dotenv import load_dotenv
 
 #logging.basicConfig(filename='debug.log', level=logging.DEBUG, 
 #                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO, 
                      format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -132,6 +135,21 @@ agents_dict = {
 }
 
 
+avatars = {
+    student.name: "✏️",                 # Pencil
+    knowledge_tracer.name: "🧠",       # Brain
+    teacher.name: "🧑‍🎓" ,                # Female teacher
+    tutor.name: "👩‍🏫",                  # Person with graduation hat
+    problem_generator.name: "📚",  # Stack of books for problem generation
+    solution_verifier.name: "🔍",  # Magnifying glass for solution verification
+    programmer.name: "👨‍💻",       # Male programmer/coder emoji
+    code_runner.name: "▶️",        # Play button for code execution
+    code_runner_verifier.name: "✅",
+    learner_model.name: "🧠",      # Brain emoji for learner model
+    level_adapter.name: "📈",      # Chart with upwards trend for level adaptation
+    motivator.name: "🏆",  
+ }
+
 ##############################################
 # Main Adaptive Learning Application
 ############################################## 
@@ -158,7 +176,7 @@ fsm.register_groupchat_manager(manager)
 
 
 # Begin GUI components
-reactive_chat = ReactiveChat(groupchat_manager=manager)
+reactive_chat = ReactiveChat(agents_dict=agents_dict, avatars=avatars, groupchat_manager=manager)
 
 
 # Register groupchat_manager and reactive_chat gui interface with ConversableAgents
