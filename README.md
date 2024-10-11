@@ -46,6 +46,13 @@ pip install openai pyautogen
 
 Note that there is also a package called autogen. Do NOT install it. You want pyautogen.
 
+Install Firebase tools 
+
+```sh
+pip install firebase-admin aiohttp
+```
+
+
 ## OpenAI Environment Configuration
 
 
@@ -53,6 +60,19 @@ Note that there is also a package called autogen. Do NOT install it. You want py
 - WINDOWS: set  OPENAI_API_KEY=sk-
 
 If you don't have Docker installed, you need to set AUTOGEN_USE_DOCKER=False. Be advised that if you set this to False it allows code to run on your system at whatever privileges you have (e.g., Windows Admin).
+
+You can also use a .env file if you don't want to export/set every time.
+
+```sh
+pip install python-dotenv
+```
+
+## Speech Recognition Module
+```sh
+pip install SpeechRecognition 
+conda install pyaudio
+```
+
 
 # Agents
 

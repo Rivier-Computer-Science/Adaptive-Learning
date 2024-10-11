@@ -20,8 +20,8 @@ class LearnerModelAgent(MyConversableAgent):
     def __init__(self, **kwargs):
         super().__init__(
             name="LearnerModelAgent",            
-            system_message=self.system_message,
-            description=self.description,
+            system_message=kwargs.pop('system_message', self.system_message),
+            description=kwargs.pop('description',self.description),
             code_execution_config=False,
             human_input_mode="NEVER",
             **kwargs
