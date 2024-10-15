@@ -153,12 +153,13 @@ class ReactiveChat(param.Parameterized):
 
 
 
-
 class PromptBasedLearning(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
         super().__init__(**params)
         self.groupchat_manager = groupchat_manager
         
+        self.PROMPT_TAB_NAME="PromptTab"
+
         # Text input for selecting the topic
         self.topic_input = pn.widgets.TextInput(placeholder="Enter topic...", width=300)
         
@@ -171,11 +172,17 @@ class PromptBasedLearning(param.Parameterized):
         self.prompt_chat_interface = pn.chat.ChatInterface(callback=self.a_prompt_tab_callback, name=self.prompt_chat_name)
         self.groupchat_manager.chat_interface = self.prompt_chat_interface
         
-        # Layout: Combine the text input, button, and chat interface
-        self.layout = pn.Column(self.topic_input, self.run_button, self.prompt_chat_interface)
+        # Progress tracker
+        self.progress = 0  # Track the student's progress
+        self.progress_display = pn.widgets.Progress(name="Learning Progress", value=self.progress, max=100)
+        self.progress_info = pn.pane.Markdown(f"{self.progress} out of 100", width=60)
+
+
+        # Layout: Combine the text input, button, progress tracker, and chat interface
+        self.layout = pn.Column(self.topic_input, self.run_button, pn.Row(self.progress_display,self.progress_info), self.prompt_chat_interface)
 
     async def a_prompt_tab_callback(self, contents: str, user: str, instance: pn.chat.ChatInterface):
-        # Process the input prompt
+        """Handle chat interactions, including decision tracking."""
         self.groupchat_manager.chat_interface = instance
         if not globals.initiate_chat_task_created:
             asyncio.create_task(self.groupchat_manager.delayed_initiate_chat(agents.tutor, self.groupchat_manager, contents))
@@ -184,6 +191,56 @@ class PromptBasedLearning(param.Parameterized):
                 globals.input_future.set_result(contents)
             else:
                 print("No input being awaited.")
+                
+        # Track user decision and response
+        self.track_decision(contents,user)
+
+    def update_prompt_tab(self, recipient, messages, sender, config):
+        if self.groupchat_manager.chat_interface.name is not self.PROMPT_TAB_NAME: return
+        last_content = messages[-1]['content'] 
+        if all(key in messages[-1] for key in ['name']):
+            self.learn_tab_interface.send(last_content, user=messages[-1]['name'], avatar=avatar[messages[-1]['name']], respond=False)
+        else:
+            self.learn_tab_interface.send(last_content, user=recipient.name, avatar=avatar[recipient.name], respond=False)
+
+    def track_decision(self, user_response: str,user):
+        """Track user decisions and adapt future prompts."""
+        # Example decision tracking logic
+        # Here, we simulate checking the user's response and adjusting progress
+        if user == "LevelAdapterAgent":            
+            pattern = re.compile(r'\b(correct|correctly|verified|yes|well done|excellent|successfully|that\'s right|good job|excellent|right|good|affirmative)\b', re.IGNORECASE)            
+            is_correct = pattern.search(user_response)
+            if is_correct:
+               print("################ CCORRECT ANSWER #################")
+               if self.progress < 100:
+                    self.progress += 10
+                    self.progress_display.value = self.progress
+                    self.progress_info.object = f"**{self.progress} out of 100**"
+
+            else:
+                print("################ WRONG ANSWER #################")
+
+
+        # Adapt future questions based on progress
+        self.adapt_learning_path()
+
+    def adapt_learning_path(self):
+        """Adjust future prompts based on the student's performance."""
+        if self.progress >= 80:
+            print("Student is doing well! Increase difficulty.")
+            # Adapt prompt to increase difficulty
+            con = "Ask more advanced fill-in-the-blank questions based on the student's skill level."
+        elif self.progress < 50:
+            print("Student needs more practice. Lower difficulty.")
+            # Adapt prompt to lower difficulty
+            con = "Ask simpler fill-in-the-blank questions to help the student improve."
+        else:
+            print("Student is progressing steadily.")
+            con = "Continue with moderate difficulty questions."
+
+        # Initiate adapted chat based on learning path
+        self.groupchat_manager.chat_interface = self.prompt_chat_interface
+        asyncio.create_task(self.groupchat_manager.delayed_initiate_chat(agents.tutor, self.groupchat_manager, con))
 
     def on_topic_select(self, event):
         """Handle topic selection."""
@@ -191,17 +248,17 @@ class PromptBasedLearning(param.Parameterized):
         if topic:
             # Process the selected topic (You can call a specific function based on the topic here)
             print(f"Topic selected: {topic}")
-            con="Ask question to student in the fillinblank format on topic "+topic+"."
+            con = "Ask question to student in the fill-in-the-blank format on topic " + topic + ". Also consider the student's skill to give better questions."
             self.groupchat_manager.chat_interface = self.prompt_chat_interface
             asyncio.create_task(self.groupchat_manager.delayed_initiate_chat(agents.tutor, self.groupchat_manager, con))
         
-            # You can add additional logic to handle the selected topic as needed
-
             # Clear the input field after selecting the topic
             self.topic_input.value = ""
 
     def update_prompt_tab(self, recipient, messages, sender, config):
-        if self.groupchat_manager.chat_interface.name is not self.prompt_chat_name: return
+        """Update chat with new messages."""
+        if self.groupchat_manager.chat_interface.name is not self.prompt_chat_name:
+            return
         last_content = messages[-1]['content'] 
         if all(key in messages[-1] for key in ['name']):
             self.prompt_chat_interface.send(last_content, user=messages[-1]['name'], avatar=avatar[messages[-1]['name']], respond=False)
@@ -209,7 +266,8 @@ class PromptBasedLearning(param.Parameterized):
             self.prompt_chat_interface.send(last_content, user=recipient.name, avatar=avatar[recipient.name], respond=False)
       
     def draw_view(self):
-        return self.layout  # Return the combined layout
+        """Return the layout for the prompt-based learning tab."""
+        return self.layout
 
     @property
     def groupchat_manager(self) -> autogen.GroupChatManager:
@@ -218,3 +276,5 @@ class PromptBasedLearning(param.Parameterized):
     @groupchat_manager.setter
     def groupchat_manager(self, groupchat_manager: autogen.GroupChatManager):
         self._groupchat_manager = groupchat_manager
+
+

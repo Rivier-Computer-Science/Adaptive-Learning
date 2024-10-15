@@ -70,11 +70,13 @@ for agent in groupchat.agents:
 manager.get_chat_history_and_initialize_chat(filename=progress_file_path, chat_interface=reactive_chat.learn_tab_interface)
 reactive_chat.update_dashboard()    # Call after history loaded
 
+
 # --- Speech Capture and Processing ---
 def handle_audio_submission(event):
     transcript = recognize_speech_from_mic()
     # Display the transcribed text in the chat interface
     reactive_chat.learn_tab_interface.send(transcript, user="User", avatar="🎤")
+    
 
 # Create app with speech recognition button
 def create_app():    
