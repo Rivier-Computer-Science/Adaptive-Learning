@@ -48,6 +48,22 @@ def recognize_speech_from_mic():
             print(f"Error: {e}")
             return None
 
+# Function to start listening for 7 seconds
+def start_listening():
+    status_text.value = "Listening for 7 seconds..."
+    transcript = recognize_speech_from_mic()  # Automatically stop listening after 7 seconds
+    if transcript:
+        reactive_chat.learn_tab_interface.send(transcript, user="User", avatar="🎤")
+    reset_recognizer()  # Reinitialize the speech recognizer for the next recording
+
+# Function to reinitialize the recognizer and status
+def reset_recognizer():
+    global recognizer, audio_data
+    recognizer = sr.Recognizer()  # Reinitialize recognizer
+    audio_data = None
+    status_text.value = "Idle"
+    print("Recognizer reset, ready for next session.")
+
 ##############################################
 # Main Adaptive Learning Application
 ##############################################
