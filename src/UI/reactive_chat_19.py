@@ -33,7 +33,17 @@ class ReactiveChat(param.Parameterized):
         self.progress_info = pn.pane.Markdown(f"{self.progress} out of {self.max_questions}", width=60)
 
         # Question and answer details for tracking
-        self.question_details = pn.widgets.DataFrame(pd.DataFrame(columns=['Question', 'User Response', 'Correct']))
+        self.question_details = pn.widgets.Tabulator(
+            pd.DataFrame(columns=['Question', 'User Response', 'Correct']),
+            show_index=True,  # Hide the index column
+            height=400,  # Set height for better visibility
+            sizing_mode='stretch_width',  # Stretch to fit the container
+            configuration={'columns': [
+                {'field': 'Question', 'title': 'Question', 'width': 300},  # Set width for Question column
+                {'field': 'User Response', 'title': 'User Response', 'width': 300},  # Set width for User Response column
+             {'field': 'Correct', 'title': 'Correct', 'width': 100}  # Set width for Correct column
+            ]}
+        )
 
         # Model tab. Capabilities for the LearnerModel
         self.MODEL_TAB_NAME = "ModelTab"
