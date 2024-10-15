@@ -44,8 +44,8 @@ class StudentAgent(MyConversableAgent):
         super().__init__(
             name="StudentAgent",
             human_input_mode="ALWAYS",
-            system_message=self.system_message,
-            description=self.description,
+            system_message=kwargs.pop('system_message', self.system_message),
+            description=kwargs.pop('description',self.description),
             **kwargs
         )
         self.goals: Dict[str, Goal] = {}

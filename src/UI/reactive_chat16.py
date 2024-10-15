@@ -1,7 +1,9 @@
-
-
-import param
+import pandas as pd
 import panel as pn
+import param
+
+
+
 import asyncio
 import re
 import autogen as autogen
@@ -9,8 +11,39 @@ from src.UI.avatar import avatar
 import src.Agents.agents as agents
 from src import globals as globals
 
+#from src.UI.reactive_chat16 import Leaderboard
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
-#from src.UI.reactive_chat23 import StudentChat
+# Use a service account.
+cred = credentials.Certificate(r'C:\Users\91955\Downloads\adaptive-learning-3ba9c-firebase-adminsdk-848fl-7846dfb380.json')
+
+app = firebase_admin.initialize_app(cred)
+
+db = firestore.client()
+
+class Leaderboard():
+    def __init__(self, **params):
+        super().__init__(**params)
+        # Initialize leaderboard data
+        self.leaderboard_data = self.fetch_leaderboard_data()
+        self.leaderboard_table = pn.widgets.DataFrame(self.leaderboard_data, name="Leaderboard", width=800, height=400)
+        
+    def fetch_leaderboard_data(self):
+        # Sample data; replace with actual data fetching logic
+        data = {
+            "Student": ["Alice", "Bob", "Charlie"],
+            "Score": [90, 85, 80]
+        }
+        return pd.DataFrame(data)
+
+    def update_leaderboard(self):
+        self.leaderboard_data = self.fetch_leaderboard_data()
+        self.leaderboard_table.value = self.leaderboard_data
+
+    def draw_view(self):
+        return pn.Column(self.leaderboard_table)
 
 class ReactiveChat(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
@@ -27,6 +60,8 @@ class ReactiveChat(param.Parameterized):
         # Dashboard tab
         self.dashboard_view = pn.pane.Markdown(f"Total messages: {len(self.groupchat_manager.groupchat.messages)}")
         
+        # Leaderboard tab
+        self.leaderboard = Leaderboard()
 
         # Progress tab
         self.progress_text = pn.pane.Markdown(f"**Student Progress**")
@@ -35,7 +70,6 @@ class ReactiveChat(param.Parameterized):
         self.progress_bar = pn.widgets.Progress(name='Progress', value=self.progress, max=self.max_questions)        
         self.progress_info = pn.pane.Markdown(f"{self.progress} out of {self.max_questions}", width=60)
 
-        
         # Model tab. Capabilities for the LearnerModel
         self.MODEL_TAB_NAME = "ModelTab"
         self.model_tab_interface = pn.chat.ChatInterface(callback=self.a_model_tab_callback, name=self.MODEL_TAB_NAME)
@@ -126,6 +160,7 @@ class ReactiveChat(param.Parameterized):
                     ),
             ("Dashboard", pn.Column(self.dashboard_view)
                     ),
+            ("Leaderboard", self.leaderboard.draw_view()),
             ("Progress", pn.Column(
                     self.progress_text,
                     pn.Row(                        
@@ -136,7 +171,6 @@ class ReactiveChat(param.Parameterized):
                       pn.Row(self.button_update_learner_model),
                       pn.Row(self.model_tab_interface))
                     ),     
-
         )
         return tabs
 
@@ -147,4 +181,6 @@ class ReactiveChat(param.Parameterized):
     @groupchat_manager.setter
     def groupchat_manager(self, groupchat_manager: autogen.GroupChatManager):
         self._groupchat_manager = groupchat_manager
+
+
 

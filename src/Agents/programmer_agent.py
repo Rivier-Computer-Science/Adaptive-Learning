@@ -34,9 +34,9 @@ class ProgrammerAgent(MyConversableAgent):
 
     def __init__(self, **kwargs):
         super().__init__(
-                name="ProgrammerAgent",
-                human_input_mode="NEVER",
-                system_message=self.system_message,
-                description=self.description,
+                name=kwargs.pop('name', "ProgrammerAgent"),
+                human_input_mode=kwargs.pop('human_input_mode', "NEVER"),
+                system_message=kwargs.pop('system_message', self.system_message),
+                description=kwargs.pop('description',self.description),
                 **kwargs
             )
