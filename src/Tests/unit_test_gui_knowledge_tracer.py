@@ -33,5 +33,35 @@ class TestFSMGraphTracerConsole(unittest.TestCase):
             self.assertEqual(self.fsm.skill_level, 0)  # Addition is index 0
             self.assertEqual(next_agent, self.fsm.knowledge_tracer)
 
+    def test_question_generated(self):
+        # Move FSM to "GenerateFirstQuestion" state
+        self.fsm.current_state = "GenerateFirstQuestion"
+        self.fsm.skill_level = 0
+        
+        # Mock ProblemGenerator response
+        self.mock_problem_generator.last_message.return_value = {"content": "What is 2 + 2?"}
+        
+        next_agent = self.fsm.next_speaker_selector()
+        
+        self.assertEqual(self.fsm.pg_response, "What is 2 + 2?")
+        self.assertEqual(self.fsm.current_state, "AwaitStudentAnswer")
+        self.assertEqual(next_agent, self.fsm.problem_generator)
+
+    def test_verify_solution(self):
+        # Move FSM to "VerifySolution" state
+        self.fsm.current_state = "VerifySolution"
+        self.fsm.pg_response = "What is 2 + 2?"
+        self.fsm.student_response = "4"
+        
+        # Mock groupchat and verifier response
+        self.fsm.groupchat_manager = Mock()
+        self.fsm.groupchat_manager.groupchat.get_messages.return_value = [{'content': 'Yes, the answer is correct.'}]
+        
+        next_agent = self.fsm.next_speaker_selector()
+        
+        self.assertEqual(self.fsm.current_state, "AdaptLevel")
+        self.assertTrue(self.fsm.was_correct)
+        self.assertEqual(next_agent, self.fsm.knowledge_tracer)
+
 if __name__ == '__main__':
     unittest.main()
