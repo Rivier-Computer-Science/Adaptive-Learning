@@ -10,7 +10,7 @@ from src import globals
 from src.Agents.agents import *
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
 from src.Agents import gui_knowledge_tracer_fsms as fsm
-from src.UI.reactive_chat import ReactiveChat
+from UI.reactive_chat_main import ReactiveChat
 from src.UI.avatar import avatar
 # Disable Docker for AutoGen
 os.environ["AUTOGEN_USE_DOCKER"] = "False"

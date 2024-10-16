@@ -9,7 +9,7 @@ from src import globals
 from src.Agents.agents_telugu import *
 from src.Agents.chat_manager_fsms_telugu import FSM
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
-from src.UI.reactive_chat import ReactiveChat
+from UI.reactive_chat_main import ReactiveChat
 from src.UI.avatar import avatar
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"

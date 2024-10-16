@@ -101,6 +101,11 @@ class ReactiveChat(param.Parameterized):
             pp = pprint.PrettyPrinter(indent=4)
             pp.pprint(self.groupchat_manager.groupchat.get_messages())
 
+            messages = self.groupchat_manager.groupchat.get_messages()
+            for message in reversed(messages):
+                if message['name'] == 'ProblemGeneratorAgent':
+                    question = message['content']
+
             if is_correct:
                 print("################ CORRECT ANSWER #################")
                 if self.progress < self.max_questions:  
@@ -109,11 +114,12 @@ class ReactiveChat(param.Parameterized):
                     self.progress_info.object = f"{self.progress} out of {self.max_questions}"
 
                 # Assuming the last question is stored in globals.last_question                
-                self.add_to_question_history(answer_given, last_message, True)  # Add correct answer to history
+                self.add_to_question_history(answer_given, question, True)  # Add correct answer to history
             else:
                 print("################ WRONG ANSWER #################")               
-                self.add_to_question_history(answer_given, last_message, False)  # Add incorrect answer to history
+                self.add_to_question_history(answer_given, question, False)  # Add incorrect answer to history
 
+       
     def add_to_question_history(self, answer_given, question, is_correct):
         '''
             Add the current question and answer details to the question history table
