@@ -27,7 +27,7 @@ class Leaderboard():
     def __init__(self, **params):
         super().__init__(**params)
         # Initialize leaderboard data
-        print("Sheetal Bandari is a topper")
+        print("Developed by Sheetal Bandari")
         self.leaderboard_data = self.fetch_leaderboard_data()
         self.leaderboard_table = pn.widgets.DataFrame(self.leaderboard_data, name="Leaderboard", width=800, height=400, show_index=False)
         
