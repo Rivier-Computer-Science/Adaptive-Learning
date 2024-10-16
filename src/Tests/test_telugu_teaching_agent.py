@@ -88,5 +88,59 @@ def test_adaptive_learning_with_phonetic():
 
     print("Adaptive learning test complete.\n")
 
+# Test the full sequence of interactions and edge cases
+def test_full_sequence_with_edge_cases():
+    fsm = FSM(agents=agents_dict)
+    telugu_agent = agents_dict["telugu_teaching_agent"]
+    problem_generator = agents_dict["problem_generator"]
+    level_adapter = agents_dict["level_adapter"]
+
+    # Extend the mock questions list with a fallback
+    questions = [
+        "Translate 'Hello' to Telugu",
+        "Translate 'One' to Telugu",
+        "Translate 'Two' to Telugu",
+        "Translate 'Three' to Telugu"
+    ]
+    problem_generator.generate_question = Mock(side_effect=lambda: questions.pop(0) if questions else "Translate 'Fallback question'")
+
+    level_adapter.adapt_level = Mock(side_effect=mock_adapt_level)
+
+    interactions = [
+        {"input": "Namaste", "expected_result": True},   # Correct
+        {"input": "Oka", "expected_result": True},       # Correct
+        {"input": "Wrong Answer", "expected_result": False},  # Incorrect
+        {"input": "Wrong Answer", "expected_result": False},  # Incorrect again
+        {"input": "Oka", "expected_result": True},       # Correct (recover)
+        {"input": "Rendu", "expected_result": True},     # Correct
+        {"input": "Mūḍu", "expected_result": True},      # Phonetic for three
+        {"input": "Wrong Answer", "expected_result": False},  # Incorrect
+        {"input": "Naku Telugu chala ishtam", "expected_result": True},  # Correct (advanced)
+        {"input": "Wrong Answer", "expected_result": False},  # Incorrect again
+    ]
+
+    print("Initial lesson and state:")
+    print(telugu_agent.present_lesson())
+    print(f"Initial skill level: {telugu_agent.skill_level}\n")
+
+    for i, interaction in enumerate(interactions):
+        fsm.current_state = "AwaitingProblem"
+        question = problem_generator.generate_question()
+        print(f"Generated Question: {question}")
+
+        user_input = interaction["input"]
+        feedback = telugu_agent.run_lesson(user_input)
+        print(f"Feedback: {feedback}")
+
+        fsm.current_state = "AdaptingLevel"
+        level_adapter.adapt_level(telugu_agent)
+
+        print(f"Skill level after response {i + 1}: {telugu_agent.skill_level}")
+        print(f"Current lesson index: {telugu_agent.current_lesson}\n")
+
+    print("Full sequence adaptive learning test complete.\n")
+
+
 # Run all the tests
 test_adaptive_learning_with_phonetic()
+test_full_sequence_with_edge_cases()
