@@ -63,5 +63,21 @@ class TestFSMGraphTracerConsole(unittest.TestCase):
         self.assertTrue(self.fsm.was_correct)
         self.assertEqual(next_agent, self.fsm.knowledge_tracer)
 
+    def test_incorrect_answer(self):
+        # Move FSM to "VerifySolution" state
+        self.fsm.current_state = "VerifySolution"
+        self.fsm.pg_response = "What is 2 + 2?"
+        self.fsm.student_response = "5"
+        
+        # Mock groupchat and verifier response
+        self.fsm.groupchat_manager = Mock()
+        self.fsm.groupchat_manager.groupchat.get_messages.return_value = [{'content': 'No, the answer is incorrect.'}]
+        
+        next_agent = self.fsm.next_speaker_selector()
+        
+        self.assertEqual(self.fsm.current_state, "GenerateQuestion")
+        self.assertFalse(self.fsm.was_correct)
+        self.assertEqual(next_agent, self.fsm.knowledge_tracer)
+        
 if __name__ == '__main__':
     unittest.main()
