@@ -140,7 +140,94 @@ def test_full_sequence_with_edge_cases():
 
     print("Full sequence adaptive learning test complete.\n")
 
+# Test rapid progression and consecutive incorrect answers to check adaptability
+def test_rapid_progress_and_consecutive_incorrect():
+    fsm = FSM(agents=agents_dict)
+    telugu_agent = agents_dict["telugu_teaching_agent"]
+    level_adapter = agents_dict["level_adapter"]
+
+    # Sequence of rapid correct answers followed by consecutive incorrect responses
+    interactions = [
+        {"input": "Namaste", "expected_result": True},  # Correct (easy)
+        {"input": "Oka", "expected_result": True},      # Correct (advance)
+        {"input": "Rendu", "expected_result": True},    # Correct (advance again)
+        {"input": "Mūḍu", "expected_result": True},     # Correct (rapid progress)
+        {"input": "Naku Telugu chala ishtam", "expected_result": True},  # Correct (higher level)
+        {"input": "Wrong Answer", "expected_result": False},  # Incorrect (sudden error)
+        {"input": "Wrong Answer", "expected_result": False},  # Incorrect again (back down level)
+    ]
+
+    # Logging initial state
+    print("Initial lesson and state:")
+    print(telugu_agent.present_lesson())
+    print(f"Initial skill level: {telugu_agent.skill_level}\n")
+
+    for i, interaction in enumerate(interactions):
+        # Simulate user input and lesson evaluation
+        user_input = interaction["input"]
+        feedback = telugu_agent.run_lesson(user_input)
+        print(f"Feedback: {feedback}")
+
+        # Adjust level based on performance
+        fsm.current_state = "AdaptingLevel"
+        level_adapter.adapt_level(telugu_agent)
+
+        # Logging after adaptation
+        print(f"Skill level after response {i + 1}: {telugu_agent.skill_level}")
+        print(f"Lesson index: {telugu_agent.current_lesson}\n")
+
+    print("Rapid progress and consecutive incorrect test complete.\n")
+
+
+# Test phonetic input within the system's workflow and confirm it doesn't introduce discrepancies
+def test_phonetic_integration_and_consistency():
+    # Initialize FSM and agents
+    fsm = FSM(agents=agents_dict)
+    telugu_agent = agents_dict["telugu_teaching_agent"]
+    problem_generator = agents_dict["problem_generator"]
+    solution_verifier = agents_dict["solution_verifier"]
+    level_adapter = agents_dict["level_adapter"]
+
+    # Phonetic test interactions
+    phonetic_interactions = [
+        {"input": "Namaste", "expected_result": True},  # Phonetic for నమస్తే
+        {"input": "Oka", "expected_result": True},      # Phonetic for ఒక
+        {"input": "Rendu", "expected_result": True},    # Phonetic for రెండు
+        {"input": "Mūḍu", "expected_result": True},     # Phonetic for మూడు
+        {"input": "Wrong Answer", "expected_result": False},  # Incorrect
+    ]
+
+    print("Initial phonetic testing state:")
+    print(telugu_agent.present_lesson())
+    print(f"Initial skill level: {telugu_agent.skill_level}")
+    print(f"Initial current lesson index: {telugu_agent.current_lesson}\n")
+
+    for i, interaction in enumerate(phonetic_interactions):
+        # Generate a new question
+        fsm.current_state = "AwaitingProblem"
+        question = problem_generator.generate_question()
+        print(f"Generated Question: {question}")
+
+        # Simulate user response with phonetic input
+        user_input = interaction["input"]
+        feedback = telugu_agent.run_lesson(user_input)
+        print(f"Feedback: {feedback}")
+
+        # Transition to the verification and adaptation stages
+        fsm.current_state = "AdaptingLevel"
+        level_adapter.adapt_level(telugu_agent)
+
+        # Logging for consistency checks
+        print(f"Skill level after response {i + 1}: {telugu_agent.skill_level}")
+        print(f"Lesson index: {telugu_agent.current_lesson}")
+        print(f"Next lesson: {telugu_agent.present_lesson()}\n")
+
+    print("Phonetic integration and consistency test complete.\n")
+
+
 
 # Run all the tests
 test_adaptive_learning_with_phonetic()
 test_full_sequence_with_edge_cases()
+test_rapid_progress_and_consecutive_incorrect()
+test_phonetic_integration_and_consistency()
