@@ -14,6 +14,7 @@ from .learner_model_agent import LearnerModelAgent
 from .level_adapter_agent import LevelAdapterAgent
 from .motivator_agent import MotivatorAgent
 from .gamification_agent import GamificationAgent
+from .mastery_agent import MasteryAgent
 
 from src.Models.llm_config import gpt3_config
 from enum import Enum
@@ -29,12 +30,12 @@ class AgentKeys(Enum):
     SOLUTION_VERIFIER = 'solution_verifier'
     PROGRAMMER = 'programmer'
     CODE_RUNNER = 'code_runner'
-    CODE_RUNNER_VERIFIER = 'code_runner_verifier'  
+    CODE_RUNNER_VERIFIER = 'code_runner_verifier'
     LEARNER_MODEL = 'learner_model'
     LEVEL_ADAPTER = 'level_adapter'
     MOTIVATOR = 'motivator'
     GAMIFICATION = 'gamification'
-
+    MASTERY = 'mastery'  # Added MASTERY key
 
 # Agents
 student = StudentAgent()
@@ -49,8 +50,7 @@ learner_model = LearnerModelAgent()
 level_adapter = LevelAdapterAgent()
 motivator = MotivatorAgent()
 gamification = GamificationAgent(name="GamificationAgent")
-
-
+mastery = MasteryAgent()  # Added MasteryAgent instance
 
 agents_dict = {
     AgentKeys.STUDENT.value: student,
@@ -64,7 +64,8 @@ agents_dict = {
     AgentKeys.LEARNER_MODEL.value: learner_model,
     AgentKeys.LEVEL_ADAPTER.value: level_adapter,
     AgentKeys.MOTIVATOR.value: motivator,
-    AgentKeys.GAMIFICATION.value: gamification
+    AgentKeys.GAMIFICATION.value: gamification,
+    AgentKeys.MASTERY.value: mastery  # Added MasteryAgent to agents_dict
 }
 
 agents_dict_by_name = {
@@ -79,13 +80,6 @@ agents_dict_by_name = {
     "LearnerModelAgent": learner_model,
     "LevelAdapterAgent": level_adapter,
     "MotivatorAgent": motivator,
-    "GamificationAgent": gamification
-
+    "GamificationAgent": gamification,
+    "MasteryAgent": mastery  # Added MasteryAgent to agents_dict_by_name
 }
-
- 
-
-       
-
-
-
