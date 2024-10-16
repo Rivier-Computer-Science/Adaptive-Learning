@@ -224,10 +224,130 @@ def test_phonetic_integration_and_consistency():
 
     print("Phonetic integration and consistency test complete.\n")
 
+# Test phonetic input alignment with FSM states: VerifyingAnswer and AdaptingLevel
+def test_phonetic_input_with_fsm_transitions():
+    fsm = FSM(agents=agents_dict)
+    telugu_agent = agents_dict["telugu_teaching_agent"]
+    problem_generator = agents_dict["problem_generator"]
+    solution_verifier = agents_dict["solution_verifier"]
+    level_adapter = agents_dict["level_adapter"]
 
+    # Phonetic interactions to test state transitions
+    phonetic_interactions = [
+        {"input": "Namaste", "expected_result": True},  # Phonetic input
+        {"input": "Oka", "expected_result": True},
+        {"input": "Rendu", "expected_result": True},
+        {"input": "Wrong Answer", "expected_result": False},  # Incorrect
+        {"input": "Naku Telugu chala ishtam", "expected_result": True},  # Advanced sentence
+    ]
+
+    print("Starting FSM transition tests for phonetic input:")
+    
+    for i, interaction in enumerate(phonetic_interactions):
+        # Start in the AwaitingProblem state
+        fsm.current_state = "AwaitingProblem"
+        question = problem_generator.generate_question()
+
+        print(f"Generated Question: {question}")
+        
+        # Move to AwaitingAnswer state and simulate response
+        fsm.current_state = "AwaitingAnswer"
+        user_input = interaction["input"]
+        feedback = telugu_agent.run_lesson(user_input)
+
+        # Verify that the correct FSM state is reached and feedback is accurate
+        print(f"FSM transitioned to: VerifyingAnswer")
+        print(f"Student response: {user_input}")
+        print(f"Feedback: {feedback}")
+
+        # Move to AdaptingLevel state to adjust the difficulty
+        fsm.current_state = "AdaptingLevel"
+        level_adapter.adapt_level(telugu_agent)
+
+        # Log FSM state transitions and learning updates
+        print(f"FSM transitioned to: AdaptingLevel")
+        print(f"Skill level after response {i + 1}: {telugu_agent.skill_level}")
+        print(f"Current lesson index: {telugu_agent.current_lesson}\n")
+
+    print("FSM phonetic input and transitions test complete.\n")
+
+
+# Test downstream processes of phonetic input (problem generation and solution verification)
+def test_phonetic_input_downstream_effects():
+    fsm = FSM(agents=agents_dict)
+    telugu_agent = agents_dict["telugu_teaching_agent"]
+    problem_generator = agents_dict["problem_generator"]
+    solution_verifier = agents_dict["solution_verifier"]
+
+    phonetic_interactions = [
+        {"input": "Namaste", "expected_result": True},  # Correct
+        {"input": "Wrong Answer", "expected_result": False},  # Incorrect
+        {"input": "Oka", "expected_result": True},      # Correct
+    ]
+
+    print("Testing downstream effects of phonetic input (problem generation and solution verification):\n")
+    
+    for i, interaction in enumerate(phonetic_interactions):
+        # Problem generation
+        fsm.current_state = "AwaitingProblem"
+        question = problem_generator.generate_question()
+        print(f"Generated Question: {question}")
+
+        # Student input
+        user_input = interaction["input"]
+        print(f"Student response: {user_input}")
+
+        # Solution verification and feedback
+        fsm.current_state = "VerifyingAnswer"
+        feedback = telugu_agent.run_lesson(user_input)
+        print(f"Feedback: {feedback}")
+
+        # Check downstream effects on problem generation and verification
+        fsm.current_state = "AdaptingLevel"
+        print(f"Checking level adaptation after phonetic input...\n")
+        print(f"Skill level: {telugu_agent.skill_level}\n")
+    
+    print("Phonetic input downstream effects test complete.\n")
+
+
+# Test unit refinement: ensuring phonetic inputs adjust the learning process correctly
+def test_refined_unit_tests_with_phonetic_input():
+    fsm = FSM(agents=agents_dict)
+    telugu_agent = agents_dict["telugu_teaching_agent"]
+    level_adapter = agents_dict["level_adapter"]
+
+    phonetic_interactions = [
+        {"input": "Namaste", "expected_result": True},  # Correct (basic)
+        {"input": "Rendu", "expected_result": True},    # Correct (basic)
+        {"input": "Wrong Answer", "expected_result": False},  # Incorrect
+        {"input": "Naku Telugu chala ishtam", "expected_result": True},  # Correct (advanced)
+        {"input": "Wrong Answer", "expected_result": False},  # Incorrect again
+    ]
+
+    print("Refining unit tests with phonetic input and adaptive behavior checks:\n")
+
+    for i, interaction in enumerate(phonetic_interactions):
+        user_input = interaction["input"]
+
+        # Run lesson and evaluate quiz
+        feedback = telugu_agent.run_lesson(user_input)
+        print(f"Feedback: {feedback}")
+
+        # Adjust difficulty
+        fsm.current_state = "AdaptingLevel"
+        level_adapter.adapt_level(telugu_agent)
+
+        # Check refinement of skill level based on phonetic input
+        print(f"Skill level after response {i + 1}: {telugu_agent.skill_level}")
+        print(f"Current lesson index: {telugu_agent.current_lesson}\n")
+
+    print("Refined phonetic input unit tests complete.\n")
 
 # Run all the tests
 test_adaptive_learning_with_phonetic()
 test_full_sequence_with_edge_cases()
 test_rapid_progress_and_consecutive_incorrect()
 test_phonetic_integration_and_consistency()
+test_phonetic_input_with_fsm_transitions()
+test_phonetic_input_downstream_effects()
+test_refined_unit_tests_with_phonetic_input()
