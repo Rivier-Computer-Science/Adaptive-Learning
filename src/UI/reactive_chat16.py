@@ -17,7 +17,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 
 # Use a service account.
-cred = credentials.Certificate(r'C:\Users\91955\Downloads\adaptive-learning-3ba9c-firebase-adminsdk-848fl-7846dfb380.json')
+cred = credentials.Certificate(r'C:\Users\91955\Downloads\adaptive-learning-rivier-firebase-adminsdk-6u1pl-d8fc406e6f.json')
 
 app = firebase_admin.initialize_app(cred)
 
@@ -27,16 +27,30 @@ class Leaderboard():
     def __init__(self, **params):
         super().__init__(**params)
         # Initialize leaderboard data
+        print("Sheetal Bandari is a topper")
         self.leaderboard_data = self.fetch_leaderboard_data()
-        self.leaderboard_table = pn.widgets.DataFrame(self.leaderboard_data, name="Leaderboard", width=800, height=400)
+        self.leaderboard_table = pn.widgets.DataFrame(self.leaderboard_data, name="Leaderboard", width=800, height=400, show_index=False)
         
     def fetch_leaderboard_data(self):
-        # Sample data; replace with actual data fetching logic
+        # Fetch data from Firestore
+        leaderboard_ref = db.collection("leaderboard").order_by('score', direction=firestore.Query.DESCENDING)
+        docs = leaderboard_ref.stream()
         data = {
-            "Student": ["Alice", "Bob", "Charlie"],
-            "Score": [90, 85, 80]
+            "Student": [],
+            "Score": []
         }
-        return pd.DataFrame(data)
+        print("pkofca")
+        for doc in docs:
+            data["Student"].append(doc.to_dict().get("username", "Unknown"))
+            data["Score"].append(doc.to_dict().get("score", 0))
+            print("odododo", doc)
+
+        # Convert to DataFrame and add rank column
+        df = pd.DataFrame(data)
+        df['Rank'] = df['Score'].rank(ascending=False, method='min').astype(int)  # Add a 'Rank' column
+        df = df.sort_values(by='Rank')  # Sort by 'Rank'
+        df = df[['Rank', 'Student', 'Score']]  # Reorder columns to show 'Rank' first
+        return df.reset_index(drop=True)  # Reset index to remove the original DataFrame index
 
     def update_leaderboard(self):
         self.leaderboard_data = self.fetch_leaderboard_data()
@@ -44,6 +58,7 @@ class Leaderboard():
 
     def draw_view(self):
         return pn.Column(self.leaderboard_table)
+
 
 class ReactiveChat(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
