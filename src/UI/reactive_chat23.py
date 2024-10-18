@@ -66,17 +66,36 @@ class StudentChat(param.Parameterized):
     def fetch_messages_for_room(self, room_id):
         """Fetch chat messages for a specific room."""
         messages_ref = db.collection('chat_rooms').document(room_id).collection('messages')
-        messages = messages_ref.order_by('timestamp').get()
+        messages = messages_ref.order_by('timestamp')
         
-        self.all_rooms[room_id]['messages']=[]
-        for message in messages:
-            message_data = message.to_dict()
-            message_id = message.id
-            self.all_rooms[room_id]['messages'].append(
-                {"id": message_id, "sender_name": message_data['sender_name'], "content": message_data['content']}
-                )
+        def on_snapshot(messages_snapshot, changes, read_time):
+            self.all_rooms[room_id]['messages'] = []  # Clear the messages before updating
+
+            for change in changes:
+                message = change.document
+                message_data = message.to_dict()
+                message_id = message.id
+
+                # Handle added and modified messages
+                if change.type.name == 'ADDED' or change.type.name == 'MODIFIED':
+                    if message_id not in self.displayed_message_ids:
+                        self.displayed_message_ids.add(message_id)
+                        self.pending_messages.add(message_data['content'])
+                        self.all_rooms[room_id]['messages'].append(
+                            {"id": message_id, "sender_name": message_data['sender_name'], "content": message_data['content']}
+                        )
+                        self.chat_interface.send(message_data['content'], user=message_data['sender_name'])
+
+                # Handle removed messages if necessary (optional)
+                elif change.type.name == 'REMOVED':
+                    # You can implement message deletion handling here if needed
+                    pass
+
+        # Attach the snapshot listener
+        messages_ref.on_snapshot(on_snapshot)
+        
         print(self.all_rooms[room_id])
-                
+        
 
     def create_room_list(self):
         """Create a dropdown to display room IDs."""
@@ -118,6 +137,8 @@ class StudentChat(param.Parameterized):
 
     async def chat_callback(self, contents: str, user: str, instance: pn.chat.ChatInterface):
         """Handle incoming messages in the chat."""
+        for message in instance.serialize():
+            print("Meddage",message)
         if contents not in self.pending_messages:
             self.pending_messages.add(contents)  # Track messages being processed
             self.displayed_message.append(contents)
