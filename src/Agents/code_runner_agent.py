@@ -38,7 +38,7 @@ You are an AutoGen agent designed to run Python code snippets and visualize the 
             name="CodeRunnerAgent",
             code_execution_config={"work_dir": "coding"},
             human_input_mode="NEVER",
-            system_message=self.system_message,
-            description=self.description,
+            system_message=kwargs.pop('system_message', self.system_message),
+            description=kwargs.pop('description',self.description),
             **kwargs
         )
