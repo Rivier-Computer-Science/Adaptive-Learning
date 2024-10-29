@@ -1,4 +1,4 @@
-from src.Agents.agents_telugu import agents_dict
+from Agents.telugu_agents import agents_dict
 from src.Agents.chat_manager_fsms_telugu import FSM
 from src.Agents.telugu_teaching_agent import TeluguTeachingAgent
 from unittest.mock import Mock  # Import Mock
