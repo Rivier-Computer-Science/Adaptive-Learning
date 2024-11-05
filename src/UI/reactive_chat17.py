@@ -5,9 +5,10 @@ import autogen as autogen
 import firebase_admin
 import panel as pn
 import param
-import src.Agents.agents as agents
 from cryptography.fernet import Fernet
 from firebase_admin import auth, credentials, firestore
+
+import src.Agents.agents as agents
 from src import globals as globals
 from src.UI.avatar import avatar
 
@@ -179,6 +180,9 @@ class UserAuth(param.Parameterized):
         self.name_input = pn.widgets.TextInput(name='Name', placeholder='Enter full name')
         self.gender_input = pn.widgets.Select(name='Gender', options=["Male", "Female", "Other"])
 
+        # Error message display
+        self.error_message = pn.pane.Markdown("")
+
         # Buttons for login, signup, and logout
         self.login_button = pn.widgets.Button(name="Login", button_type="primary")
         self.signup_button = pn.widgets.Button(name="Sign Up", button_type="success")
@@ -201,6 +205,7 @@ class UserAuth(param.Parameterized):
     def toggle_page(self, event):
         """Toggle between login and signup page."""
         self.is_login_page = not self.is_login_page
+        self.error_message.object = ""  # Clear error message when switching pages
 
         # Update the button text and layout
         if self.is_login_page:
@@ -218,6 +223,7 @@ class UserAuth(param.Parameterized):
         elif self.is_login_page:
             # Login page layout
             self.layout[:] = [
+                self.error_message,
                 self.email_input,
                 self.password_input,
                 self.toggle_page_button,
@@ -226,6 +232,7 @@ class UserAuth(param.Parameterized):
         else:
             # Signup page layout
             self.layout[:] = [
+                self.error_message,
                 self.name_input,
                 self.email_input,
                 self.password_input,
@@ -256,7 +263,9 @@ class UserAuth(param.Parameterized):
             self.user_uid = user.uid
             self.update_layout()  # Switch to profile page
         except Exception as e:
-            print(f"Error: {e}")
+            # Update error message pane
+            self.error_message.object = f"Error: {e}"
+            self.update_layout()
 
     def handle_signup(self, event):
         """Handle user signup and save details in Firestore."""
@@ -292,7 +301,9 @@ class UserAuth(param.Parameterized):
             self.user_uid = user.uid
             self.update_layout()  # Switch to profile page
         except Exception as e:
-            print(f"Error: {e}")
+            # Update error message pane
+            self.error_message.object = f"Error: {e}"
+            self.update_layout()
 
     def update_user_data(self, updated_name, updated_email, updated_gender):
         """Update user data in Firestore."""
@@ -344,6 +355,7 @@ class UserAuth(param.Parameterized):
     def handle_logout(self, event):
         """Handle user logout."""
         self.user_uid = None  # Clear user session
+        self.error_message.object = ""  # Clear error message on logout
         self.update_layout()  # Switch back to login page
         print("User logged out.")
 
