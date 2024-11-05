@@ -23,38 +23,84 @@ app = firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
+
+
 class Leaderboard():
     def __init__(self, **params):
         super().__init__(**params)
         # Initialize leaderboard data
         print("Developed by Sheetal Bandari")
         self.leaderboard_data = self.fetch_leaderboard_data()
-        self.leaderboard_table = pn.widgets.DataFrame(self.leaderboard_data, name="Leaderboard", width=800, height=400, show_index=False)
-        
+        self.leaderboard_table = self.create_centered_table(self.leaderboard_data)
+
     def fetch_leaderboard_data(self):
         # Fetch data from Firestore
         leaderboard_ref = db.collection("leaderboard").order_by('score', direction=firestore.Query.DESCENDING)
         docs = leaderboard_ref.stream()
         data = {
+            "ProfilePic": [],
             "Student": [],
             "Score": []
         }
         print("pkofca")
         for doc in docs:
-            data["Student"].append(doc.to_dict().get("username", "Unknown"))
-            data["Score"].append(doc.to_dict().get("score", 0))
-            print("odododo", doc)
+            doc_data = doc.to_dict()
+            username = doc_data.get("username", "Unknown")
+            score = doc_data.get("score", 0)
+            profile_pic_url = doc_data.get("profile_image_url", "")  # URL for profile picture
+            if profile_pic_url=="":
+                profile_pic_url="https://cdn.pixabay.com/photo/2021/07/02/04/48/user-6380868_1280.png"
+            data["Student"].append(username)
+            data["Score"].append(score)
+            data["ProfilePic"].append(profile_pic_url)  # Add the profile picture URL
+
+            print("odododo", doc,profile_pic_url)
 
         # Convert to DataFrame and add rank column
         df = pd.DataFrame(data)
         df['Rank'] = df['Score'].rank(ascending=False, method='min').astype(int)  # Add a 'Rank' column
         df = df.sort_values(by='Rank')  # Sort by 'Rank'
-        df = df[['Rank', 'Student', 'Score']]  # Reorder columns to show 'Rank' first
+        df = df[['Rank', 'ProfilePic',  'Student', 'Score']]  # Reorder columns to show 'Rank' first
         return df.reset_index(drop=True)  # Reset index to remove the original DataFrame index
+    
+    def create_centered_table(self, data):
+        # Convert DataFrame to HTML, adding images with circular style
+        rows = []
+        for _, row in data.iterrows():
+            profile_pic_html = (
+                f'<img src="{row["ProfilePic"]}" alt="" style="border-radius: 50%; width: 30px; height: 30px; margin-right: 10px;">'
+            )
+            student_html = f"{profile_pic_html}{row['Student']}"
+            rows.append(f"<tr><td>{row['Rank']}</td><td>{student_html}</td><td>{row['Score']}</td></tr>")
+
+        html_table = "<table class='centered-table'>" + \
+                     "<thead><tr><th>Rank</th><th>Student</th><th>Score</th></tr></thead><tbody>" + \
+                     "".join(rows) + "</tbody></table>"
+
+        # Custom CSS for centering and styling
+        custom_css = """
+        <style>
+            .centered-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .centered-table th, .centered-table td {
+                text-align: center;
+                padding: 8px;
+                border: 1px solid #ddd;
+            }
+            .centered-table th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }
+        </style>
+        """
+        return pn.pane.HTML(custom_css + html_table, sizing_mode="stretch_both")
+
 
     def update_leaderboard(self):
         self.leaderboard_data = self.fetch_leaderboard_data()
-        self.leaderboard_table.value = self.leaderboard_data
+        self.leaderboard_table.object = self.create_centered_table(self.leaderboard_data)
 
     def draw_view(self):
         return pn.Column(self.leaderboard_table)
