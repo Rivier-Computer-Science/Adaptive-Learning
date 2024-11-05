@@ -1,4 +1,3 @@
-##################### Knowledge Tracer #########################
 from typing import Dict
 from .conversable_agent import MyConversableAgent
 from src.KnowledgeGraphs.math_taxonomy import (

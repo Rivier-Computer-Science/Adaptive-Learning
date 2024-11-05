@@ -18,8 +18,8 @@ class LevelAdapterAgent(MyConversableAgent):
     def __init__(self, **kwargs):
         super().__init__(
             name="LevelAdapterAgent",
-            system_message=self.system_message,
-            description=self.description,
+            system_message=kwargs.pop('system_message', self.system_message),
+            description=kwargs.pop('description',self.description),
             human_input_mode="NEVER",
             **kwargs
          )

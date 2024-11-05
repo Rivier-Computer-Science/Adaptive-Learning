@@ -1,16 +1,22 @@
-
-
-import param
-import panel as pn
 import asyncio
 import re
+
 import autogen as autogen
-from src.UI.avatar import avatar
+import firebase_admin
+import panel as pn
+import param
+from firebase_admin import credentials, firestore
+
 import src.Agents.agents as agents
 from src import globals as globals
+from src.UI.avatar import avatar
+
+# Initialize Firestore using the credentials
+cred = credentials.Certificate(r'C:\Users\kutha\Downloads\adaptive-learning-rivier-firebase-adminsdk-6u1pl-d8fc406e6f.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 
-#from src.UI.reactive_chat23 import StudentChat
 
 class ReactiveChat(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
@@ -19,6 +25,9 @@ class ReactiveChat(param.Parameterized):
         pn.extension(design="material")
 
         self.groupchat_manager = groupchat_manager
+        
+        self.bookmarked_messages=[]
+ 
  
         # Learn tab
         self.LEARN_TAB_NAME = "LearnTab"
@@ -27,7 +36,9 @@ class ReactiveChat(param.Parameterized):
         # Dashboard tab
         self.dashboard_view = pn.pane.Markdown(f"Total messages: {len(self.groupchat_manager.groupchat.messages)}")
         
-
+        # Initialize BookmarkPage
+        self.bookmark_page = BookmarkPage()
+        
         # Progress tab
         self.progress_text = pn.pane.Markdown(f"**Student Progress**")
         self.progress = 0
@@ -65,11 +76,20 @@ class ReactiveChat(param.Parameterized):
     
     def update_learn_tab(self, recipient, messages, sender, config):
         if self.groupchat_manager.chat_interface.name is not self.LEARN_TAB_NAME: return
+        bookmark_button = pn.widgets.ButtonIcon(icon="heart", size="2em", description="favorite")
+        
         last_content = messages[-1]['content'] 
         if all(key in messages[-1] for key in ['name']):
+            bookmark_button.on_click(lambda event: self.bookmark_page.add_bookmark({"message":last_content, "user":messages[-1]['name']}))
+            
             self.learn_tab_interface.send(last_content, user=messages[-1]['name'], avatar=avatar[messages[-1]['name']], respond=False)
+            self.learn_tab_interface.append(pn.Column(bookmark_button))
+        
         else:
+            bookmark_button.on_click(lambda event: self.bookmark_page.add_bookmark({"message":last_content, "user": recipient.name}))
+            
             self.learn_tab_interface.send(last_content, user=recipient.name, avatar=avatar[recipient.name], respond=False)
+            self.learn_tab_interface.append(pn.Column(bookmark_button))
         
     ########## tab2: Dashboard
     def update_dashboard(self):
@@ -136,7 +156,7 @@ class ReactiveChat(param.Parameterized):
                       pn.Row(self.button_update_learner_model),
                       pn.Row(self.model_tab_interface))
                     ),     
-
+            ("Bookmark", self.bookmark_page.get_view())
         )
         return tabs
 
@@ -148,3 +168,74 @@ class ReactiveChat(param.Parameterized):
     def groupchat_manager(self, groupchat_manager: autogen.GroupChatManager):
         self._groupchat_manager = groupchat_manager
 
+
+
+class BookmarkPage(param.Parameterized):
+    def __init__(self, **params):
+        super().__init__(**params)
+
+        self.bookmarked_messages = []  # Local storage for bookmarks
+        self.chat_interface = pn.chat.ChatInterface(callback=self.noop_callback, name="BookmarkInterface")
+
+        # Load initial bookmarks from Firestore for the user
+        self.load_bookmarks()
+
+    async def noop_callback(self, contents: str, user: str, instance: pn.chat.ChatInterface):
+        """No operation callback for the bookmark interface."""
+        pass
+
+    def add_bookmark(self, message_data):
+        """Add a new message to bookmarks, update Firestore, and update the chat interface."""
+        self.bookmarked_messages.append(message_data)
+        
+        # Add the bookmark to Firestore (nested under the user's document)
+        db.collection('bookmarks').add(message_data)
+
+        self.update_bookmark_view()
+
+    def remove_bookmark(self, message_data):
+        """Remove a message from bookmarks, update Firestore, and update the chat interface."""
+        self.bookmarked_messages.remove(message_data)
+        
+        # Remove the bookmark from Firestore
+        bookmarks_ref = db.collection('bookmarks')
+        # Query for the specific bookmark document by its content
+        query = bookmarks_ref.where('message', '==', message_data['message']).stream()
+        
+        for doc in query:
+            doc.reference.delete()
+
+        self.update_bookmark_view()
+
+    def load_bookmarks(self):
+        """Load the user's bookmarks from the Firestore sub-collection."""
+        bookmarks_ref = db.collection('bookmarks')
+        docs = bookmarks_ref.stream()
+
+        # Clear current bookmarks
+        self.bookmarked_messages = []
+
+        for doc in docs:
+            self.bookmarked_messages.append(doc.to_dict())
+
+        self.update_bookmark_view()
+
+    def update_bookmark_view(self):
+        """Update the chat interface to display bookmarked messages with remove buttons."""
+        self.chat_interface.clear()  # Clear previous messages
+
+        for message_data in self.bookmarked_messages:
+            user = message_data['user']
+            message = message_data['message']
+
+            # Create a button to remove the bookmark
+            remove_button = pn.widgets.ButtonIcon(icon="heart", active_icon="heart-filled", value=True, size="2em", description="favorite")
+            remove_button.on_click(lambda event, msg=message_data: self.remove_bookmark(msg))
+
+            # Send the bookmarked message to the chat interface and append the remove button
+            self.chat_interface.send(message, user=user, avatar=None, respond=False)
+            self.chat_interface.append(pn.Row(remove_button))
+
+    def get_view(self):
+        """Return the view of the chat interface with bookmarked messages."""
+        return pn.Column(self.chat_interface)

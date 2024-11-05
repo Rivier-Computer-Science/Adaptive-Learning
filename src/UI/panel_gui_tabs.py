@@ -1,7 +1,12 @@
 import asyncio
 import os
 from typing import Dict, List
+
+import asyncio
+import os
+from typing import Dict, List
 import autogen
+import openai
 import openai
 import panel as pn
 import speech_recognition as sr

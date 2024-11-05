@@ -1,7 +1,9 @@
-
-
-import param
+import pandas as pd
 import panel as pn
+import param
+
+
+
 import asyncio
 import re
 import autogen as autogen
@@ -9,8 +11,54 @@ from src.UI.avatar import avatar
 import src.Agents.agents as agents
 from src import globals as globals
 
+#from src.UI.reactive_chat16 import Leaderboard
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
-#from src.UI.reactive_chat23 import StudentChat
+# Use a service account.
+cred = credentials.Certificate(r'C:\Users\91955\Downloads\adaptive-learning-rivier-firebase-adminsdk-6u1pl-d8fc406e6f.json')
+
+app = firebase_admin.initialize_app(cred)
+
+db = firestore.client()
+
+class Leaderboard():
+    def __init__(self, **params):
+        super().__init__(**params)
+        # Initialize leaderboard data
+        print("Developed by Sheetal Bandari")
+        self.leaderboard_data = self.fetch_leaderboard_data()
+        self.leaderboard_table = pn.widgets.DataFrame(self.leaderboard_data, name="Leaderboard", width=800, height=400, show_index=False)
+        
+    def fetch_leaderboard_data(self):
+        # Fetch data from Firestore
+        leaderboard_ref = db.collection("leaderboard").order_by('score', direction=firestore.Query.DESCENDING)
+        docs = leaderboard_ref.stream()
+        data = {
+            "Student": [],
+            "Score": []
+        }
+        print("pkofca")
+        for doc in docs:
+            data["Student"].append(doc.to_dict().get("username", "Unknown"))
+            data["Score"].append(doc.to_dict().get("score", 0))
+            print("odododo", doc)
+
+        # Convert to DataFrame and add rank column
+        df = pd.DataFrame(data)
+        df['Rank'] = df['Score'].rank(ascending=False, method='min').astype(int)  # Add a 'Rank' column
+        df = df.sort_values(by='Rank')  # Sort by 'Rank'
+        df = df[['Rank', 'Student', 'Score']]  # Reorder columns to show 'Rank' first
+        return df.reset_index(drop=True)  # Reset index to remove the original DataFrame index
+
+    def update_leaderboard(self):
+        self.leaderboard_data = self.fetch_leaderboard_data()
+        self.leaderboard_table.value = self.leaderboard_data
+
+    def draw_view(self):
+        return pn.Column(self.leaderboard_table)
+
 
 class ReactiveChat(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
@@ -27,6 +75,8 @@ class ReactiveChat(param.Parameterized):
         # Dashboard tab
         self.dashboard_view = pn.pane.Markdown(f"Total messages: {len(self.groupchat_manager.groupchat.messages)}")
         
+        # Leaderboard tab
+        self.leaderboard = Leaderboard()
 
         # Progress tab
         self.progress_text = pn.pane.Markdown(f"**Student Progress**")
@@ -35,7 +85,6 @@ class ReactiveChat(param.Parameterized):
         self.progress_bar = pn.widgets.Progress(name='Progress', value=self.progress, max=self.max_questions)        
         self.progress_info = pn.pane.Markdown(f"{self.progress} out of {self.max_questions}", width=60)
 
-        
         # Model tab. Capabilities for the LearnerModel
         self.MODEL_TAB_NAME = "ModelTab"
         self.model_tab_interface = pn.chat.ChatInterface(callback=self.a_model_tab_callback, name=self.MODEL_TAB_NAME)
@@ -126,6 +175,7 @@ class ReactiveChat(param.Parameterized):
                     ),
             ("Dashboard", pn.Column(self.dashboard_view)
                     ),
+            ("Leaderboard", self.leaderboard.draw_view()),
             ("Progress", pn.Column(
                     self.progress_text,
                     pn.Row(                        
@@ -136,7 +186,6 @@ class ReactiveChat(param.Parameterized):
                       pn.Row(self.button_update_learner_model),
                       pn.Row(self.model_tab_interface))
                     ),     
-
         )
         return tabs
 
@@ -147,4 +196,6 @@ class ReactiveChat(param.Parameterized):
     @groupchat_manager.setter
     def groupchat_manager(self, groupchat_manager: autogen.GroupChatManager):
         self._groupchat_manager = groupchat_manager
+
+
 

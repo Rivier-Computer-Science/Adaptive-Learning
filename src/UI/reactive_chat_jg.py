@@ -5,19 +5,20 @@ import panel as pn
 import asyncio
 import re
 import autogen as autogen
-from src.UI.avatar import avatar
-import src.Agents.agents as agents
 from src import globals as globals
-
+from src.Agents.agents import AgentKeys
 
 #from src.UI.reactive_chat23 import StudentChat
 
+
 class ReactiveChat(param.Parameterized):
-    def __init__(self, groupchat_manager=None, **params):
+    def __init__(self, agents_dict,  avatars=None, groupchat_manager=None, **params):
         super().__init__(**params)
         
         pn.extension(design="material")
 
+        self.agents_dict = agents_dict
+        self.avatars = avatars
         self.groupchat_manager = groupchat_manager
  
         # Learn tab
@@ -27,7 +28,6 @@ class ReactiveChat(param.Parameterized):
         # Dashboard tab
         self.dashboard_view = pn.pane.Markdown(f"Total messages: {len(self.groupchat_manager.groupchat.messages)}")
         
-
         # Progress tab
         self.progress_text = pn.pane.Markdown(f"**Student Progress**")
         self.progress = 0
@@ -56,7 +56,7 @@ class ReactiveChat(param.Parameterized):
         '''                      
         self.groupchat_manager.chat_interface = instance
         if not globals.initiate_chat_task_created:
-            asyncio.create_task(self.groupchat_manager.delayed_initiate_chat(agents.tutor, self.groupchat_manager, contents))  
+            asyncio.create_task(self.groupchat_manager.delayed_initiate_chat(self.agents_dict[AgentKeys.TUTOR.value], self.groupchat_manager, contents))  
         else:
             if globals.input_future and not globals.input_future.done():                
                 globals.input_future.set_result(contents)                 
@@ -67,9 +67,9 @@ class ReactiveChat(param.Parameterized):
         if self.groupchat_manager.chat_interface.name is not self.LEARN_TAB_NAME: return
         last_content = messages[-1]['content'] 
         if all(key in messages[-1] for key in ['name']):
-            self.learn_tab_interface.send(last_content, user=messages[-1]['name'], avatar=avatar[messages[-1]['name']], respond=False)
+            self.learn_tab_interface.send(last_content, user=messages[-1]['name'], avatar=self.avatars[messages[-1]['name']], respond=False)
         else:
-            self.learn_tab_interface.send(last_content, user=recipient.name, avatar=avatar[recipient.name], respond=False)
+            self.learn_tab_interface.send(last_content, user=recipient.name, avatar=self.avatars[recipient.name], respond=False)
         
     ########## tab2: Dashboard
     def update_dashboard(self):
@@ -103,10 +103,10 @@ class ReactiveChat(param.Parameterized):
         if self.groupchat_manager.chat_interface.name is not self.MODEL_TAB_NAME: return
         messages = self.groupchat_manager.groupchat.get_messages()
         for m in messages:
-            agents.learner_model.send(m, recipient=agents.learner_model, request_reply=False)
-        await agents.learner_model.a_send("What is the student's current capabilities", recipient=agents.learner_model, request_reply=True)
-        response = agents.learner_model.last_message(agent=agents.learner_model)["content"]
-        self.model_tab_interface.send(response, user=agents.learner_model.name,avatar=avatar[agents.learner_model.name])
+            self.agents_dict[AgentKeys.LEARNER_MODEL.value].send(m, recipient=self.agents_dict[AgentKeys.LEARNER_MODEL.value], request_reply=False)
+        await self.agents_dict[AgentKeys.LEARNER_MODEL.value].a_send("What is the student's current capabilities", recipient=self.agents_dict[AgentKeys.LEARNER_MODEL.value], request_reply=True)
+        response = self.agents_dict[AgentKeys.LEARNER_MODEL.value].last_message(agent=self.agents_dict[AgentKeys.LEARNER_MODEL.value])["content"]
+        self.model_tab_interface.send(response, user=self.agents_dict[AgentKeys.LEARNER_MODEL.value].name,avatar=self.avatars[self.agents_dict[AgentKeys.LEARNER_MODEL.value].name])
 
 
     async def a_model_tab_callback(self, contents: str, user: str, instance: pn.chat.ChatInterface):
@@ -115,8 +115,8 @@ class ReactiveChat(param.Parameterized):
         '''
         self.groupchat_manager.chat_interface = instance
         if user == "System" or user == "User":
-            response = agents.learner_model.last_message(agent=agents.learner_model)["content"]
-            self.learn_tab_interface.send(response, user=agents.learner_model.name,avatar=avatar[agents.learner_model.name])
+            response = self.agents_dict[AgentKeys.LEARNER_MODEL.value].last_message(agent=self.agents_dict[AgentKeys.LEARNER_MODEL.value])["content"]
+            self.learn_tab_interface.send(response, user=self.agents_dict[AgentKeys.LEARNER_MODEL.value].name,avatar=self.avatars[self.agents_dict[AgentKeys.LEARNER_MODEL.value].name])
     
 
     ########## Create the "windows" and draw the tabs
