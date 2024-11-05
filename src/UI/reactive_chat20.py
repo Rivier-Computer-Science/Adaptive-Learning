@@ -176,7 +176,25 @@ class BookmarkPage(param.Parameterized):
 
         self.bookmarked_messages = []  # Local storage for bookmarks
         self.chat_interface = pn.chat.ChatInterface(callback=self.noop_callback, name="BookmarkInterface")
+        
+        self.confirm_float_panel = pn.layout.FloatPanel(
+            pn.pane.Markdown("Are you sure you want to remove this bookmark?"),
+            pn.widgets.Button(name="Confirm", button_type="danger", width=100),
+            pn.widgets.Button(name="Cancel", button_type="primary", width=100),
+            name="Confirm Deletion",
+            contained=False,
+            position='center',
+            theme="warning filleddark",
+            status="closed"  # Initially hidden
+        )
+        self.confirm_float_panel[1].on_click(self.confirm_remove)  # Confirm button
+        self.confirm_float_panel[2].on_click(self.cancel_remove)   # Cancel button
+        
+        # Placeholder for the message to remove
+        self.message_to_remove = None
 
+
+        
         # Load initial bookmarks from Firestore for the user
         self.load_bookmarks()
 
@@ -192,6 +210,32 @@ class BookmarkPage(param.Parameterized):
         db.collection('bookmarks').add(message_data)
 
         self.update_bookmark_view()
+        
+    def confirm_remove(self, event=None):
+        """Confirm the removal of a bookmark and update Firestore."""
+        if self.message_to_remove:
+            self.bookmarked_messages.remove(self.message_to_remove)
+            
+            # Remove the bookmark from Firestore
+            bookmarks_ref = db.collection('bookmarks')
+            query = bookmarks_ref.where('message', '==', self.message_to_remove).stream()
+            
+            for doc in query:
+                doc.reference.delete()
+
+            self.update_bookmark_view()
+            self.cancel_remove()  # Hide the float panel after confirming
+
+        
+    def cancel_remove(self, event=None):
+        """Hide the confirmation float panel without removing the bookmark."""
+        self.confirm_float_panel.param.set_param(status="closed")
+        self.message_to_remove = None  # Reset the message to remove
+
+    def remove_bookmark(self, message_data):
+        """Trigger the confirmation float panel for removing a bookmark."""
+        self.message_to_remove = message_data
+        self.confirm_float_panel.param.set_param(status="normalized")  # Show float panel
 
     def remove_bookmark(self, message_data):
         """Remove a message from bookmarks, update Firestore, and update the chat interface."""
