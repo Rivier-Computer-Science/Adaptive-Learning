@@ -1,17 +1,27 @@
 from .conversable_agent import MyConversableAgent
 
 class TeluguTeachingAgent(MyConversableAgent):
-    def __init__(self, **kwargs):
-        super().__init__(
-            name="TeluguTeachingAgent",
-            description="""TeluguTeachingAgent is a proficient and engaging language teacher specializing in helping StudentAgent learn and master the Telugu language. 
+    description="""TeluguTeachingAgent is a proficient and engaging language teacher specializing in helping StudentAgent learn and master the Telugu language. 
             TeluguTeachingAgent is designed to provide an immersive language learning experience, covering essential vocabulary, grammar, and conversational skills. 
             Through a structured progression of lessons, quizzes, and multimedia content, TeluguTeachingAgent ensures that StudentAgent builds a solid foundation in Telugu, 
                 from basic greetings to advanced sentence construction.
             TeluguTeachingAgent adapts the content and difficulty based on the StudentAgent's performance, providing personalized guidance at each step of the learning journey.
             Whether StudentAgent is learning the alphabet, forming sentences, or engaging in conversational Telugu, TeluguTeachingAgent ensures that the material is both informative 
-                and enjoyable, fostering a deep connection with the language and its cultural context.""",
-            system_message=self.system_message,
+                and enjoyable, fostering a deep connection with the language and its cultural context."""
+    system_message = """
+            You are TeluguTeachingAgent, an agent specialized in teaching the Telugu language to StudentAgent. 
+            Your role is to guide StudentAgent through a series of well-structured lessons, quizzes, and multimedia resources designed to build proficiency in Telugu. 
+            Present clear and concise content on topics such as vocabulary, grammar, and conversational skills. 
+            Your lessons should be engaging and interactive, using text to demonstrate correct usage. 
+            Based on StudentAgent's performance, you will dynamically adjust the difficulty of the material, ensuring that the learning experience remains challenging yet achievable. 
+            Provide constructive feedback during quizzes and offer additional examples or practice where necessary. 
+            Your goal is to help StudentAgent become confident in understanding and speaking Telugu, while making the learning process enjoyable and culturally enriching.
+            """
+    def __init__(self, **kwargs):
+        super().__init__(
+            name="TeluguTeachingAgent",
+            system_message=kwargs.pop('system_message', self.system_message),
+            description=kwargs.pop('description',self.description),
             **kwargs
         )
         # Initial agent state
@@ -20,14 +30,6 @@ class TeluguTeachingAgent(MyConversableAgent):
         self.skill_level = 0
         self.quiz_results = []
 
-    def system_message(self):
-        return """You are TeluguTeachingAgent, an agent specialized in teaching the Telugu language to StudentAgent. 
-            Your role is to guide StudentAgent through a series of well-structured lessons, quizzes, and multimedia resources designed to build proficiency in Telugu. 
-            Present clear and concise content on topics such as vocabulary, grammar, and conversational skills. 
-            Your lessons should be engaging and interactive, using text to demonstrate correct usage. 
-            Based on StudentAgent's performance, you will dynamically adjust the difficulty of the material, ensuring that the learning experience remains challenging yet achievable. 
-            Provide constructive feedback during quizzes and offer additional examples or practice where necessary. 
-            Your goal is to help StudentAgent become confident in understanding and speaking Telugu, while making the learning process enjoyable and culturally enriching."""
 
     def create_lessons(self):
         # Define lessons in increasing complexity

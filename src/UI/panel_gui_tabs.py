@@ -13,11 +13,13 @@ import speech_recognition as sr
 from src import globals
 from src.Agents.agents import *
 from src.Agents.chat_manager_fsms import FSM
+
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
 from src.UI.reactive_chat16 import ReactiveChat
 from src.UI.avatar import avatar
 from src.KnowledgeGraphs.math_taxonomy import topic_colors
 import pandas as pd
+
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 

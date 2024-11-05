@@ -1,117 +1,24 @@
-import pandas as pd
-import panel as pn
+
+
 import param
-
-
-
+import panel as pn
 import asyncio
 import re
 import autogen as autogen
-from src.UI.avatar import avatar
-import src.Agents.agents as agents
 from src import globals as globals
+from src.Agents.agents import AgentKeys
 
-#from src.UI.reactive_chat16 import Leaderboard
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-
-# Use a service account.
-cred = credentials.Certificate(r'C:\Users\91955\Downloads\adaptive-learning-rivier-firebase-adminsdk-6u1pl-d8fc406e6f.json')
-
-app = firebase_admin.initialize_app(cred)
-
-db = firestore.client()
-
-
-
-class Leaderboard():
-    def __init__(self, **params):
-        super().__init__(**params)
-        # Initialize leaderboard data
-        print("Developed by Sheetal Bandari")
-        self.leaderboard_data = self.fetch_leaderboard_data()
-        self.leaderboard_table = self.create_centered_table(self.leaderboard_data)
-
-    def fetch_leaderboard_data(self):
-        # Fetch data from Firestore
-        leaderboard_ref = db.collection("leaderboard").order_by('score', direction=firestore.Query.DESCENDING)
-        docs = leaderboard_ref.stream()
-        data = {
-            "ProfilePic": [],
-            "Student": [],
-            "Score": []
-        }
-        print("pkofca")
-        for doc in docs:
-            doc_data = doc.to_dict()
-            username = doc_data.get("username", "Unknown")
-            score = doc_data.get("score", 0)
-            profile_pic_url = doc_data.get("profile_image_url", "")  # URL for profile picture
-            if profile_pic_url=="":
-                profile_pic_url="https://cdn.pixabay.com/photo/2021/07/02/04/48/user-6380868_1280.png"
-            data["Student"].append(username)
-            data["Score"].append(score)
-            data["ProfilePic"].append(profile_pic_url)  # Add the profile picture URL
-
-            print("odododo", doc,profile_pic_url)
-
-        # Convert to DataFrame and add rank column
-        df = pd.DataFrame(data)
-        df['Rank'] = df['Score'].rank(ascending=False, method='min').astype(int)  # Add a 'Rank' column
-        df = df.sort_values(by='Rank')  # Sort by 'Rank'
-        df = df[['Rank', 'ProfilePic',  'Student', 'Score']]  # Reorder columns to show 'Rank' first
-        return df.reset_index(drop=True)  # Reset index to remove the original DataFrame index
-    
-    def create_centered_table(self, data):
-        # Convert DataFrame to HTML, adding images with circular style
-        rows = []
-        for _, row in data.iterrows():
-            profile_pic_html = (
-                f'<img src="{row["ProfilePic"]}" alt="" style="border-radius: 50%; width: 30px; height: 30px; margin-right: 10px;">'
-            )
-            student_html = f"{profile_pic_html}{row['Student']}"
-            rows.append(f"<tr><td>{row['Rank']}</td><td>{student_html}</td><td>{row['Score']}</td></tr>")
-
-        html_table = "<table class='centered-table'>" + \
-                     "<thead><tr><th>Rank</th><th>Student</th><th>Score</th></tr></thead><tbody>" + \
-                     "".join(rows) + "</tbody></table>"
-
-        # Custom CSS for centering and styling
-        custom_css = """
-        <style>
-            .centered-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            .centered-table th, .centered-table td {
-                text-align: center;
-                padding: 8px;
-                border: 1px solid #ddd;
-            }
-            .centered-table th {
-                background-color: #f2f2f2;
-                font-weight: bold;
-            }
-        </style>
-        """
-        return pn.pane.HTML(custom_css + html_table, sizing_mode="stretch_both")
-
-
-    def update_leaderboard(self):
-        self.leaderboard_data = self.fetch_leaderboard_data()
-        self.leaderboard_table.object = self.create_centered_table(self.leaderboard_data)
-
-    def draw_view(self):
-        return pn.Column(self.leaderboard_table)
-
+import logging
 
 class ReactiveChat(param.Parameterized):
-    def __init__(self, groupchat_manager=None, **params):
+    def __init__(self, agents_dict,  avatars=None, groupchat_manager=None, **params):
+        logging.info("Beginning Reactive Chat Window Initialization")
         super().__init__(**params)
         
         pn.extension(design="material")
 
+        self.agents_dict = agents_dict
+        self.avatars = avatars
         self.groupchat_manager = groupchat_manager
  
         # Learn tab
@@ -121,9 +28,6 @@ class ReactiveChat(param.Parameterized):
         # Dashboard tab
         self.dashboard_view = pn.pane.Markdown(f"Total messages: {len(self.groupchat_manager.groupchat.messages)}")
         
-        # Leaderboard tab
-        self.leaderboard = Leaderboard()
-
         # Progress tab
         self.progress_text = pn.pane.Markdown(f"**Student Progress**")
         self.progress = 0
@@ -131,6 +35,7 @@ class ReactiveChat(param.Parameterized):
         self.progress_bar = pn.widgets.Progress(name='Progress', value=self.progress, max=self.max_questions)        
         self.progress_info = pn.pane.Markdown(f"{self.progress} out of {self.max_questions}", width=60)
 
+        
         # Model tab. Capabilities for the LearnerModel
         self.MODEL_TAB_NAME = "ModelTab"
         self.model_tab_interface = pn.chat.ChatInterface(callback=self.a_model_tab_callback, name=self.MODEL_TAB_NAME)
@@ -142,29 +47,60 @@ class ReactiveChat(param.Parameterized):
         #       Currently, I have placed it in CustomGroupChatManager
         self.groupchat_manager.chat_interface = self.learn_tab_interface  # default chat tab
 
+        logging.info("Reactive Chat Window Initialized")
+
+
     ############ tab1: Learn interface
     async def a_learn_tab_callback(self, contents: str, user: str, instance: pn.chat.ChatInterface):
         '''
             All panel callbacks for the learn tab come through this callback function
             Because there are two chat panels, we need to save the instance
             Then, when update is called, check the instance name
-        '''                      
+        '''    
+        if isinstance(contents, tuple):
+            logging.error(f"Contents is a tuple, which is unexpected: {contents}")
+
+        logging.debug(f"Entered with contents type= {type(contents)} and Contents= {contents} and instance= {instance}")                  
         self.groupchat_manager.chat_interface = instance
         if not globals.initiate_chat_task_created:
-            asyncio.create_task(self.groupchat_manager.delayed_initiate_chat(agents.tutor, self.groupchat_manager, contents))  
+            logging.debug("calling asyncio.create_task() ")
+            try:
+                #Do not use await here or it will lock the panel tab and not allow further student input
+                asyncio.create_task(self.groupchat_manager.delayed_initiate_chat(self.agents_dict[AgentKeys.TUTOR.value], self.groupchat_manager, contents))  
+                logging.info("COMPLETED asyncio.create_task(groupchat_manager.delayed_initiate_chat) ")
+            except Exception as e:
+                logging.error("Exception occured while trying to create task delayed_initiate_chat")
+                raise
+            
         else:
-            if globals.input_future and not globals.input_future.done():                
+            if globals.input_future and not globals.input_future.done():
+                logging.debug("globals.input_future.done() not completed")     
+                logging.debug(f"Type of contents: {type(contents)}, Contents: {contents}")           
                 globals.input_future.set_result(contents)                 
+                logging.debug(f"Setting globals.input_future.set_results(contents) with contents = {contents}")
             else:
                 print("No input being awaited.")
     
     def update_learn_tab(self, recipient, messages, sender, config):
+        logging.debug(f"chat_interface.name = {self.groupchat_manager.chat_interface.name} and tab name= {self.LEARN_TAB_NAME} ")
         if self.groupchat_manager.chat_interface.name is not self.LEARN_TAB_NAME: return
-        last_content = messages[-1]['content'] 
-        if all(key in messages[-1] for key in ['name']):
-            self.learn_tab_interface.send(last_content, user=messages[-1]['name'], avatar=avatar[messages[-1]['name']], respond=False)
-        else:
-            self.learn_tab_interface.send(last_content, user=recipient.name, avatar=avatar[recipient.name], respond=False)
+        logging.debug(f"Called with messages=  \n {messages}")
+        last_content = messages[-1]['content']
+        try: 
+            if all(key in messages[-1] for key in ['name']):
+                logging.debug(f"learn_tab_interface.send( last_content: {last_content} \n user={messages[-1]['name']} \n avatars={self.avatars[messages[-1]['name']]}")
+                self.learn_tab_interface.send(last_content, user=messages[-1]['name'], avatar=self.avatars[messages[-1]['name']], respond=False)
+                logging.debug("learn_tab updated")
+            else:
+                logging.debug(f"learn_tab_interface.send( last_content: {last_content} \n user={recipient.name} \n avatars={self.avatars[recipient.name]}")
+                self.learn_tab_interface.send(last_content, user=recipient.name, avatar=self.avatars[recipient.name], respond=False)
+                logging.debug('learn_tab updated')
+        except Exception as e:
+            logging.exception("This is possibly due toa a bad avatars dictionary")
+            print("EXCEPTION: reactive_chat24_telugu.py update_learn_tab() writing learn_tab_interface.send() caused an exception ")
+            print("This is possibly due to a bad avatars dictionary")
+            print(e)
+            raise
         
     ########## tab2: Dashboard
     def update_dashboard(self):
@@ -172,6 +108,9 @@ class ReactiveChat(param.Parameterized):
 
     ########### tab3: Progress
     def update_progress(self, contents, user):
+        if isinstance(contents, tuple):
+            logging.error(f"Contents is a tuple, which is unexpected: {contents}")
+
         # Parse the agent's output for keywords                 
         if user == "LevelAdapterAgent":            
             pattern = re.compile(r'\b(correct|correctly|verified|yes|well done|excellent|successfully|that\'s right|good job|excellent|right|good|affirmative)\b', re.IGNORECASE)            
@@ -198,20 +137,23 @@ class ReactiveChat(param.Parameterized):
         if self.groupchat_manager.chat_interface.name is not self.MODEL_TAB_NAME: return
         messages = self.groupchat_manager.groupchat.get_messages()
         for m in messages:
-            agents.learner_model.send(m, recipient=agents.learner_model, request_reply=False)
-        await agents.learner_model.a_send("What is the student's current capabilities", recipient=agents.learner_model, request_reply=True)
-        response = agents.learner_model.last_message(agent=agents.learner_model)["content"]
-        self.model_tab_interface.send(response, user=agents.learner_model.name,avatar=avatar[agents.learner_model.name])
+            self.agents_dict[AgentKeys.LEARNER_MODEL.value].send(m, recipient=self.agents_dict[AgentKeys.LEARNER_MODEL.value], request_reply=False)
+        await self.agents_dict[AgentKeys.LEARNER_MODEL.value].a_send("What is the student's current capabilities", recipient=self.agents_dict[AgentKeys.LEARNER_MODEL.value], request_reply=True)
+        response = self.agents_dict[AgentKeys.LEARNER_MODEL.value].last_message(agent=self.agents_dict[AgentKeys.LEARNER_MODEL.value])["content"]
+        self.model_tab_interface.send(response, user=self.agents_dict[AgentKeys.LEARNER_MODEL.value].name,avatar=self.avatars[self.agents_dict[AgentKeys.LEARNER_MODEL.value].name])
 
 
     async def a_model_tab_callback(self, contents: str, user: str, instance: pn.chat.ChatInterface):
         '''
             Receive any input from the ChatInterface of the Model tab
         '''
+        if isinstance(contents, tuple):
+            logging.error(f"Contents is a tuple, which is unexpected: {contents}")
+
         self.groupchat_manager.chat_interface = instance
         if user == "System" or user == "User":
-            response = agents.learner_model.last_message(agent=agents.learner_model)["content"]
-            self.learn_tab_interface.send(response, user=agents.learner_model.name,avatar=avatar[agents.learner_model.name])
+            response = self.agents_dict[AgentKeys.LEARNER_MODEL.value].last_message(agent=self.agents_dict[AgentKeys.LEARNER_MODEL.value])["content"]
+            self.learn_tab_interface.send(response, user=self.agents_dict[AgentKeys.LEARNER_MODEL.value].name,avatar=self.avatars[self.agents_dict[AgentKeys.LEARNER_MODEL.value].name])
     
 
     ########## Create the "windows" and draw the tabs
@@ -221,7 +163,6 @@ class ReactiveChat(param.Parameterized):
                     ),
             ("Dashboard", pn.Column(self.dashboard_view)
                     ),
-            ("Leaderboard", self.leaderboard.draw_view()),
             ("Progress", pn.Column(
                     self.progress_text,
                     pn.Row(                        
@@ -232,6 +173,7 @@ class ReactiveChat(param.Parameterized):
                       pn.Row(self.button_update_learner_model),
                       pn.Row(self.model_tab_interface))
                     ),     
+
         )
         return tabs
 
@@ -242,6 +184,4 @@ class ReactiveChat(param.Parameterized):
     @groupchat_manager.setter
     def groupchat_manager(self, groupchat_manager: autogen.GroupChatManager):
         self._groupchat_manager = groupchat_manager
-
-
 
