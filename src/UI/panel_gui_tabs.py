@@ -14,7 +14,6 @@ from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGr
 from src.UI.reactive_chat16 import ReactiveChat
 
 from src.UI.avatar import avatar
-from src.UI.reactive_chat20 import ReactiveChat
 
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 
