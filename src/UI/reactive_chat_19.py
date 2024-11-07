@@ -8,6 +8,7 @@ from src.UI.avatar import avatar
 import src.Agents.agents as agents
 from src import globals as globals
 import pprint
+import logging
 
 class ReactiveChat(param.Parameterized):
     def __init__(self, groupchat_manager=None, **params):
@@ -15,6 +16,18 @@ class ReactiveChat(param.Parameterized):
 
 
         pn.extension(design="material")
+
+        pn.config.raw_css.append("""
+        .tabulator-cell {
+            white-space: normal !important;  /* Allows text to wrap */
+            word-wrap: break-word;           /* Breaks long words if necessary */
+            padding: 5px;                    /* Adds some padding for better readability */
+        }
+        .custom-table-container {
+            width: 99vw; /* 99% of the viewport width */
+            margin: 0 auto; /* Center the table */
+        }
+        """)
 
         self.groupchat_manager = groupchat_manager
 
@@ -33,7 +46,38 @@ class ReactiveChat(param.Parameterized):
         self.progress_info = pn.pane.Markdown(f"{self.progress} out of {self.max_questions}", width=60)
 
         # Question and answer details for tracking
-        self.question_details = pn.widgets.DataFrame(pd.DataFrame(columns=['Question', 'User Response', 'Correct']))
+        self.question_details = pn.widgets.Tabulator(
+            pd.DataFrame(columns=['Question', 'Student Answer', 'Correct']),
+            show_index=False,  # Hide the index column
+            height=400,        # Set height for better visibility
+            sizing_mode='stretch_width',  # Stretch to fit the container
+            configuration={
+                'layout': 'fitColumns',  # Ensure columns fit the container
+                'columns': [
+                    {
+                        'field': 'Question',
+                        'title': 'Question',
+                        'widthGrow': 3,  
+                        'formatter': 'plaintext',  # Plain text formatter
+                    },
+                    {
+                        'field': 'Student Answer',
+                        'title': 'Student Answer',
+                        'widthGrow': 1,  
+                        'formatter': 'plaintext',  # Plain text formatter
+                    },
+                    {
+                        'field': 'Correct',
+                        'title': 'Correct',
+                        'widthGrow': 1,  
+                        'formatter': 'tickCross',  # Use tick/cross for boolean values
+                        'hozAlign': 'center',     # Center align for better aesthetics
+                    }
+                ],
+            }
+        )
+
+
 
         # Model tab. Capabilities for the LearnerModel
         self.MODEL_TAB_NAME = "ModelTab"
@@ -76,20 +120,27 @@ class ReactiveChat(param.Parameterized):
 
     ########### tab3: Progress
     def update_progress(self, contents, user):
-        if user == "LevelAdapterAgent":
-        # Check if the response is from the LevelAdapterAgent
-            pattern = re.compile(r'\b(incorrect|wrong)\b', re.IGNORECASE)            
-            is_correct = not pattern.search(contents)
-            answer_given = globals.last_question
+        # chat_manager -> LearnerModelAgent has contents from CodeRunnerAgent
+        # chat_manager -> LevelAdapterAgent has contents from LearnerModelAgent        
+        if user == "LevelAdapterAgent":    # Get response from LearnerModelAgent
+            logging.info(f"update_progress(). User= {user}. contents=\n{contents}")
 
+            # Find original question
             all_messages = self.groupchat_manager.groupchat.get_messages()
-            last_message = all_messages[-1]["content"]
+            for message in list(reversed(all_messages)):
+                if message['name'] == 'ProblemGeneratorAgent':
+                    question = message['content']
+                    break
 
-
-            print("##### UPDATE PROGRESS::contents \n", contents)
-            print('########## DUMP OF ALL MESSAGES from GroupChat manager\n')
-            pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(self.groupchat_manager.groupchat.get_messages())
+            # Find Student's answer
+            for message in list(reversed(all_messages)):
+                if message['name'] == 'StudentAgent':
+                    student_answer = message['content']
+                    break
+            
+            # Is Student's answer correct?
+            pattern_correct = re.compile(r"StudentAgent's answer is correct", re.IGNORECASE)
+            is_correct = bool(pattern_correct.search(contents))
 
             if is_correct:
                 print("################ CORRECT ANSWER #################")
@@ -97,26 +148,14 @@ class ReactiveChat(param.Parameterized):
                     self.progress += 1
                     self.progress_bar.value = self.progress
                     self.progress_info.object = f"{self.progress} out of {self.max_questions}"
-
-                # Assuming the last question is stored in globals.last_question                
-                self.add_to_question_history(answer_given, last_message, True)  # Add correct answer to history
             else:
                 print("################ WRONG ANSWER #################")               
-                self.add_to_question_history(answer_given, last_message, False)  # Add incorrect answer to history
+                
+            # Update panel tab with history
+            new_row = pd.DataFrame({'Question': [question], 'Student Answer': [student_answer], 'Correct': [is_correct]})
+            self.question_details.value = pd.concat([self.question_details.value, new_row], ignore_index=True)
 
-    def add_to_question_history(self, answer_given, question, is_correct):
-        '''
-            Add the current question and answer details to the question history table
-            only if the question or response contains the specified keywords.
-        '''
-        print("QUESTION: \n", question)
-        print("USER RESPONSE: \n", answer_given)
-
-        new_row = pd.DataFrame({'Question': [question], 'User Response': [answer_given], 'Correct': [is_correct]})
-
-        # Concatenate the new row with the existing DataFrame
-        self.question_details.value = pd.concat([self.question_details.value, new_row], ignore_index=True)
-
+        
     ########## Model Tab
     async def handle_button_update_model(self, event=None):
         self.groupchat_manager.chat_interface = self.model_tab_interface
@@ -169,6 +208,7 @@ class ReactiveChat(param.Parameterized):
     @groupchat_manager.setter
     def groupchat_manager(self, groupchat_manager: autogen.GroupChatManager):
         self._groupchat_manager = groupchat_manager
+
 if __name__ == "main":    
-    app = create_app()
+    app = ReactiveChat().draw_view()
     pn.serve(app, callback_exception='verbose')
