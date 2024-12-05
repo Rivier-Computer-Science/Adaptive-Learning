@@ -23,6 +23,7 @@ app = firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
+# submitting fully Completed Code
 
 
 class Leaderboard():
