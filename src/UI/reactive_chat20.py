@@ -16,6 +16,7 @@ cred = credentials.Certificate(r'C:\Users\kutha\Downloads\adaptive-learning-rivi
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+# completed code of sprint 4
 
 
 class ReactiveChat(param.Parameterized):
