@@ -16,6 +16,8 @@ from src.UI.avatar import avatar
 cred = credentials.Certificate(r'C:\Users\kutha\Downloads\adaptive-learning-rivier-firebase-adminsdk-6u1pl-d8fc406e6f.json')
 firebase_admin.initialize_app(cred)
 
+# completed code
+
 # Firestore database reference
 db = firestore.client()
 
