@@ -12,6 +12,8 @@ avatar = {
     learner_model.name: "🧠",      # Brain emoji for learner model
     level_adapter.name: "📈",      # Chart with upwards trend for level adaptation
     motivator.name: "🏆",  
+    "MasteryAgent": "📚", 
+    "Math Master": "📚", 
     gamification.name: "🎮",        # Trophy emoji for motivation
  }
 

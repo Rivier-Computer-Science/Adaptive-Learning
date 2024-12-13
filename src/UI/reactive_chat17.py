@@ -25,6 +25,8 @@ class ReactiveChat(param.Parameterized):
         super().__init__(**params)
         
         pn.extension(design="material")
+        
+        # Subbmitting Fully Completed Code
 
         self.groupchat_manager = groupchat_manager
  
