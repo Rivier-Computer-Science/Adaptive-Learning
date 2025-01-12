@@ -26,6 +26,7 @@ dependencies:
   - charset-normalizer=3.4.1=pyhd8ed1ab_0
   - contourpy=1.3.1=py312hdb19cb5_0
   - cryptography=44.0.0=py312hda17c39_0
+  - cuda-version=12.6=h7480c83_3
   - diskcache=5.6.3=pyhd8ed1ab_1
   - distro=1.9.0=py312h06a4308_0
   - docker-py=7.1.0=pyhd8ed1ab_1
@@ -68,7 +69,7 @@ dependencies:
   - libgomp=14.2.0=h77fa898_1
   - libjpeg-turbo=3.0.3=h5eee18b_0
   - liblapack=3.9.0=26_linux64_openblas
-  - liblightgbm=4.5.0
+  - liblightgbm=4.5.0=cuda_hd1e9f75_3
   - liblzma=5.6.3=hb9d3cd8_1
   - libnsl=2.0.1=hd590300_0
   - libogg=1.3.5=h27cfd23_1
@@ -84,9 +85,9 @@ dependencies:
   - libwebp-base=1.5.0=h851e524_0
   - libxcb=1.17.0=h8a09558_0
   - libxcrypt=4.4.36=hd590300_1
-  - libxgboost
+  - libxgboost=2.1.3=cuda126_hf02754f_0
   - libzlib=1.3.1=hb9d3cd8_2
-  - lightgbm
+  - lightgbm=4.5.0=cuda_py_3
   - linkify-it-py=2.0.0=py312h06a4308_0
   - markdown=3.4.1=py312h06a4308_0
   - markdown-it-py=2.2.0=py312h06a4308_1
@@ -112,7 +113,7 @@ dependencies:
   - portaudio=19.7.0=hf4617a5_0
   - propcache=0.2.0=py312h5eee18b_0
   - pthread-stubs=0.3=h0ce48e5_1
-  - py-xgboost
+  - py-xgboost=2.1.3=cuda126_pyh206be00_0
   - pyaudio=0.2.14=py312h5daeab6_2
   - pyautogen=0.7.0=pyhd8ed1ab_0
   - pycparser=2.22=pyh29332c3_1
@@ -155,7 +156,7 @@ dependencies:
   - websocket-client=1.8.0=pyhd8ed1ab_1
   - websockets=14.1=py312h66e93f0_0
   - wheel=0.44.0=py312h06a4308_0
-  - xgboost
+  - xgboost=2.1.3=cuda126_pyh993ee4f_0
   - xorg-libxau=1.0.12=hb9d3cd8_0
   - xorg-libxdmcp=1.1.5=hb9d3cd8_0
   - xyzservices=2022.9.0=py312h06a4308_1
