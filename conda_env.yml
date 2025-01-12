@@ -5,7 +5,6 @@ channels:
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=2_gnu
-  - _py-xgboost-mutex=2.0=gpu_0
   - aiohappyeyeballs=2.4.4=py312h06a4308_0
   - aiohttp=3.11.10=py312h5eee18b_0
   - aiosignal=1.2.0=pyhd3eb1b0_0
@@ -119,7 +118,8 @@ dependencies:
   - pydantic-core=2.27.1=py312h4aa5aa6_0
   - pynacl=1.5.0=py312h66e93f0_4
   - pysocks=1.7.1=pyha55dd90_7
-  - python=3.12.2=hab00c5b_0_cpython
+  - python=3.12
+  - python_abi
   - python-dateutil=2.9.0.post0=pyhff2d567_1
   - python-dotenv=1.0.1=pyhd8ed1ab_1
   - python-tzdata=2024.2=pyhd8ed1ab_1
