@@ -17,6 +17,12 @@ conda init
 # display environments
 conda info --envs
 
+# Add 'conda activate adaptive' to ~/.bashrc if not already present
+if ! grep -q "conda activate adaptive" ~/.bashrc; then
+    echo "Adding 'conda activate adaptive' to ~/.bashrc"
+    echo -e "\n# Activate the adaptive conda environment by default\nconda activate adaptive" >> ~/.bashrc
+fi
+
 # Activate the environment
 conda activate adaptive    
 
