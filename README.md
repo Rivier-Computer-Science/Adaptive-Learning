@@ -15,33 +15,51 @@ Dokku, S., Gumpula, A., Gudati, S., Nagisetty, M., Thimmarayappa, R., Yeruva, J.
 
 # Running the Code
 
-Runs in a browser:
+Run as a module. It will open up a browser tab in your default browser. 
+
+Note that as of 1/12/2025, it does not work with Firefox. Use Chrome.
 
 ```sh
-(adaptive) user@machine:~/Adaptive-Learning$ python -m src.UI.panel_gui_tabs
+(adaptive) user@machine:~/Adaptive-Learning$ python -m src.UI.panel_gui_tabs_jg
 ```
 
-Runs in the console:
-
-```sh
-(adaptive) user@machine:~/Adaptive-Learning$ python -m src.UI.console_knowledge_tracer
-```
-
-## Installing Dependencies
+# Installing Dependencies
 
 Install Anaconda
 - Download and install it from the [official Anaconda website](https://www.anaconda.com/products/individual).
 
+Install Dependencies from conda environment file
+
 ```sh
-conda create -n adaptive python=3.12 anaconda
+conda env create -f conda_env.yml -n adaptive
 conda activate adaptive
 ```
+
+
+
+## To Install Each Package Manually (not recommended)
+
+It is preferable to install with the conda_env.yml file but these packages can also be install manually.
+
+```sh
+conda update --all
+conda create -n adaptive python=3.12
+conda activate adaptive
+```
+
+Install panel
+
+`conda install -c conda-forge panel`
+
+Install transitions state machine
+
+`conda install -c conda-forge transitions`
 
 Install pyautogen 0.2.33+
 
 ```sh
-conda config --set pip_interop_entabled True
-pip install openai pyautogen
+conda install openai
+conda install -c conda-forge pyautogen
 ```
 
 Note that there is also a package called autogen. Do NOT install it. You want pyautogen.
@@ -49,7 +67,9 @@ Note that there is also a package called autogen. Do NOT install it. You want py
 Install Firebase tools 
 
 ```sh
-pip install firebase-admin aiohttp
+conda install aiohttp
+conda config --set pip_interop_enabled True
+pip install firebase-admin
 ```
 
 
@@ -63,13 +83,11 @@ If you don't have Docker installed, you need to set AUTOGEN_USE_DOCKER=False. Be
 
 You can also use a .env file if you don't want to export/set every time.
 
-```sh
-pip install python-dotenv
-```
+
 
 ## Speech Recognition Module
 ```sh
-pip install SpeechRecognition 
+conda install SpeechRecognition 
 conda install pyaudio
 ```
 

@@ -96,7 +96,7 @@ class MyConversableAgent(autogen.ConversableAgent, MyBaseAgent):
         self.reactive_chat.update_learn_tab(recipient=recipient, messages=messages, sender=sender, config=config)
         self.reactive_chat.update_dashboard()                          
         self.reactive_chat.update_progress(contents=last_content,user=recipient.name)   
-        self.reactive_chat.promptC.update_prompt_tab(recipient=recipient, messages=messages, sender=sender, config=config)     
+        #self.reactive_chat.promptC.update_prompt_tab(recipient=recipient, messages=messages, sender=sender, config=config)     
         #Note: do not call update_model_tab. The button takes care of that.
 
                 

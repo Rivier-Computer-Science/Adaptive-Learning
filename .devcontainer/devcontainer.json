@@ -1,0 +1,30 @@
+{
+    "name": "Ubuntu 24.04 Dev Container",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            },
+            "extensions": [
+                "vscjava.vscode-java-pack",
+                "GitHub.codespaces",
+                "GitHub.copilot-chat",
+                "GitHub.vscode-pull-request-github",
+                "VisualStudioExptTeam.vscodeintellicode",
+                "ms-python.python",
+                "scalameta.metals",
+                "scala-lang.scala",
+                "GitHub.copilot",
+                "ms-python.autopep8",
+                "redhat.java",
+                "redhat.vscode-yaml",
+                "ms-azuretools.vscode-docker"
+            ]
+        }
+    },
+    "postCreateCommand": "chmod +x .devcontainer/setup.sh && bash .devcontainer/setup.sh"
+}
+  
