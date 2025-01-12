@@ -112,7 +112,6 @@ dependencies:
   - portaudio=19.7.0=hf4617a5_0
   - propcache=0.2.0=py312h5eee18b_0
   - pthread-stubs=0.3=h0ce48e5_1
-  - py-xgboost
   - pyaudio=0.2.14=py312h5daeab6_2
   - pyautogen=0.7.0=pyhd8ed1ab_0
   - pycparser=2.22=pyh29332c3_1
@@ -124,7 +123,6 @@ dependencies:
   - python-dateutil=2.9.0.post0=pyhff2d567_1
   - python-dotenv=1.0.1=pyhd8ed1ab_1
   - python-tzdata=2024.2=pyhd8ed1ab_1
-  - python_abi=3.12=5_cp312
   - pytz=2024.1=pyhd8ed1ab_0
   - pyviz_comms=3.0.2=py312h06a4308_0
   - pywin32-on-windows=0.1.0=pyh1179c8e_3
@@ -155,7 +153,6 @@ dependencies:
   - websocket-client=1.8.0=pyhd8ed1ab_1
   - websockets=14.1=py312h66e93f0_0
   - wheel=0.44.0=py312h06a4308_0
-  - xgboost
   - xorg-libxau=1.0.12=hb9d3cd8_0
   - xorg-libxdmcp=1.1.5=hb9d3cd8_0
   - xyzservices=2022.9.0=py312h06a4308_1
