@@ -28,12 +28,6 @@ RUN wget --no-check-certificate https://repo.anaconda.com/archive/Anaconda3-2024
 # Add Anaconda to the PATH
 ENV PATH="/opt/conda/bin:$PATH"
 
-# Create the Conda environment
-RUN conda env create -f conda_env.yml -n adaptive && \
-    conda clean -a
-
-RUN conda activate adaptive    
-
 
 # Unset non-interactive mode after installation
 ENV DEBIAN_FRONTEND=
