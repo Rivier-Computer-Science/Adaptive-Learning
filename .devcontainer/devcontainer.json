@@ -25,6 +25,6 @@
             ]
         }
     },
-    "postCreateCommand": "chmod +x .devcontainer/setup.sh && bash .devcontainer/setup.sh"
+    "postCreateCommand": "chmod +x .devcontainer/setup.sh && bash -x .devcontainer/setup.sh"
 }
   
