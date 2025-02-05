@@ -15,6 +15,7 @@ from .level_adapter_agent import LevelAdapterAgent
 from .motivator_agent import MotivatorAgent
 from .gamification_agent import GamificationAgent
 from .mastery_agent import MasteryAgent
+from .hint_agent import HintAgent  # Import the HintAgent class
 
 from src.Models.llm_config import gpt3_config
 from enum import Enum
@@ -36,6 +37,7 @@ class AgentKeys(Enum):
     MOTIVATOR = 'motivator'
     GAMIFICATION = 'gamification'
     MASTERY = 'mastery'  # Added MASTERY key
+    HINT_AGENT = 'hint_agent'  # ✅ NEW: Added HINT_AGENT key
 
 # Agents
 student = StudentAgent()
@@ -51,6 +53,7 @@ level_adapter = LevelAdapterAgent()
 motivator = MotivatorAgent()
 gamification = GamificationAgent(name="GamificationAgent")
 mastery = MasteryAgent()  # Added MasteryAgent instance
+hint_agent = HintAgent()  # ✅ NEW: Create HintAgent instance
 
 agents_dict = {
     AgentKeys.STUDENT.value: student,
@@ -65,7 +68,8 @@ agents_dict = {
     AgentKeys.LEVEL_ADAPTER.value: level_adapter,
     AgentKeys.MOTIVATOR.value: motivator,
     AgentKeys.GAMIFICATION.value: gamification,
-    AgentKeys.MASTERY.value: mastery  # Added MasteryAgent to agents_dict
+    AgentKeys.MASTERY.value: mastery,  # Added MasteryAgent to agents_dict
+    AgentKeys.HINT_AGENT.value: hint_agent  
 }
 
 agents_dict_by_name = {
@@ -81,5 +85,6 @@ agents_dict_by_name = {
     "LevelAdapterAgent": level_adapter,
     "MotivatorAgent": motivator,
     "GamificationAgent": gamification,
-    "MasteryAgent": mastery  # Added MasteryAgent to agents_dict_by_name
+    "MasteryAgent": mastery,  # Added MasteryAgent to agents_dict_by_name
+    "HintAgent": hint_agent  
 }
