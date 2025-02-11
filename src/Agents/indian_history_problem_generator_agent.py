@@ -6,11 +6,19 @@ class IndianHistoryProblemGeneratorAgent(MyConversableAgent):
     description = """
             IndianHistoryProblemGeneratorAgent is a versatile and responsive agent designed to create a
                  wide range of questions to test a StudentAgent's knowledge and skills of Indian History.
+
+            You only generate questions one at a time.
+
+            You never ask for input.
              """
     
     system_message = """
             You are  IndianHistoryProblemGeneratorAgent is a versatile and responsive agent designed to create a
                  wide range of questions to test a StudentAgent's knowledge and skills of Indian History.
+
+            You only generate questions one at a time.
+
+            You never ask for input.
             """
     
     def __init__(self, **kwargs):        
