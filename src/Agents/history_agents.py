@@ -13,8 +13,8 @@ from src.Agents.level_adapter_agent import LevelAdapterAgent
 from src.Agents.motivator_agent import MotivatorAgent
 
 # Telugu specific
-from src.Agents.indian_history_teaching_agent import IndianHistoryTeachingAgent
-from src.Agents.indian_history_problem_generator_agent import IndianHistoryProblemGeneratorAgent
+from src.Agents.history_teaching_agent import HistoryTeachingAgent
+from src.Agents.history_problem_generator_agent import HistoryProblemGeneratorAgent
 
 
 
@@ -62,13 +62,14 @@ class AgentKeys(Enum):
  
 # Agents
 student = StudentAgent(llm_config=llm)
-teacher = IndianHistoryTeachingAgent(llm_config=llm)
+teacher = HistoryTeachingAgent(history_prefix="US", llm_config=llm)  # Pass history type
 tutor = TutorAgent(llm_config=llm)
-problem_generator = IndianHistoryProblemGeneratorAgent(llm_config=llm)
+problem_generator = HistoryProblemGeneratorAgent(history_subject="US History", llm_config=llm)  # Pass history type
 solution_verifier = SolutionVerifierAgent(llm_config=llm)
 learner_model = LearnerModelAgent(llm_config=llm)
 level_adapter = LevelAdapterAgent(llm_config=llm)
 motivator = MotivatorAgent(llm_config=llm)
+
 
 agents_dict = {
     AgentKeys.STUDENT.value: student,
