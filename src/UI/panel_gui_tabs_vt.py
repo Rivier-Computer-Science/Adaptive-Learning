@@ -75,6 +75,7 @@ from src.Agents.code_runner_agent import CodeRunnerAgent
 from src.Agents.learner_model_agent import LearnerModelAgent
 from src.Agents.level_adapter_agent import LevelAdapterAgent
 from src.Agents.motivator_agent import MotivatorAgent
+from src.Agents.job_finder_agent import JobFinderAgent
 from src.Agents.agents import AgentKeys
 
 
@@ -153,7 +154,7 @@ level_adapter = LevelAdapterAgent(llm_config=llm,
 motivator = MotivatorAgent(llm_config=llm)
 
 
-
+job_finder = JobFinderAgent(llm_config=llm)
 
 agents_dict = {
     AgentKeys.STUDENT.value: student,
@@ -168,6 +169,7 @@ agents_dict = {
     AgentKeys.LEARNER_MODEL.value: learner_model,
     AgentKeys.LEVEL_ADAPTER.value: level_adapter,
     AgentKeys.MOTIVATOR.value: motivator,
+    AgentKeys.JOB_FINDER.value: job_finder,
 }
 
 
@@ -184,6 +186,7 @@ avatars = {
     learner_model.name: "🧠",      # Brain emoji for learner model
     level_adapter.name: "📈",      # Chart with upwards trend for level adaptation
     motivator.name: "🏆",  
+    job_finder.name: "🎯",
  }
 
 ##############################################
