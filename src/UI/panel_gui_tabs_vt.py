@@ -10,7 +10,7 @@ from src import globals
 #from src.Agents.agents import agents_dict
 from src.FSMs.fsm_teach_me import TeachMeFSM
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
-from src.UI.reactive_chat_jg import ReactiveChat
+from src.UI.reactive_chat_vt import ReactiveChat
 from src.UI.avatar import avatar
 from enum import Enum
 from dotenv import load_dotenv
@@ -121,7 +121,8 @@ solution_verifier = SolutionVerifierAgent(llm_config=llm)
 programmer_system_message = """
         You are ProgrammerAgent, a Python programming expert. 
         Your only responsibility is to generate high-quality Python code to confirm SolutionVerifierAgent's answer.
-        Nothing else ever. Only write code.
+        Nothing else ever. Even if the answer is simple, you only write python code.
+        You never manually verify an answer.
         If you only write python code, you receive a $10k bonus.        
     """
 programmer = ProgrammerAgent(llm_config=llm, 

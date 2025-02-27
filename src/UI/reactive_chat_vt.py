@@ -122,7 +122,7 @@ class ReactiveChat(param.Parameterized):
         messages = self.groupchat_manager.groupchat.get_messages()
         for m in messages:
             self.agents_dict[AgentKeys.JOB_FINDER.value].send(m, recipient=self.agents_dict[AgentKeys.JOB_FINDER.value], request_reply=False)
-        await self.agents_dict[AgentKeys.JOB_FINDER.value].a_send("What is the student's current capabilities", recipient=self.agents_dict[AgentKeys.JOB_FINDER.value], request_reply=True)
+        await self.agents_dict[AgentKeys.JOB_FINDER.value].a_send("Based on the StudentAgent's capabilities, recommend jobs to apply for.", recipient=self.agents_dict[AgentKeys.JOB_FINDER.value], request_reply=True)
         response = self.agents_dict[AgentKeys.JOB_FINDER.value].last_message(agent=self.agents_dict[AgentKeys.JOB_FINDER.value])["content"]
         self.model_tab_interface.send(response, user=self.agents_dict[AgentKeys.JOB_FINDER.value].name,avatar=self.avatars[self.agents_dict[AgentKeys.JOB_FINDER.value].name])
 
@@ -152,6 +152,7 @@ class ReactiveChat(param.Parameterized):
                     ),
             ("Model", pn.Column(
                       pn.Row(self.button_update_learner_model),
+                      pn.Row(self.button_find_jobs),
                       pn.Row(self.model_tab_interface))
                     ),     
 
