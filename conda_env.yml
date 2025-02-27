@@ -7,5 +7,6 @@ dependencies:
   - docker-py
   - pip:
       - firebase-admin
+      - openai
       - pyautogen
 prefix: /opt/conda/envs/adaptive
