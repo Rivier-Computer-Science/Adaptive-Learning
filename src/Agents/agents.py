@@ -36,6 +36,7 @@ class AgentKeys(Enum):
     MOTIVATOR = 'motivator'
     GAMIFICATION = 'gamification'
     MASTERY = 'mastery'  # Added MASTERY key
+    JOB_FINDER = 'job_finder'
 
 # Agents
 student = StudentAgent()
@@ -65,7 +66,7 @@ agents_dict = {
     AgentKeys.LEVEL_ADAPTER.value: level_adapter,
     AgentKeys.MOTIVATOR.value: motivator,
     AgentKeys.GAMIFICATION.value: gamification,
-    AgentKeys.MASTERY.value: mastery  # Added MasteryAgent to agents_dict
+    AgentKeys.MASTERY.value: mastery,  # Added MasteryAgent to agents_dict
 }
 
 agents_dict_by_name = {
