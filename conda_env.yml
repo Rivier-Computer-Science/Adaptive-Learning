@@ -9,4 +9,5 @@ dependencies:
       - firebase-admin
       - openai
       - pyautogen
+      - transitions
 prefix: /opt/conda/envs/adaptive
