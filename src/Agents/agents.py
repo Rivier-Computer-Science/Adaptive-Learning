@@ -15,7 +15,12 @@ from .level_adapter_agent import LevelAdapterAgent
 from .motivator_agent import MotivatorAgent
 from .gamification_agent import GamificationAgent
 from .mastery_agent import MasteryAgent
-
+from .career_growth_agent import CareerGrowthAgent  # ✅ Import the agent
+from .certification_recommendation_agent import CertificationRecommendationAgent
+from .competency_extraction_agent import CompetencyExtractionAgent
+from .gap_analysis_agent import GapAnalysisAgent
+from .personalized_learning_plan_agent import PersonalizedLearningPlanAgent
+from .resource_ranking_agent import ResourceRankingAgent
 from src.Models.llm_config import gpt3_config
 from enum import Enum
 
@@ -36,9 +41,15 @@ class AgentKeys(Enum):
     MOTIVATOR = 'motivator'
     GAMIFICATION = 'gamification'
     MASTERY = 'mastery'  # Added MASTERY key
+    CERTIFICATION_RECOMMENDATION = 'certification_recommendation'
+    CAREER_GROWTH = 'career_growth'
+    COMPETENCY_EXTRACTION = 'competency_extraction'
+    GAP_ANALYSIS = 'gap_analysis'
+    PERSONALIZED_PLAN = 'personalized_plan'
+    RESOURCE_RANKING = 'resource_ranking'
     JOB_FINDER = 'job_finder'
 
-# Agents
+# Agent
 student = StudentAgent()
 knowledge_tracer = KnowledgeTracerAgent()
 teacher = TeacherAgent()
@@ -51,6 +62,12 @@ learner_model = LearnerModelAgent()
 level_adapter = LevelAdapterAgent()
 motivator = MotivatorAgent()
 gamification = GamificationAgent(name="GamificationAgent")
+career_growth = CareerGrowthAgent()
+certification_recommendation = CertificationRecommendationAgent()
+competency_Extraction_Agent = CompetencyExtractionAgent()
+gap_analysis_agent = GapAnalysisAgent()
+personalized_learning_plan = PersonalizedLearningPlanAgent()
+resource_ranking = ResourceRankingAgent()
 mastery = MasteryAgent()  # Added MasteryAgent instance
 
 agents_dict = {
@@ -83,4 +100,5 @@ agents_dict_by_name = {
     "MotivatorAgent": motivator,
     "GamificationAgent": gamification,
     "MasteryAgent": mastery  # Added MasteryAgent to agents_dict_by_name
+
 }

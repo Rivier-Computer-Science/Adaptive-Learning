@@ -19,6 +19,12 @@ class ReactiveChat(param.Parameterized):
 
         self.agents_dict = agents_dict
         self.avatars = avatars
+        # Ensure LearnerModelAgent exists
+        if AgentKeys.LEARNER_MODEL.value not in self.agents_dict:
+            raise KeyError("LearnerModelAgent is missing from agents_dict. Please add it before initializing ReactiveChat.")
+        if self.agents_dict[AgentKeys.LEARNER_MODEL.value].name not in self.avatars:
+            raise KeyError("Avatar missing for LearnerModelAgent. Please add it to the avatars dictionary.")
+
         self.groupchat_manager = groupchat_manager
  
         # Learn tab
@@ -50,20 +56,45 @@ class ReactiveChat(param.Parameterized):
         self.groupchat_manager.chat_interface = self.learn_tab_interface  # default chat tab
 
     ############ tab1: Learn interface
+    # --- Update ReactiveChat.a_learn_tab_callback to properly route user messages ---
     async def a_learn_tab_callback(self, contents: str, user: str, instance: pn.chat.ChatInterface):
         '''
             All panel callbacks for the learn tab come through this callback function
-            Because there are two chat panels, we need to save the instance
-            Then, when update is called, check the instance name
+            Ensure agent receives and responds to user input explicitly.
         '''                      
         self.groupchat_manager.chat_interface = instance
-        if not globals.initiate_chat_task_created:
-            asyncio.create_task(self.groupchat_manager.delayed_initiate_chat(self.agents_dict[AgentKeys.TUTOR.value], self.groupchat_manager, contents))  
+
+        # Forward user message to CompetencyExtractionAgent and get GPT reply
+        competency_agent = self.agents_dict.get("CompetencyExtractionAgent")
+
+        if competency_agent:
+            # Send message to the agent and request a reply via ChatGPT
+            await competency_agent.a_send(
+                f"User input: {contents}. Please analyze and respond with relevant competencies.",
+                recipient=competency_agent,
+                request_reply=True,
+                llm_config={
+                    "config_list": [{"model": "gpt-4", "api_key": os.getenv("OPENAI_API_KEY")}],
+                    "temperature": 0.7
+                }
+            )
+
+            try:
+                response = competency_agent.last_message(agent=competency_agent)["content"]
+            except KeyError:
+                response = "Awaiting first response from CompetencyExtractionAgent..."
+
+            self.learn_tab_interface.send(
+                response, 
+                user=competency_agent.name,
+                avatar=self.avatars.get(competency_agent.name, None)
+            )
         else:
             if globals.input_future and not globals.input_future.done():                
                 globals.input_future.set_result(contents)                 
             else:
                 print("No input being awaited.")
+
     
     def update_learn_tab(self, recipient, messages, sender, config):
         if self.groupchat_manager.chat_interface.name is not self.LEARN_TAB_NAME: return
@@ -102,14 +133,25 @@ class ReactiveChat(param.Parameterized):
         '''
             This is a long latency operation therefore async
         '''
-        if self.groupchat_manager.chat_interface.name is not self.MODEL_TAB_NAME: return
-        messages = self.groupchat_manager.groupchat.get_messages()
-        for m in messages:
-            self.agents_dict[AgentKeys.LEARNER_MODEL.value].send(m, recipient=self.agents_dict[AgentKeys.LEARNER_MODEL.value], request_reply=False)
-        await self.agents_dict[AgentKeys.LEARNER_MODEL.value].a_send("What is the student's current capabilities", recipient=self.agents_dict[AgentKeys.LEARNER_MODEL.value], request_reply=True)
-        response = self.agents_dict[AgentKeys.LEARNER_MODEL.value].last_message(agent=self.agents_dict[AgentKeys.LEARNER_MODEL.value])["content"]
-        self.model_tab_interface.send(response, user=self.agents_dict[AgentKeys.LEARNER_MODEL.value].name,avatar=self.avatars[self.agents_dict[AgentKeys.LEARNER_MODEL.value].name])
+        if self.groupchat_manager.chat_interface.name is not self.MODEL_TAB_NAME:
+            return
 
+        learner = self.agents_dict[AgentKeys.LEARNER_MODEL.value]
+        messages = self.groupchat_manager.groupchat.get_messages()
+
+        for m in messages:
+            learner.send(m, recipient=learner, request_reply=False)
+
+        await learner.a_send("What is the student's current capabilities", recipient=learner, request_reply=True)
+
+        try:
+            response = learner.last_message(agent=learner)["content"]
+        except KeyError:
+            response = "No message history available yet for LearnerModelAgent."
+
+        self.model_tab_interface.send(response, user=learner.name, avatar=self.avatars[learner.name])
+
+        
     async def handle_button_find_jobs(self, event=None):
         self.groupchat_manager.chat_interface = self.model_tab_interface
         await self.a_find_jobs()
@@ -128,14 +170,16 @@ class ReactiveChat(param.Parameterized):
 
 
     async def a_model_tab_callback(self, contents: str, user: str, instance: pn.chat.ChatInterface):
-        '''
-            Receive any input from the ChatInterface of the Model tab
-        '''
         self.groupchat_manager.chat_interface = instance
+
         if user == "System" or user == "User":
-            response = self.agents_dict[AgentKeys.LEARNER_MODEL.value].last_message(agent=self.agents_dict[AgentKeys.LEARNER_MODEL.value])["content"]
-            self.learn_tab_interface.send(response, user=self.agents_dict[AgentKeys.LEARNER_MODEL.value].name,avatar=self.avatars[self.agents_dict[AgentKeys.LEARNER_MODEL.value].name])
-    
+            learner = self.agents_dict[AgentKeys.LEARNER_MODEL.value]
+            try:
+                response = learner.last_message(agent=learner)["content"]
+            except KeyError:
+                response = "No message history available yet for LearnerModelAgent."
+
+            self.learn_tab_interface.send(response, user=learner.name, avatar=self.avatars[learner.name])
 
     ########## Create the "windows" and draw the tabs
     def draw_view(self):         

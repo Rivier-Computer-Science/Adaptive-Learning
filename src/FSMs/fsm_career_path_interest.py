@@ -3,9 +3,11 @@ import json
 import autogen
 from transitions import Machine
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager
+from src.Agents.learner_model_agent import LearnerModelAgent
 from src.UI.reactive_chat import ReactiveChat
 import src.UI.avatar as avatar
 import logging
+
 
 # Define the script directory and progress file path for chat persistence
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +21,7 @@ avatars = {
     "PerformanceTrendAnalysisAgent": "📈",
     "AutogenCareerGenerationAgent": "🛠️",
     "AIVisualizationAgent": "🎨",
+    "LearnerModelAgent": "🧠"
 }
 
 # Define the base Autogen Agent class
@@ -65,8 +68,23 @@ class AutogenCareerGenerationAgent(MyConversableAgent):
 class AIVisualizationAgent(MyConversableAgent):
     def __init__(self):
         super().__init__(name="AIVisualizationAgent")
+class CompetencyExtractionAgent(MyConversableAgent):
+    def __init__(self):
+        super().__init__(name="CompetencyExtractionAgent")
+
+    def autogen_reply_func(self, input_text):
+        # Trigger LLM-generated response
+        asyncio.create_task(self.a_send(
+            f"Analyze the role: {input_text}. List the competencies required for this career path.",
+            recipient=self,
+            request_reply=True
+        ))
+        return None  # Let async response take over
+
 
 # Instantiate AI Agents
+learner_model_agent = LearnerModelAgent()
+
 agents_dict = {
     "SurveyGenerationAgent": SurveyGenerationAgent(),
     "AdaptiveQuestioningAgent": AdaptiveQuestioningAgent(),
@@ -75,37 +93,43 @@ agents_dict = {
     "PerformanceTrendAnalysisAgent": PerformanceTrendAnalysisAgent(),
     "AutogenCareerGenerationAgent": AutogenCareerGenerationAgent(),
     "AIVisualizationAgent": AIVisualizationAgent(),
+    "LearnerModelAgent": learner_model_agent
 }
 
 # Finite State Machine (FSM) for managing career path transitions
 class CareerFSM:
-    states = ["start", "survey", "data_retrieval", "analysis", "career_matching", 
-              "refinement", "visualization", "final"]
-
-    def __init__(self, agents_dict):
-        self.machine = Machine(model=self, states=CareerFSM.states, initial="start")
-
-        # Define transitions
-        self.machine.add_transition("begin_survey", "start", "survey")
-        self.machine.add_transition("retrieve_data", "survey", "data_retrieval")
-        self.machine.add_transition("analyze", "data_retrieval", "analysis")
-        self.machine.add_transition("match_careers", "analysis", "career_matching")
-        self.machine.add_transition("refine", "career_matching", "refinement")
-        self.machine.add_transition("visualize", "refinement", "visualization")
-        self.machine.add_transition("complete", "visualization", "final")
-
+    def __init__(self, agents_dict, groupchat_agents=None):
         self.agents_dict = agents_dict
+        self.groupchat_agents = groupchat_agents or list(agents_dict.values())
         self.current_speaker_index = 0
-        self.agent_names = list(agents_dict.keys())
+        self.groupchat_manager = None
+
+        self.states = ["start", "survey", "data_retrieval", "analysis", "career_matching", 
+                       "refinement", "visualization", "final"]
+        self.transitions = [
+            {"trigger": "begin_survey", "source": "start", "dest": "survey"},
+            {"trigger": "retrieve_data", "source": "survey", "dest": "data_retrieval"},
+            {"trigger": "analyze", "source": "data_retrieval", "dest": "analysis"},
+            {"trigger": "match_careers", "source": "analysis", "dest": "career_matching"},
+            {"trigger": "refine", "source": "career_matching", "dest": "refinement"},
+            {"trigger": "visualize", "source": "refinement", "dest": "visualization"},
+            {"trigger": "complete", "source": "visualization", "dest": "final"}
+        ]
+
+        self.machine = Machine(model=self, states=self.states, transitions=self.transitions, initial="start")
 
     def next_speaker_selector(self):
-        """Selects the next agent in the conversation cycle."""
-        next_speaker = self.agent_names[self.current_speaker_index]
-        self.current_speaker_index = (self.current_speaker_index + 1) % len(self.agent_names)
-        return self.agents_dict[next_speaker]
+        next_agent = self.groupchat_agents[self.current_speaker_index]
+        self.current_speaker_index = (self.current_speaker_index + 1) % len(self.groupchat_agents)
+        return next_agent
+
+    def register_groupchat_manager(self, manager):
+        self.groupchat_manager = manager
+
+
 
 # Initialize FSM
-fsm = CareerFSM(agents_dict)
+fsm = CareerFSM(agents_dict, groupchat_agents=list(agents_dict.values()))
 
 
 
