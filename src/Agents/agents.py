@@ -15,6 +15,13 @@ from .level_adapter_agent import LevelAdapterAgent
 from .motivator_agent import MotivatorAgent
 from .gamification_agent import GamificationAgent
 from .mastery_agent import MasteryAgent
+from .career_growth_agent import CareerGrowthAgent  # ✅ Import the agent
+from .certification_recommendation_agent import CertificationRecommendationAgent  # ✅ Import the agent
+from .student_career_dashboard_agent import StudentCareerDashboardAgent
+
+# Create an instance of StudentCareerDashboardAgent
+student_career_dashboard = StudentCareerDashboardAgent()
+
 
 from src.Models.llm_config import gpt3_config
 from enum import Enum
@@ -38,6 +45,11 @@ class AgentKeys(Enum):
     MASTERY = 'mastery'  # Added MASTERY key
     JOB_FINDER = 'job_finder'
 
+    CAREER_GROWTH = 'career_growth'  # ✅ Added Career Growth Agent
+    CERTIFICATION_RECOMMENDATION = 'certification_recommendation'  # ✅ Added Certification Recommendation Agent
+    STUDENT_CAREER_DASHBOARD = 'student_career_dashboard'
+
+
 # Agents
 student = StudentAgent()
 knowledge_tracer = KnowledgeTracerAgent()
@@ -52,6 +64,11 @@ level_adapter = LevelAdapterAgent()
 motivator = MotivatorAgent()
 gamification = GamificationAgent(name="GamificationAgent")
 mastery = MasteryAgent()  # Added MasteryAgent instance
+career_growth = CareerGrowthAgent()  # ✅ Added Career Growth Agent instance
+certification_recommendation = CertificationRecommendationAgent()  # ✅ Added Certification Recommendation Agent instance
+
+
+
 
 agents_dict = {
     AgentKeys.STUDENT.value: student,
@@ -67,6 +84,9 @@ agents_dict = {
     AgentKeys.MOTIVATOR.value: motivator,
     AgentKeys.GAMIFICATION.value: gamification,
     AgentKeys.MASTERY.value: mastery,  # Added MasteryAgent to agents_dict
+
+    AgentKeys.STUDENT_CAREER_DASHBOARD.value: student_career_dashboard,
+
 }
 
 agents_dict_by_name = {
@@ -82,5 +102,5 @@ agents_dict_by_name = {
     "LevelAdapterAgent": level_adapter,
     "MotivatorAgent": motivator,
     "GamificationAgent": gamification,
-    "MasteryAgent": mastery  # Added MasteryAgent to agents_dict_by_name
+    "MasteryAgent": mastery,  # Added MasteryAgent to agents_dict_by_name
 }

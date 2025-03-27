@@ -15,6 +15,8 @@ from src.Agents.motivator_agent import MotivatorAgent
 # Telugu specific
 from src.Agents.history_teaching_agent import HistoryTeachingAgent
 from src.Agents.history_problem_generator_agent import HistoryProblemGeneratorAgent
+from src.Agents.shared_data import get_selected_country  
+
 
 
 
@@ -62,9 +64,9 @@ class AgentKeys(Enum):
  
 # Agents
 student = StudentAgent(llm_config=llm)
-teacher = HistoryTeachingAgent(history_prefix="US", llm_config=llm)  # Pass history type
+teacher = HistoryTeachingAgent(llm_config=llm)
 tutor = TutorAgent(llm_config=llm)
-problem_generator = HistoryProblemGeneratorAgent(history_subject="US History", llm_config=llm)  # Pass history type
+problem_generator = HistoryProblemGeneratorAgent(llm_config=llm)
 solution_verifier = SolutionVerifierAgent(llm_config=llm)
 learner_model = LearnerModelAgent(llm_config=llm)
 level_adapter = LevelAdapterAgent(llm_config=llm)
