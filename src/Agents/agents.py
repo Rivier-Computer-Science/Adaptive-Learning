@@ -21,6 +21,14 @@ from .competency_extraction_agent import CompetencyExtractionAgent
 from .gap_analysis_agent import GapAnalysisAgent
 from .personalized_learning_plan_agent import PersonalizedLearningPlanAgent
 from .resource_ranking_agent import ResourceRankingAgent
+from .certification_recommendation_agent import CertificationRecommendationAgent  # ✅ Import the agent
+from .student_career_dashboard_agent import StudentCareerDashboardAgent
+
+# Create an instance of StudentCareerDashboardAgent
+student_career_dashboard = StudentCareerDashboardAgent()
+
+
+
 from src.Models.llm_config import gpt3_config
 from enum import Enum
 
@@ -41,6 +49,7 @@ class AgentKeys(Enum):
     MOTIVATOR = 'motivator'
     GAMIFICATION = 'gamification'
     MASTERY = 'mastery'  # Added MASTERY key
+
     CERTIFICATION_RECOMMENDATION = 'certification_recommendation'
     CAREER_GROWTH = 'career_growth'
     COMPETENCY_EXTRACTION = 'competency_extraction'
@@ -48,6 +57,12 @@ class AgentKeys(Enum):
     PERSONALIZED_PLAN = 'personalized_plan'
     RESOURCE_RANKING = 'resource_ranking'
     JOB_FINDER = 'job_finder'
+
+    JOB_FINDER = 'job_finder'
+    CAREER_GROWTH = 'career_growth'  # ✅ Added Career Growth Agent
+    CERTIFICATION_RECOMMENDATION = 'certification_recommendation'  # ✅ Added Certification Recommendation Agent
+    STUDENT_CAREER_DASHBOARD = 'student_career_dashboard'
+
 
 # Agent
 student = StudentAgent()
@@ -69,6 +84,11 @@ gap_analysis_agent = GapAnalysisAgent()
 personalized_learning_plan = PersonalizedLearningPlanAgent()
 resource_ranking = ResourceRankingAgent()
 mastery = MasteryAgent()  # Added MasteryAgent instance
+career_growth = CareerGrowthAgent()  # ✅ Added Career Growth Agent instance
+certification_recommendation = CertificationRecommendationAgent()  # ✅ Added Certification Recommendation Agent instance
+
+
+
 
 agents_dict = {
     AgentKeys.STUDENT.value: student,
@@ -84,6 +104,7 @@ agents_dict = {
     AgentKeys.MOTIVATOR.value: motivator,
     AgentKeys.GAMIFICATION.value: gamification,
     AgentKeys.MASTERY.value: mastery,  # Added MasteryAgent to agents_dict
+    AgentKeys.STUDENT_CAREER_DASHBOARD.value: student_career_dashboard,
 }
 
 agents_dict_by_name = {
@@ -100,5 +121,5 @@ agents_dict_by_name = {
     "MotivatorAgent": motivator,
     "GamificationAgent": gamification,
     "MasteryAgent": mastery  # Added MasteryAgent to agents_dict_by_name
-
+    "MasteryAgent": mastery,  # Added MasteryAgent to agents_dict_by_name
 }

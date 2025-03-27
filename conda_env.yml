@@ -4,6 +4,7 @@ channels:
   - anaconda
   - defaults
 dependencies:
+
   - anyio
   - bokeh
   - ca-certificates
@@ -53,3 +54,13 @@ dependencies:
       - rsa==4.9
       - uritemplate==4.1.1
 prefix: /opt/conda/envs/adaptive
+
+  - anaconda
+  - docker-py
+  - pip:
+    - firebase-admin
+    - openai
+    - pyautogen
+    - transitions
+prefix: /opt/conda/envs/adaptive
+

@@ -7,13 +7,13 @@ from typing import List, Dict
 import logging
 from src import globals
 from src.FSMs.fsm_career_path_interest import CareerFSM  # Updated FSM
+from src.FSMs.fsm_teach_me import TeachMeFSM
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
 from src.UI.reactive_chat_vt import ReactiveChat
 from src.UI.avatar import avatar
 from enum import Enum
 from dotenv import load_dotenv
 from src.FSMs.fsm_career_path_interest import CareerFSM
-
 
 load_dotenv()
 
@@ -86,6 +86,9 @@ agents_dict = {
 
 agents_dict_by_name = {agent.name: agent for agent in agents_dict.values()}
 
+    AgentKeys.JOB_FINDER.value: job_finder
+}
+
 avatars = {
     student.name: "✏️",  
     career_growth.name: "🚀",
@@ -96,6 +99,7 @@ avatars = {
     personalized_plan.name: "📘",
     learner_model.name: "🧠",
     resource_ranking.name: "⭐"
+    job_finder.name: "🎯"
 }
 
 ##############################################
@@ -106,6 +110,8 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 progress_file_path = os.path.join(script_dir, '../../progress.json')
 
 fsm = CareerFSM(agents_dict)  # Updated FSM
+
+fsm = TeachMeFSM(agents_dict)
 
 groupchat = CustomGroupChat(
     agents=list(agents_dict.values()), 
@@ -122,6 +128,12 @@ manager = CustomGroupChatManager(
     filename=progress_file_path, 
     is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0,
     agents_dict_by_name=agents_dict_by_name
+
+manager = CustomGroupChatManager(
+    groupchat=groupchat,
+    filename=progress_file_path, 
+    is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0
+
 )    
 
 fsm.register_groupchat_manager(manager)
@@ -195,6 +207,7 @@ async def a_find_jobs():
     
     reactive_chat.model_tab_interface.send(response, user=job_finder.name, avatar=avatars[job_finder.name])
 
+
 async def handle_competency_extraction(event=None):
     await competency_extractor.a_send("Retrieve required competencies for selected career path.",
         recipient=competency_extractor, request_reply=True)
@@ -238,6 +251,7 @@ reactive_chat.button_find_jobs = pn.widgets.Button(
     name="Find Jobs", button_type="primary"
 )
 reactive_chat.button_find_jobs.on_click(handle_find_jobs)
+
 
 reactive_chat.button_competency = pn.widgets.Button(name="Get Competencies", button_type="primary")
 reactive_chat.button_gap_analysis = pn.widgets.Button(name="Run Gap Analysis", button_type="primary")
@@ -291,3 +305,10 @@ def create_app():
 if __name__ == "__main__":
     app = create_app()
     pn.serve(app, callback_exception="verbose")
+        career_finder_tab
+    )
+
+if __name__ == "__main__":
+    app = create_app()
+    pn.serve(app, callback_exception="verbose")
+
