@@ -6,12 +6,14 @@ import asyncio
 from typing import List, Dict
 import logging
 from src import globals
+from src.FSMs.fsm_career_path_interest import CareerFSM  # Updated FSM
 from src.FSMs.fsm_teach_me import TeachMeFSM
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
 from src.UI.reactive_chat_vt import ReactiveChat
 from src.UI.avatar import avatar
 from enum import Enum
 from dotenv import load_dotenv
+from src.FSMs.fsm_career_path_interest import CareerFSM
 
 load_dotenv()
 
@@ -52,6 +54,11 @@ from src.Agents.student_agent import StudentAgent
 from src.Agents.career_growth_agent import CareerGrowthAgent
 from src.Agents.certification_recommendation_agent import CertificationRecommendationAgent
 from src.Agents.job_finder_agent import JobFinderAgent
+from src.Agents.competency_extraction_agent import CompetencyExtractionAgent
+from src.Agents.gap_analysis_agent import GapAnalysisAgent
+from src.Agents.personalized_learning_plan_agent import PersonalizedLearningPlanAgent
+from src.Agents.resource_ranking_agent import ResourceRankingAgent
+from src.Agents.learner_model_agent import LearnerModelAgent
 from src.Agents.agents import AgentKeys
 
 # Instantiate agents
@@ -59,11 +66,26 @@ student = StudentAgent(llm_config=llm)
 career_growth = CareerGrowthAgent(llm_config=llm)
 cert_recommendation = CertificationRecommendationAgent(llm_config=llm)
 job_finder = JobFinderAgent(llm_config=llm)
+competency_extractor = CompetencyExtractionAgent(llm_config=llm)
+gap_analyzer = GapAnalysisAgent(llm_config=llm)
+personalized_plan = PersonalizedLearningPlanAgent(llm_config=llm)
+learner_model = LearnerModelAgent(llm_config=llm)
+resource_ranking = ResourceRankingAgent(llm_config=llm)
 
 agents_dict = {
     AgentKeys.STUDENT.value: student,
     AgentKeys.CAREER_GROWTH.value: career_growth,
     AgentKeys.CERTIFICATION_RECOMMENDATION.value: cert_recommendation,
+    AgentKeys.JOB_FINDER.value: job_finder,
+    AgentKeys.COMPETENCY_EXTRACTION.value: competency_extractor,
+    AgentKeys.GAP_ANALYSIS.value: gap_analyzer,
+    AgentKeys.PERSONALIZED_PLAN.value: personalized_plan,
+    AgentKeys.LEARNER_MODEL.value: learner_model,
+    AgentKeys.RESOURCE_RANKING.value: resource_ranking
+}
+
+agents_dict_by_name = {agent.name: agent for agent in agents_dict.values()}
+
     AgentKeys.JOB_FINDER.value: job_finder
 }
 
@@ -71,6 +93,12 @@ avatars = {
     student.name: "✏️",  
     career_growth.name: "🚀",
     cert_recommendation.name: "🎓",
+    job_finder.name: "🎯",
+    competency_extractor.name: "📌",
+    gap_analyzer.name: "⚖️",
+    personalized_plan.name: "📘",
+    learner_model.name: "🧠",
+    resource_ranking.name: "⭐"
     job_finder.name: "🎯"
 }
 
@@ -80,6 +108,8 @@ avatars = {
 globals.input_future = None
 script_dir = os.path.dirname(os.path.abspath(__file__))
 progress_file_path = os.path.join(script_dir, '../../progress.json')
+
+fsm = CareerFSM(agents_dict)  # Updated FSM
 
 fsm = TeachMeFSM(agents_dict)
 
@@ -91,10 +121,19 @@ groupchat = CustomGroupChat(
     speaker_selection_method=fsm.next_speaker_selector
 )
 
+agents_dict_by_name = {agent.name: agent for agent in agents_dict.values()}
+
+manager = CustomGroupChatManager(
+    groupchat=groupchat,
+    filename=progress_file_path, 
+    is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0,
+    agents_dict_by_name=agents_dict_by_name
+
 manager = CustomGroupChatManager(
     groupchat=groupchat,
     filename=progress_file_path, 
     is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0
+
 )    
 
 fsm.register_groupchat_manager(manager)
@@ -111,6 +150,7 @@ for agent in groupchat.agents:
 # Load chat history on startup
 manager.get_chat_history_and_initialize_chat(filename=progress_file_path, chat_interface=reactive_chat.learn_tab_interface)
 reactive_chat.update_dashboard()  # Call after history is loaded
+
 
 ##############################################
 # UI Handlers
@@ -167,6 +207,31 @@ async def a_find_jobs():
     
     reactive_chat.model_tab_interface.send(response, user=job_finder.name, avatar=avatars[job_finder.name])
 
+
+async def handle_competency_extraction(event=None):
+    await competency_extractor.a_send("Retrieve required competencies for selected career path.",
+        recipient=competency_extractor, request_reply=True)
+    response = competency_extractor.last_message(agent=competency_extractor)["content"]
+    reactive_chat.model_tab_interface.send(response, user=competency_extractor.name, avatar=avatars[competency_extractor.name])
+
+async def handle_gap_analysis(event=None):
+    await gap_analyzer.a_send("Compare student's skills with industry requirements and find gaps.",
+        recipient=gap_analyzer, request_reply=True)
+    response = gap_analyzer.last_message(agent=gap_analyzer)["content"]
+    reactive_chat.model_tab_interface.send(response, user=gap_analyzer.name, avatar=avatars[gap_analyzer.name])
+
+async def handle_personalized_plan(event=None):
+    await personalized_plan.a_send("Create a personalized learning plan: suggest courses, books, and exercises.",
+        recipient=personalized_plan, request_reply=True)
+    response = personalized_plan.last_message(agent=personalized_plan)["content"]
+    reactive_chat.model_tab_interface.send(response, user=personalized_plan.name, avatar=avatars[personalized_plan.name])
+
+async def handle_resource_ranking(event=None):
+    await resource_ranking.a_send("Rank the most effective resources based on student goals and skill level.",
+        recipient=resource_ranking, request_reply=True)
+    response = resource_ranking.last_message(agent=resource_ranking)["content"]
+    reactive_chat.model_tab_interface.send(response, user=resource_ranking.name, avatar=avatars[resource_ranking.name])
+
 ##############################################
 # Panel UI Setup
 ############################################## 
@@ -186,6 +251,28 @@ reactive_chat.button_find_jobs = pn.widgets.Button(
     name="Find Jobs", button_type="primary"
 )
 reactive_chat.button_find_jobs.on_click(handle_find_jobs)
+
+
+reactive_chat.button_competency = pn.widgets.Button(name="Get Competencies", button_type="primary")
+reactive_chat.button_gap_analysis = pn.widgets.Button(name="Run Gap Analysis", button_type="primary")
+reactive_chat.button_study_plan = pn.widgets.Button(name="Generate Study Plan", button_type="primary")
+reactive_chat.button_rank_resources = pn.widgets.Button(name="Rank Resources", button_type="primary")
+
+reactive_chat.button_competency.on_click(handle_competency_extraction)
+reactive_chat.button_gap_analysis.on_click(handle_gap_analysis)
+reactive_chat.button_study_plan.on_click(handle_personalized_plan)
+reactive_chat.button_rank_resources.on_click(handle_resource_ranking)
+
+study_tab = (
+    "Study Assist",
+    pn.Column(
+        pn.Row(reactive_chat.button_competency),
+        pn.Row(reactive_chat.button_gap_analysis),
+        pn.Row(reactive_chat.button_study_plan),
+        pn.Row(reactive_chat.button_rank_resources),
+        pn.Row(reactive_chat.model_tab_interface)
+    )
+)
 
 # --- Career Progression Tab ---
 career_progression_tab = (
@@ -210,9 +297,18 @@ career_finder_tab = (
 def create_app():
     return pn.Tabs(
         career_progression_tab,
+        career_finder_tab,
+        study_tab 
+    )
+
+
+if __name__ == "__main__":
+    app = create_app()
+    pn.serve(app, callback_exception="verbose")
         career_finder_tab
     )
 
 if __name__ == "__main__":
     app = create_app()
     pn.serve(app, callback_exception="verbose")
+
