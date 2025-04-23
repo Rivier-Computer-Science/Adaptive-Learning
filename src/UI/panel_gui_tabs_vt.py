@@ -7,13 +7,13 @@ from typing import List, Dict
 import logging
 from src import globals
 from src.FSMs.fsm_career_path_interest import CareerFSM  # Updated FSM
-from src.FSMs.fsm_teach_me import TeachMeFSM
 from src.Agents.group_chat_manager_agent import CustomGroupChatManager, CustomGroupChat
 from src.UI.reactive_chat_vt import ReactiveChat
 from src.UI.avatar import avatar
 from enum import Enum
 from dotenv import load_dotenv
 from src.FSMs.fsm_career_path_interest import CareerFSM
+
 
 load_dotenv()
 
@@ -40,8 +40,6 @@ gpt4_config = {
     "temperature": temperature,
     "max_tokens": max_tokens,
     "top_p": top_p,
-    "frequency_penalty": frequency_penalty,
-    "presence_penalty": presence_penalty,
     "seed": seed
 }
 
@@ -59,7 +57,18 @@ from src.Agents.gap_analysis_agent import GapAnalysisAgent
 from src.Agents.personalized_learning_plan_agent import PersonalizedLearningPlanAgent
 from src.Agents.resource_ranking_agent import ResourceRankingAgent
 from src.Agents.learner_model_agent import LearnerModelAgent
+from src.Agents.user_preference_update_agent import UserPreferenceUpdateAgent
+from src.Agents.realtime_career_adjustment_agent import RealTimeCareerAdjustmentAgent
+from src.Agents.recommendation_testing_agent import RecommendationTestingAgent
+from src.Agents.state_definition_agent import StateDefinitionAgent
+from src.Agents.state_transition_agent import StateTransitionAgent
+from src.Agents.data_sync_agent import DataSynchronizationAgent
+from src.Agents.state_machine_test_agent import StateMachineTestingAgent
 from src.Agents.agents import AgentKeys
+from src.Agents.ai_evaluation_agent import AIEvaluationAgent
+from src.Agents.scenario_simulation_agent import ScenarioSimulationAgent
+from src.Agents.dynamic_recommendation_testing_agent import DynamicRecommendationTestingAgent
+
 
 # Instantiate agents
 student = StudentAgent(llm_config=llm)
@@ -71,6 +80,19 @@ gap_analyzer = GapAnalysisAgent(llm_config=llm)
 personalized_plan = PersonalizedLearningPlanAgent(llm_config=llm)
 learner_model = LearnerModelAgent(llm_config=llm)
 resource_ranking = ResourceRankingAgent(llm_config=llm)
+user_pref_update = UserPreferenceUpdateAgent(llm_config=llm)
+career_adjustment = RealTimeCareerAdjustmentAgent(llm_config=llm)
+recommendation_testing = RecommendationTestingAgent(llm_config=llm)
+competency_extractor = CompetencyExtractionAgent(llm_config=llm)
+state_definition = StateDefinitionAgent(llm_config=llm)
+state_transition = StateTransitionAgent(llm_config=llm)
+data_sync = DataSynchronizationAgent(llm_config=llm)
+state_machine_tester = StateMachineTestingAgent(llm_config=llm)
+ai_evaluation = AIEvaluationAgent(llm_config=llm)
+scenario_simulation = ScenarioSimulationAgent(llm_config=llm)
+dynamic_testing = DynamicRecommendationTestingAgent(llm_config=llm)
+
+
 
 agents_dict = {
     AgentKeys.STUDENT.value: student,
@@ -81,13 +103,20 @@ agents_dict = {
     AgentKeys.GAP_ANALYSIS.value: gap_analyzer,
     AgentKeys.PERSONALIZED_PLAN.value: personalized_plan,
     AgentKeys.LEARNER_MODEL.value: learner_model,
-    AgentKeys.RESOURCE_RANKING.value: resource_ranking
+    AgentKeys.RESOURCE_RANKING.value: resource_ranking,
+    AgentKeys.USER_PREF_UPDATE.value: user_pref_update,
+    AgentKeys.REALTIME_CAREER_ADJUSTMENT.value: career_adjustment,
+    AgentKeys.RECOMMENDATION_TESTING.value: recommendation_testing,
+    AgentKeys.STATE_DEFINITION.value: state_definition,
+    AgentKeys.STATE_TRANSITION.value: state_transition,
+    AgentKeys.DATA_SYNC.value: data_sync,
+    AgentKeys.STATE_MACHINE_TESTING.value: state_machine_tester,
+    AgentKeys.AI_EVALUATION.value: ai_evaluation,
+    AgentKeys.SCENARIO_SIMULATION.value: scenario_simulation,
+    AgentKeys.DYNAMIC_RECOMMENDATION_TESTING.value: dynamic_testing,
 }
 
 agents_dict_by_name = {agent.name: agent for agent in agents_dict.values()}
-
-    AgentKeys.JOB_FINDER.value: job_finder
-}
 
 avatars = {
     student.name: "✏️",  
@@ -98,8 +127,17 @@ avatars = {
     gap_analyzer.name: "⚖️",
     personalized_plan.name: "📘",
     learner_model.name: "🧠",
-    resource_ranking.name: "⭐"
-    job_finder.name: "🎯"
+    resource_ranking.name: "⭐",
+    user_pref_update.name: "🧭",
+    career_adjustment.name: "🔁",
+    recommendation_testing.name: "🧪",
+    state_definition.name: "🧾",
+    state_transition.name: "🔄",
+    data_sync.name: "🔗",
+    state_machine_tester.name: "🧪",
+    ai_evaluation.name: "🧠",
+    scenario_simulation.name: "🧬",
+    dynamic_testing.name: "🔁",
 }
 
 ##############################################
@@ -110,8 +148,6 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 progress_file_path = os.path.join(script_dir, '../../progress.json')
 
 fsm = CareerFSM(agents_dict)  # Updated FSM
-
-fsm = TeachMeFSM(agents_dict)
 
 groupchat = CustomGroupChat(
     agents=list(agents_dict.values()), 
@@ -128,12 +164,6 @@ manager = CustomGroupChatManager(
     filename=progress_file_path, 
     is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0,
     agents_dict_by_name=agents_dict_by_name
-
-manager = CustomGroupChatManager(
-    groupchat=groupchat,
-    filename=progress_file_path, 
-    is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0
-
 )    
 
 fsm.register_groupchat_manager(manager)
@@ -145,7 +175,10 @@ reactive_chat = ReactiveChat(agents_dict=agents_dict, avatars=avatars, groupchat
 for agent in groupchat.agents:
     agent.groupchat_manager = manager
     agent.reactive_chat = reactive_chat
-    agent.register_reply([autogen.Agent, None], reply_func=agent.autogen_reply_func, config={"callback": None})
+
+    if hasattr(agent, "autogen_reply_func"):
+        agent.register_reply([autogen.Agent, None], reply_func=agent.autogen_reply_func, config={"callback": None})
+
 
 # Load chat history on startup
 manager.get_chat_history_and_initialize_chat(filename=progress_file_path, chat_interface=reactive_chat.learn_tab_interface)
@@ -207,7 +240,6 @@ async def a_find_jobs():
     
     reactive_chat.model_tab_interface.send(response, user=job_finder.name, avatar=avatars[job_finder.name])
 
-
 async def handle_competency_extraction(event=None):
     await competency_extractor.a_send("Retrieve required competencies for selected career path.",
         recipient=competency_extractor, request_reply=True)
@@ -232,6 +264,59 @@ async def handle_resource_ranking(event=None):
     response = resource_ranking.last_message(agent=resource_ranking)["content"]
     reactive_chat.model_tab_interface.send(response, user=resource_ranking.name, avatar=avatars[resource_ranking.name])
 
+async def handle_update_interests(event=None):
+    await user_pref_update.a_send("Student updated interests. Refresh recommendations.", recipient=user_pref_update, request_reply=True)
+    response = user_pref_update.last_message(agent=user_pref_update)["content"]
+    reactive_chat.model_tab_interface.send(response, user=user_pref_update.name, avatar=avatars[user_pref_update.name])
+    reactive_chat.last_agent = user_pref_update
+
+async def handle_adjust_recommendations(event=None):
+    await career_adjustment.a_send("Revise career suggestions based on new student preferences.", recipient=career_adjustment, request_reply=True)
+    response = career_adjustment.last_message(agent=career_adjustment)["content"]
+    reactive_chat.model_tab_interface.send(response, user=career_adjustment.name, avatar=avatars[career_adjustment.name])
+
+async def handle_test_recommendations(event=None):
+    await recommendation_testing.a_send("Simulate behavior to test recommendation accuracy.", recipient=recommendation_testing, request_reply=True)
+    response = recommendation_testing.last_message(agent=recommendation_testing)["content"]
+    reactive_chat.model_tab_interface.send(response, user=recommendation_testing.name, avatar=avatars[recommendation_testing.name])
+
+async def handle_state_definition(event=None):
+    await state_definition.a_send("Define the career progression states and transitions.", recipient=state_definition, request_reply=True)
+    response = state_definition.last_message(agent=state_definition)["content"]
+    reactive_chat.model_tab_interface.send(response, user=state_definition.name, avatar=avatars[state_definition.name])
+
+async def handle_state_transition(event=None):
+    await state_transition.a_send("Trigger a state transition based on current learner progress.", recipient=state_transition, request_reply=True)
+    response = state_transition.last_message(agent=state_transition)["content"]
+    reactive_chat.model_tab_interface.send(response, user=state_transition.name, avatar=avatars[state_transition.name])
+
+async def handle_data_sync(event=None):
+    await data_sync.a_send("Sync updated career state with learner model and dashboard.", recipient=data_sync, request_reply=True)
+    response = data_sync.last_message(agent=data_sync)["content"]
+    reactive_chat.model_tab_interface.send(response, user=data_sync.name, avatar=avatars[data_sync.name])
+
+async def handle_test_state_machine(event=None):
+    await state_machine_tester.a_send("Test state transitions for correctness and stability.", recipient=state_machine_tester, request_reply=True)
+    response = state_machine_tester.last_message(agent=state_machine_tester)["content"]
+    reactive_chat.model_tab_interface.send(response, user=state_machine_tester.name, avatar=avatars[state_machine_tester.name])
+
+async def handle_ai_evaluation(event=None):
+    await ai_evaluation.a_send("Evaluate how well the recommendations match student input and real-world trends.", recipient=ai_evaluation, request_reply=True)
+    response = ai_evaluation.last_message(agent=ai_evaluation)["content"]
+    reactive_chat.model_tab_interface.send(response, user=ai_evaluation.name, avatar=avatars[ai_evaluation.name])
+
+async def handle_scenario_simulation(event=None):
+    await scenario_simulation.a_send("Simulate diverse student profiles to stress-test the system.", recipient=scenario_simulation, request_reply=True)
+    response = scenario_simulation.last_message(agent=scenario_simulation)["content"]
+    reactive_chat.model_tab_interface.send(response, user=scenario_simulation.name, avatar=avatars[scenario_simulation.name])
+
+async def handle_dynamic_testing(event=None):
+    await dynamic_testing.a_send("Test system's responsiveness to evolving student interests and skills.", recipient=dynamic_testing, request_reply=True)
+    response = dynamic_testing.last_message(agent=dynamic_testing)["content"]
+    reactive_chat.model_tab_interface.send(response, user=dynamic_testing.name, avatar=avatars[dynamic_testing.name])
+
+
+
 ##############################################
 # Panel UI Setup
 ############################################## 
@@ -252,7 +337,6 @@ reactive_chat.button_find_jobs = pn.widgets.Button(
 )
 reactive_chat.button_find_jobs.on_click(handle_find_jobs)
 
-
 reactive_chat.button_competency = pn.widgets.Button(name="Get Competencies", button_type="primary")
 reactive_chat.button_gap_analysis = pn.widgets.Button(name="Run Gap Analysis", button_type="primary")
 reactive_chat.button_study_plan = pn.widgets.Button(name="Generate Study Plan", button_type="primary")
@@ -262,6 +346,35 @@ reactive_chat.button_competency.on_click(handle_competency_extraction)
 reactive_chat.button_gap_analysis.on_click(handle_gap_analysis)
 reactive_chat.button_study_plan.on_click(handle_personalized_plan)
 reactive_chat.button_rank_resources.on_click(handle_resource_ranking)
+
+reactive_chat.button_update_interests = pn.widgets.Button(name="Update Interests", button_type="primary")
+reactive_chat.button_adjust_recommendations = pn.widgets.Button(name="Adjust Career Suggestions", button_type="primary")
+reactive_chat.button_test_recommendations = pn.widgets.Button(name="Test Recommendation Adaptability", button_type="primary")
+
+reactive_chat.button_update_interests.on_click(handle_update_interests)
+reactive_chat.button_adjust_recommendations.on_click(handle_adjust_recommendations)
+reactive_chat.button_test_recommendations.on_click(handle_test_recommendations)
+
+reactive_chat.button_define_states = pn.widgets.Button(name="Define States", button_type="primary")
+reactive_chat.button_trigger_transition = pn.widgets.Button(name="Trigger State Transition", button_type="primary")
+reactive_chat.button_sync_data = pn.widgets.Button(name="Sync Career Data", button_type="primary")
+reactive_chat.button_test_state_machine = pn.widgets.Button(name="Test State Machine", button_type="primary")
+
+reactive_chat.button_define_states.on_click(handle_state_definition)
+reactive_chat.button_trigger_transition.on_click(handle_state_transition)
+reactive_chat.button_sync_data.on_click(handle_data_sync)
+reactive_chat.button_test_state_machine.on_click(handle_test_state_machine)
+
+reactive_chat.button_ai_eval = pn.widgets.Button(name="Run AI Evaluation", button_type="primary")
+reactive_chat.button_simulate_scenarios = pn.widgets.Button(name="Simulate Scenarios", button_type="primary")
+reactive_chat.button_dynamic_test = pn.widgets.Button(name="Test Dynamic Updates", button_type="primary")
+
+reactive_chat.button_ai_eval.on_click(handle_ai_evaluation)
+reactive_chat.button_simulate_scenarios.on_click(handle_scenario_simulation)
+reactive_chat.button_dynamic_test.on_click(handle_dynamic_testing)
+
+
+
 
 study_tab = (
     "Study Assist",
@@ -293,22 +406,52 @@ career_finder_tab = (
     )
 )
 
+interest_tab = (
+    "Dynamic Interests", 
+    pn.Column(
+        pn.Row(reactive_chat.button_update_interests),
+        pn.Row(reactive_chat.button_adjust_recommendations),
+        pn.Row(reactive_chat.button_test_recommendations),
+        pn.Row(reactive_chat.model_tab_interface)
+    )
+)
+
+career_state_tab = (
+    "Career State Machine", 
+    pn.Column(
+        pn.Row(reactive_chat.button_define_states),
+        pn.Row(reactive_chat.button_trigger_transition),
+        pn.Row(reactive_chat.button_sync_data),
+        pn.Row(reactive_chat.button_test_state_machine),
+        pn.Row(reactive_chat.model_tab_interface)
+    )
+)
+
+evaluation_tab = (
+    "AI Testing", 
+    pn.Column(
+        pn.Row(reactive_chat.button_ai_eval),
+        pn.Row(reactive_chat.button_simulate_scenarios),
+        pn.Row(reactive_chat.button_dynamic_test),
+        pn.Row(reactive_chat.model_tab_interface)
+    )
+)
+
+
+
+
 # Create Panel UI
 def create_app():
     return pn.Tabs(
         career_progression_tab,
         career_finder_tab,
-        study_tab 
+        study_tab,
+        interest_tab,
+        career_state_tab,
+        evaluation_tab
     )
 
 
 if __name__ == "__main__":
     app = create_app()
     pn.serve(app, callback_exception="verbose")
-        career_finder_tab
-    )
-
-if __name__ == "__main__":
-    app = create_app()
-    pn.serve(app, callback_exception="verbose")
-

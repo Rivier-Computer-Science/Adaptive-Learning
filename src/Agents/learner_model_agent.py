@@ -18,6 +18,10 @@ class LearnerModelAgent(MyConversableAgent):
             Your goal is to ensure that the StudentAgent's learning experience is tailored to their current abilities, promoting effective and personalized learning.
             """
     def __init__(self, **kwargs):
+        llm_config = kwargs.pop('llm_config', {
+            "model": "gpt-4"
+        })
+
         super().__init__(
             name="LearnerModelAgent",            
             system_message=kwargs.pop('system_message', self.system_message),
