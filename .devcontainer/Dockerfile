@@ -17,16 +17,8 @@ RUN apt update && apt install -y \
     build-essential \
     vim \
     jq \
+    firefox \
     && apt clean
-
-
-# Download Anaconda and install it
-RUN wget --no-check-certificate https://repo.anaconda.com/archive/Anaconda3-2024.10-1-Linux-x86_64.sh -O /tmp/anaconda.sh && \
-    bash /tmp/anaconda.sh -b -p /opt/conda && \
-    rm /tmp/anaconda.sh
-
-# Add Anaconda to the PATH
-ENV PATH="/opt/conda/bin:$PATH"
 
 
 # Unset non-interactive mode after installation

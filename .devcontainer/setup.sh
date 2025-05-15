@@ -1,29 +1,15 @@
 #!/bin/bash
 
-echo "Creating adaptive conda environment. This will take some time (minutes)"
+echo "Creating uv environment."
 
-# Ensure Conda is initialized for the current shell
-eval "$(conda shell.bash hook)"
+# install uv and venv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.local/bin/env
+uv venv --python 3.12
+source .venv/bin/activate
+uv pip install -r requirements.txt
 
-# Create the Conda environment
-conda env create -f conda_env.yml -n adaptive 
-
-# Clean up unnecessary files
-conda clean -a --yes
-
-# Initialize bashrc
-conda init
-
-# display environments
-conda info --envs
-
-# Add 'conda activate adaptive' to ~/.bashrc if not already present
-if ! grep -q "conda activate adaptive" ~/.bashrc; then
-    echo "Adding 'conda activate adaptive' to ~/.bashrc"
-    echo -e "\n# Activate the adaptive conda environment by default\nconda activate adaptive" >> ~/.bashrc
-fi
-
-# Activate the environment
-conda activate adaptive    
+# New installs will have the wrong decryption key by default. So, reinitialize them.
+rm portfolio_*
 
 echo "Setup completed successfully!"
