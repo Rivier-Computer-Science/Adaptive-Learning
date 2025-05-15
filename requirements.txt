@@ -1,6 +1,6 @@
+aiohttp
 crewai
 firebase-admin
-firefox
 markdown
 matplotlib
 numpy
