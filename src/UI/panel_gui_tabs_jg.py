@@ -52,8 +52,8 @@ gpt4_config = {"config_list": gpt4_config_list,
                "temperature": temperature,
                "max_tokens": max_tokens,
                "top_p": top_p,
-               "frequency_penalty": frequency_penalty,
-               "presence_penalty": presence_penalty,
+               #"frequency_penalty": frequency_penalty,
+               #"presence_penalty": presence_penalty,
                "seed": seed
 }
 
