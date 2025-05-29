@@ -4,8 +4,26 @@ import asyncio
 import aiohttp
 import os
 import firebase_admin
-from firebase_admin import credentials, db, auth
-from concurrent.futures import ThreadPoolExecutor
+from firebase_admin import credentials, auth, firestore, initialize_app, _apps
+from dotenv import load_dotenv
+
+load_dotenv()
+SERVICE_ACCOUNT_KEY_PATH = os.getenv('FIREBASE_SERVICE_ACCOUNT_KEY_PATH')
+if not firebase_admin._apps:
+    cred = credentials.Certificate(SERVICE_ACCOUNT_KEY_PATH)
+    firebase_admin.initialize_app(cred)
+
+print("DEBUG at import: FIREBASE_SERVICE_ACCOUNT_KEY_PATH =", os.getenv("FIREBASE_SERVICE_ACCOUNT_KEY_PATH"))
+db = firestore.client()
+
+
+load_dotenv()
+SERVICE_ACCOUNT_KEY_PATH = os.getenv('FIREBASE_SERVICE_ACCOUNT_KEY_PATH')
+if not firebase_admin._apps:
+    cred = credentials.Certificate(SERVICE_ACCOUNT_KEY_PATH)
+    firebase_admin.initialize_app(cred)
+
+db = firestore.client()
 
 class Firebase:
     def __init__(self,
@@ -536,7 +554,7 @@ class Firebase:
             print(f'Score for user {user_id} on subject "{subject_id}", lesson "{lesson_id}" incremented by {increment}.')
         except Exception as e:
             print(f'Error incrementing score for user {user_id} on subject "{subject_id}", lesson "{lesson_id}": {e}')
-
+            
     # -----------------------
     # Cleanup Method
     # -----------------------
@@ -557,3 +575,75 @@ class Firebase:
 
     async def __aexit__(self, exc_type, exc, tb):
         await self.close()
+
+    # --------------------------------------------------------
+    # Firestore Integration for Session Sync - Author: Rakesh
+    # --------------------------------------------------------
+
+def get_firestore_client(service_account_key_path=None, database_url=None):
+    """
+    Returns a Firestore client, initializing the Firebase app if needed.
+    Uses the same parameter/env variable fallback pattern as the Firebase class.
+    """
+    # Fetch from arguments first, else from environment variables
+    service_account_key_path = service_account_key_path or os.getenv('FIREBASE_SERVICE_ACCOUNT_KEY_PATH')
+    database_url = database_url or os.getenv('FIREBASE_DATABASE_URL')
+
+    # DEBUG: Show what's being used (remove or comment)
+    #print("DEBUG: Firestore client init with service_account_key_path =", service_account_key_path)
+    #print("DEBUG: Firestore client init with database_url =", database_url)
+
+    if not service_account_key_path:
+        raise ValueError("Service account key path must be provided either as a parameter or via 'FIREBASE_SERVICE_ACCOUNT_KEY_PATH' environment variable.")
+    if not database_url:
+        raise ValueError("Database URL must be provided either as a parameter or via 'FIREBASE_DATABASE_URL' environment variable.")
+
+    # Initialize Firebase app if not already done
+    if not _apps:
+        cred = credentials.Certificate(service_account_key_path)
+        initialize_app(cred, {'databaseURL': database_url})
+
+    return firestore.client()
+
+    # ----------------------------------------------
+    # Save session to firebases  - Author: Rakesh
+    # ----------------------------------------------
+
+# def save_session_to_firestore(session_data, user_uid):
+#     """
+#     Save the chat session data to Firestore under the user's UID.
+#     """
+#     # Save to users/{user_uid}/sessions/{session_id}
+#     print(f"Saving to Firestore for user_uid: {user_id}")
+#     user_id = user_uid or session_data.get('user_id')
+#     session_id = session_data.get('session_id')
+#     if not user_id or not session_id:
+#         print("Missing user ID or session ID for Firestore save.")
+#         return
+#     try:
+#         # Reference: users/{user_id}/sessions/{session_id}
+#         doc_ref = db.collection("users").document(user_id).collection("sessions").document(session_id)
+#         doc_ref.set(session_data)
+#         print(f"Session data saved to Firestore at users/{user_id}/sessions/{session_id}")
+#     except Exception as e:
+#         print(f"Error saving session to Firestore: {e}")
+
+def save_session_to_firestore(session_data, user_uid):
+    """
+    Save the chat session data to Firestore under the user's UID.
+    """
+    user_id = user_uid or session_data.get('user_uid')
+    session_id = session_data.get('session_uid')
+    if not user_id or not session_id:
+        print("Missing user ID or session ID for Firestore save.")
+        print("DEBUG: user_id =", user_id)
+        print("DEBUG: session_id =", session_id)
+        print("DEBUG: session_data keys:", list(session_data.keys()))
+        return
+    try:
+        # Only Firestore syntax!
+        doc_ref = db.collection("users").document(user_id).collection("sessions").document(session_id)
+        doc_ref.set(session_data)
+        print(f"Session data saved to Firestore at users/{user_id}/sessions/{session_id}")
+    except Exception as e:
+        print(f"Error saving session to Firestore: {e}")
