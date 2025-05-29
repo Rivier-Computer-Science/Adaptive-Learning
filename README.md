@@ -16,7 +16,7 @@ Dokku, S., Gumpula, A., Gudati, S., Nagisetty, M., Thimmarayappa, R., Yeruva, J.
 
 
 ```sh
-~/Adaptive-Learning$ uv run python -m src.UI.panel_gui_tabs_vt
+~/Adaptive-Learning$ uv run python -m src.UI.panel_gui_tabs_jg
 ```
 
 
@@ -184,6 +184,18 @@ We had hoped to use an unconstrained `autogen.GroupChatManager` to manage agent 
 
 The console knowledge tracer program uses direct agent communication.
 
+
+### Spring 2025 (May)
+
+- **Enhanced Autogen JSON Output**
+  - Added structured fields: `topic`, `timestamp`, `steps_completed`, `suggestions`.
+  - Improved clarity and consistency of session JSON data.
+
+- **Firebase Firestore Integration**
+  - Session data now writes to Firestore for persistent storage.
+  - Includes a user migration script using CSV import format.
+
+
 ## State Machine in panel UI
 
 ![uml_state_machine_v3](~/../pics/uml_state_machine_v3.png)
@@ -197,4 +209,3 @@ The UI contains multiple tabs in various states of completion. The Learn tab is 
 The Model tab interacts with the LearnerModel agent and provides an assessment of the student's capabilities.
 
 ![learner_model](~/../pics/learner_model.png)
-
