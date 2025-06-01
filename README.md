@@ -16,7 +16,7 @@ Dokku, S., Gumpula, A., Gudati, S., Nagisetty, M., Thimmarayappa, R., Yeruva, J.
 
 
 ```sh
-~/Adaptive-Learning$ uv run python -m src.UI.panel_gui_tabs_vt
+~/Adaptive-Learning$ uv run python -m src.UI.panel_gui_tabs_jg
 ```
 
 
@@ -124,6 +124,26 @@ Activate the environment
 
 `uv pip install -r requirements.txt`
 
+### Setting up Fernet Key for encryption
+
+In your terminal, run the following Python command:
+
+`python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`
+
+This will output a string .Add that key as `FERNET_KEY=` to your .env
+
+
+### Steps to run migration script
+
+To migrate existing users to Firestore and Firebase Realtime Database, use the provided migration script.
+
+Ensure your script (e.g., migrate_firestore_users.py) points to your CSV file.
+
+In your terminal, load the .env file after the changes are made and run then run below command:
+
+`python migrate_firestore_users.py`
+
+You should see output as All users migrated!! message.
 
 
 ### Set up the Default Browser for Windows Display
@@ -157,6 +177,17 @@ export OPENAI_API_KEY=sk-     # available form platform.openai.com
 
 Note: for Windows use *set* instead of *export*
 
+
+### SU25
+
+- **Enhanced Autogen JSON Output**
+  - Added structured fields: `topic`, `timestamp`, `steps_completed`, `suggestions`.
+  - Improved clarity and consistency of session JSON data.
+
+- **Firebase Firestore Integration**
+  - Session data now writes to Firestore for persistent storage.
+  - Includes a user migration script using CSV import format.
+Add comment
 
 
 
