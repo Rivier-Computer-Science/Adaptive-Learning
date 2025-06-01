@@ -168,9 +168,3 @@ compute_gephi2.py
 adaptive-learning-rivier-firebase-adminsdk-6u1pl-d8fc406e6f.json
 src/.DS_Store
 adaptive-learning-rivier-firebase-adminsdk.json
-
-#Personal
-.bashrc
-.bash_history
-.DS_Store
-*.log
