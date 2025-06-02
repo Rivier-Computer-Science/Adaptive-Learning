@@ -225,3 +225,4 @@ if __name__ == "__main__":
     import panel as pn
     pn.extension()
     pn.serve(template, show=True, autoreload=True)
+    
