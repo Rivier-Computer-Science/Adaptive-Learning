@@ -211,7 +211,7 @@ for agent in groupchat.agents:
 manager.get_chat_history_and_initialize_chat(filename=progress_file_path, chat_interface=reactive_chat.learn_tab_interface)
 reactive_chat.update_dashboard()
 
-pn.template.BootstrapTemplate(
+template = pn.template.BootstrapTemplate(
     title="Adaptive Learning - Math Mastery",
     main=[
         pn.Tabs(
@@ -219,5 +219,9 @@ pn.template.BootstrapTemplate(
             ("Math Mastery", math_mastery_interface.create_layout())
         )
     ]
-).servable()
+)
 
+if __name__ == "__main__":
+    import panel as pn
+    pn.extension()
+    pn.serve(template, show=True, autoreload=True)
