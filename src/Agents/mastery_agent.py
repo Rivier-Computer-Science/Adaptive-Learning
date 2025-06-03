@@ -1,168 +1,188 @@
-from typing import Dict
+
 from .conversable_agent import MyConversableAgent
 from src.KnowledgeGraphs.math_taxonomy import (
-    topics_and_subtopics, 
-    subsub_topics, 
+    topics_and_subtopics,
+    subsub_topics,
     subsubsub_topics,
     topic_colors
 )
-import random
 import logging
+import random
+import asyncio
+from openai import AsyncOpenAI
 
 class MasteryAgent(MyConversableAgent):
     description = """
-    MasteryAgent is a comprehensive and adaptive agent that tracks the student's mastery of mathematical subjects.
-    It implements core functionality to generate questions, determine mastery achievement, and manage topic transitions.
+    MasteryAgent is a specialized AI tutor focused on mathematics education.
+    It generates appropriate math questions, evaluates student responses,
+    tracks mastery progress, and adapts difficulty based on performance.
     """
+
     system_message = """
-    You are MasteryAgent, a comprehensive and adaptive agent that tracks the student's mastery of mathematical subjects.
-    Your role is to assess student knowledge, generate appropriate math questions, evaluate answers, and determine when mastery is achieved.
+    You are MasteryAgent, an advanced mathematics education agent.
+    Your core responsibilities are:
+    1. Generate clear, level-appropriate math questions when requested
+    2. Provide detailed step-by-step solutions for each question
+    3. Evaluate student answers with constructive feedback
+    4. Track student progress and adapt difficulty accordingly
     """
 
     def __init__(self, **kwargs):
         super().__init__(
-            name="MasteryAgent",
-            human_input_mode="NEVER",
-            system_message=self.system_message,
-            description=self.description,
+            name=kwargs.pop('name', "MasteryAgent"),
+            human_input_mode=kwargs.pop('human_input_mode', "NEVER"),
+            system_message=kwargs.pop('system_message', self.system_message),
+            description=kwargs.pop('description', self.description),
             **kwargs
         )
+        self.client = AsyncOpenAI()
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+
         self.current_topic = None
-        self.mastery_threshold = 0.8
+        self.current_subtopic = None
         self.questions_asked = 0
         self.correct_answers = 0
+        self.mastery_threshold = 0.8
+        self.mastery_achieved = False
+        self.performance_history = {}
+        self.results = []
+        self.adaptive_difficulty = 1.0
         self.topics = list(topics_and_subtopics.keys())
         self.subtopics = topics_and_subtopics
         self.subsubtopics = subsub_topics
         self.subsubsubtopics = subsubsub_topics
-        self.performance_history = {}
-        logging.basicConfig(level=logging.INFO)
-        self.logger = logging.getLogger(__name__)
 
-    async def ask_question(self, topic):
-        """Generate adaptive questions based on taxonomy level and student performance"""
+    def _get_difficulty_level(self):
+        if self.adaptive_difficulty < 0.8:
+            return "basic"
+        elif self.adaptive_difficulty < 1.2:
+            return "intermediate"
+        return "advanced"
+
+    def _adjust_difficulty(self, recent_scores: list):
+        if len(recent_scores) >= 3:
+            recent_performance = sum(recent_scores[-3:]) / 3
+            if recent_performance > 0.8:
+                self.adaptive_difficulty = min(1.5, self.adaptive_difficulty + 0.1)
+            elif recent_performance < 0.6:
+                self.adaptive_difficulty = max(0.5, self.adaptive_difficulty - 0.1)
+
+    def _update_performance_tracking(self, is_correct: bool):
+        if is_correct:
+            self.correct_answers += 1
+
+        if self.current_topic not in self.performance_history:
+            self.performance_history[self.current_topic] = {
+                'attempts': 0,
+                'correct': 0,
+                'recent_scores': []
+            }
+
+        history = self.performance_history[self.current_topic]
+        history['attempts'] += 1
+        if is_correct:
+            history['correct'] += 1
+
+        history['recent_scores'].append(1 if is_correct else 0)
+        if len(history['recent_scores']) > 5:
+            history['recent_scores'].pop(0)
+
+        self._adjust_difficulty(history['recent_scores'])
+
+    async def ask_question(self, topic: str, subtopic: str = None) -> str:
+        self.current_topic = topic
+        self.current_subtopic = subtopic
+        self.questions_asked += 1
+
+        difficulty = self._get_difficulty_level()
+        prompt = f"""Generate a {difficulty} level math question about {topic}
+{f'focusing on {subtopic}' if subtopic else ''}.
+
+Format:
+[Question]
+(Your question)
+[Answer]
+(Your solution with full steps)"""
+
         try:
-            if topic in self.subtopics:
-                subtopic = self._select_appropriate_subtopic(topic)
-                if subtopic in self.subsubtopics:
-                    subsubtopic = self._select_appropriate_subsubtopic(subtopic)
-                    if subsubtopic in self.subsubsubtopics:
-                        subsubsubtopic = random.choice(self.subsubsubtopics[subsubtopic])
-                        prompt = f"Generate a math question about {subsubsubtopic} suitable for a student learning this topic. Include the correct answer."
-                    else:
-                        prompt = f"Generate a math question about {subsubtopic} suitable for a student learning this topic. Include the correct answer."
-                else:
-                    prompt = f"Generate a math question about {subtopic} suitable for a student learning this topic. Include the correct answer."
-            else:
-                prompt = f"Generate a math question about {topic} suitable for a student learning this topic. Include the correct answer."
-
-            self.questions_asked += 1
-            self.logger.info(f"Generating question for topic: {topic}")
-            response = await self.llm(prompt)
-            return response
+            response = await self.client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": self.system_message},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7
+            )
+            return response.choices[0].message.content
         except Exception as e:
             self.logger.error(f"Error generating question: {str(e)}")
             raise
 
-    def _select_appropriate_subtopic(self, topic):
-        """Select subtopic based on performance history"""
-        if topic in self.performance_history:
-            weak_topics = [t for t, p in self.performance_history[topic].items() if p < 0.8]
-            if weak_topics:
-                return random.choice(weak_topics)
-        return random.choice(self.subtopics[topic])
-
-    def _select_appropriate_subsubtopic(self, subtopic):
-        """Select subsubtopic based on difficulty level"""
-        available_topics = self.subsubtopics.get(subtopic, [])
-        if not available_topics:
-            return None
-        return random.choice(available_topics)
-
-    async def evaluate_answer(self, question, student_answer, correct_answer):
-        """Evaluate student answer and provide detailed feedback"""
+    async def evaluate_answer(self, question: str, student_answer: str, correct_answer: str):
         prompt = f"""
-        Evaluate the following student answer to a math question:
-        Question: {question}
-        Student's Answer: {student_answer}
-        Correct Answer: {correct_answer}
+Evaluate this math answer:
+Question: {question}
+Student Answer: {student_answer}
+Correct Answer: {correct_answer}
 
-        Provide:
-        1. Correctness assessment
-        2. Detailed explanation of any errors
-        3. Hints for improvement
-        4. Related concepts to review
-        """
-        evaluation = await self.llm(prompt)
-        is_correct = evaluation.lower().startswith('correct')
-        if is_correct:
-            self.correct_answers += 1
-            self._update_performance_history(self.current_topic, True)
-        else:
-            self._update_performance_history(self.current_topic, False)
-        
-        return is_correct, evaluation
-
-    def _update_performance_history(self, topic, is_correct):
-        """Update performance history for adaptive question selection"""
-        if topic not in self.performance_history:
-            self.performance_history[topic] = {}
-        current_performance = self.performance_history[topic].get(topic, 0.5)
-        alpha = 0.3  # Learning rate
-        new_performance = current_performance + alpha * (1 if is_correct else 0 - current_performance)
-        self.performance_history[topic][topic] = new_performance
-        self.logger.info(f"Updated performance for {topic}: {new_performance}")
-
-    def check_mastery(self):
-        """Check if mastery threshold has been achieved"""
-        if self.questions_asked > 0:
-            mastery_score = self.correct_answers / self.questions_asked
-            return mastery_score >= self.mastery_threshold
-        return False
-
-    def get_mastery_status(self):
-        """Get detailed mastery status including performance metrics"""
-        if self.questions_asked > 0:
-            return {
-                'topic': self.current_topic,
-                'mastery_percentage': (self.correct_answers / self.questions_asked) * 100,
-                'questions_attempted': self.questions_asked,
-                'correct_answers': self.correct_answers,
-                'performance_history': self.performance_history.get(self.current_topic, {})
-            }
-        return f"No questions asked for {self.current_topic} yet."
-
-    async def conduct_mastery_test(self, topic, num_questions=5, get_student_answer_func=None):
-        """Conduct a complete mastery test with adaptive questioning"""
-        self.current_topic = topic
-        self.reset_for_new_topic()
-        results = []
+Respond with:
+1. Start with "Correct!" or "Incorrect."
+2. Explain the correctness clearly
+3. Suggest how to improve
+"""
 
         try:
-            for _ in range(num_questions):
-                question_and_answer = await self.ask_question(topic)
-                question, correct_answer = question_and_answer.split('\n', 1)
-                
-                if get_student_answer_func:
-                    student_answer = await get_student_answer_func(question)
-                else:
-                    student_answer = "No answer provided"
-                
-                is_correct, evaluation = await self.evaluate_answer(question, student_answer, correct_answer)
-                results.append({
-                    'question': question,
-                    'student_answer': student_answer,
-                    'correct_answer': correct_answer,
-                    'is_correct': is_correct,
-                    'evaluation': evaluation,
-                    'topic': topic
-                })
-
-            mastery_achieved = self.check_mastery()
-            self.logger.info(f"Mastery test completed for {topic}. Mastery achieved: {mastery_achieved}")
-            return results, mastery_achieved
+            response = await self.client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": self.system_message},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7
+            )
+            evaluation = response.choices[0].message.content
+            is_correct = evaluation.lower().startswith("correct")
+            self._update_performance_tracking(is_correct)
+            return is_correct, evaluation
         except Exception as e:
-            self.logger.error(f"Error during mastery test: {str(e)}")
+            self.logger.error(f"Evaluation error: {str(e)}")
             raise
 
+    def get_subtopics_for_topic(self, topic: str):
+        return self.subtopics.get(topic, [])
+
+    def get_subsubtopics_for_subtopic(self, subtopic: str):
+        return self.subsubtopics.get(subtopic, [])
+
+    def get_mastery_status(self):
+        if self.questions_asked == 0:
+            return {
+                'status': 'No questions attempted',
+                'mastery_achieved': False,
+                'current_mastery': 0,
+                'progress': 0
+            }
+        ratio = self.correct_answers / self.questions_asked
+        return {
+            'topic': self.current_topic,
+            'subtopic': self.current_subtopic,
+            'questions_attempted': self.questions_asked,
+            'correct_answers': self.correct_answers,
+            'current_mastery': ratio * 100,
+            'mastery_achieved': ratio >= self.mastery_threshold,
+            'progress': (ratio / self.mastery_threshold) * 100,
+            'difficulty_level': self._get_difficulty_level()
+        }
+
+
+    async def start_test(self, topic):
+        self.reset_for_new_topic()
+        return await self.ask_question(topic)
+
+    def reset_for_new_topic(self):
+        self.questions_asked = 0
+        self.correct_answers = 0
+        self.adaptive_difficulty = 1.0
+        self.mastery_achieved = False
 

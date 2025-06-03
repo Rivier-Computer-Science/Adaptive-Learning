@@ -1,8 +1,6 @@
-
-
 # Introduction Multi-Agent Adaptive Learning
 
-This code is from Rivier University's Professional Seminar class (COMP-699) from the Summer of 2024.
+This code is from Rivier University's Professional Seminar class (COMP-699) from the Summer of 2024, the Fall of 2024, and the Spring of 2025.
 
 It uses [Microsoft's autogen](https://microsoft.github.io/autogen/docs/Getting-Started/) to specialize an agent for each function of an adaptive learning system. The model used is OpenAI's ChatGPT-4o.
 
@@ -13,65 +11,185 @@ There is [a paper published by the Rivier Academic Journal](https://www2.rivier.
 Dokku, S., Gumpula, A., Gudati, S., Nagisetty, M., Thimmarayappa, R., Yeruva, J. P., & Glossner, J. (2024). Multi-agent adaptive learning for mathematics. _Rivier Academic Journal_, 19(1), Summer 2024. Rivier University.
 
 
-# Running the Code
 
-Runs in a browser:
+## Executing the Code
 
-```sh
-(adaptive) user@machine:~/Adaptive-Learning$ python -m src.UI.panel_gui_tabs
-```
-
-Runs in the console:
 
 ```sh
-(adaptive) user@machine:~/Adaptive-Learning$ python -m src.UI.console_knowledge_tracer
-```
-
-## Installing Dependencies
-
-Install Anaconda
-- Download and install it from the [official Anaconda website](https://www.anaconda.com/products/individual).
-
-```sh
-conda create -n adaptive python=3.12 anaconda
-conda activate adaptive
-```
-
-Install pyautogen 0.2.33+
-
-```sh
-conda config --set pip_interop_entabled True
-pip install openai pyautogen
-```
-
-Note that there is also a package called autogen. Do NOT install it. You want pyautogen.
-
-Install Firebase tools 
-
-```sh
-pip install firebase-admin aiohttp
+~/Adaptive-Learning$ uv run python -m src.UI.panel_gui_tabs_jg
 ```
 
 
-## OpenAI Environment Configuration
 
 
-- LINUX: export  OPENAI_API_KEY=sk-
-- WINDOWS: set  OPENAI_API_KEY=sk-
+## Recommended Installation
 
-If you don't have Docker installed, you need to set AUTOGEN_USE_DOCKER=False. Be advised that if you set this to False it allows code to run on your system at whatever privileges you have (e.g., Windows Admin).
+Use a github codespace
 
-You can also use a .env file if you don't want to export/set every time.
+
+## 
+
+## Local Windows
+
+### Install WSL and Ubuntu24.04
+
+https://learn.microsoft.com/en-us/windows/wsl/install
+
+open PowerShell in admin mode (right click on program)
+`wsl --install -d Ubuntu-24.04`
+
+To see all the available Linux distributions
+
+`wsl --list --online`
+
+reboot your machine
+
+
+
+### Install Docker Desktop
+
+https://docs.docker.com/desktop/setup/install/windows-install/
+
+reboot 
+
+start Docker desktop and configure it to start on Windows boot (Settings->General)
+
+
+
+### Open Ubuntu in WSL
+
+In Windows search, type Ubuntu and select Ubuntu-24.04
+
+create your userid
+
+create a password  <---- DON'T FORGET IT
+
+
+
+### Follow the Install Linux Software Instructions
+
+From here, the directions for Linux and Windows running Linux are the same except where noted.
+
+
+
+# Install Linux Software (in Ubuntu or WSL Ubuntu)
+
+`sudo apt update && sudo apt install -y \
+    software-properties-common \
+    curl \
+    zip \
+    unzip \
+    tar \
+    ca-certificates \
+    git \
+    wget \
+    build-essential \
+    vim \
+    jq \
+    firefox \  
+    wslu \
+    && sudo apt clean`
+
+
+
+### Install uv and venv
+
+https://docs.astral.sh/uv/#installation
+
+`curl -LsSf https://astral.sh/uv/install.sh | sh`
+
+
+
+### Install Microsoft Visual Studio Code
+
+https://code.visualstudio.com/sha/download
+
+
+
+### Clone the Repository
+
+`git clone https://github.com/Rivier-Computer-Science/Adaptive-Learning.git`
+
+cd into Adaptive-Learning and initialize a venv environment
+
+`uv venv --python 3.12`
+
+Activate the environment
+
+`source .venv/bin/activate`
+
+
+
+### Install Python requirements.txt
+
+`uv pip install -r requirements.txt`
+
+### Setting up Fernet Key for encryption
+
+In your terminal, run the following Python command:
+
+`python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`
+
+This will output a string .Add that key as `FERNET_KEY=` to your .env
+
+
+### Steps to run migration script
+
+To migrate existing users to Firestore and Firebase Realtime Database, use the provided migration script.
+
+Ensure your script (e.g., migrate_firestore_users.py) points to your CSV file.
+
+In your terminal, load the .env file after the changes are made and run then run below command:
+
+`python migrate_firestore_users.py`
+
+You should see output as All users migrated!! message.
+
+
+### Set up the Default Browser for Windows Display
+
+Note: Linux users should not need to perform this step.
+
+If your Windows browser does not open automatically:
+
+Option 1: All http requests use the Windows browser:
+`sudo apt install wslu
+echo 'export BROWSER=wsluview' >> ~/.bashrc`
+
+Option 2: Only this project uses the Windows browser:
+
+`sudo apt install wslu`
+
+echo 'export BOKEH_BROWSER=wsluview' >> ~/.bashrc`
+
+Option 3: Run the browser from within Ubuntu: :
+`echo 'export BOKEH_BROWSER=firefox' >> ~/.bashrc`
+
+
+
+## Set Environment Variables
+
+Sign up to get an [OpenAI Key](https://platform.openai.com/docs/overview)
 
 ```sh
-pip install python-dotenv
+export OPENAI_API_KEY=sk-     # available form platform.openai.com
 ```
 
-## Speech Recognition Module
-```sh
-pip install SpeechRecognition 
-conda install pyaudio
-```
+Note: for Windows use *set* instead of *export*
+
+
+### SU25
+
+- **Enhanced Autogen JSON Output**
+  - Added structured fields: `topic`, `timestamp`, `steps_completed`, `suggestions`.
+  - Improved clarity and consistency of session JSON data.
+
+- **Firebase Firestore Integration**
+  - Session data now writes to Firestore for persistent storage.
+  - Includes a user migration script using CSV import format.
+
+- added SpeechRecognition Module to requirements.txt
+
 
 
 # Agents
@@ -111,4 +229,3 @@ The UI contains multiple tabs in various states of completion. The Learn tab is 
 The Model tab interacts with the LearnerModel agent and provides an assessment of the student's capabilities.
 
 ![learner_model](~/../pics/learner_model.png)
-
