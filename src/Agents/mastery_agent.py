@@ -14,7 +14,7 @@ class MasteryAgent(MyConversableAgent):
     It generates appropriate math questions, evaluates student responses,
     tracks mastery progress, and adapts difficulty based on performance.
     """
-    
+
     system_message = """
     You are MasteryAgent, an advanced mathematics education agent.
     Your core responsibilities are:
@@ -32,12 +32,12 @@ class MasteryAgent(MyConversableAgent):
             description=kwargs.pop('description', self.description),
             **kwargs
         )
-        
+
         # Initialize state
         self._init_state()
         self._init_topic_hierarchy()
         self._setup_logging()
-        
+
         # Initialize AsyncOpenAI client
         self.client = AsyncOpenAI()
 
@@ -47,11 +47,11 @@ class MasteryAgent(MyConversableAgent):
             self.current_topic = topic
             self.current_subtopic = subtopic
             self.questions_asked += 1
-            
+
             difficulty = self._get_difficulty_level()
             prompt = f"""Generate a {difficulty} level math question about {topic}
             {f'focusing on {subtopic}' if subtopic else ''}.
-            
+
             Format exactly as:
             [Question]
             (write a {difficulty} level question here)
@@ -64,11 +64,11 @@ class MasteryAgent(MyConversableAgent):
             3. Include relevant formulas
             4. Match the {difficulty} difficulty level
             """
-            
+
             completion = await self._get_completion(prompt)
             self.logger.info(f"Generated question for {topic}/{subtopic}")
             return completion
-            
+
         except Exception as e:
             self.logger.error(f"Error generating question: {str(e)}")
             raise
@@ -81,22 +81,22 @@ class MasteryAgent(MyConversableAgent):
             Question: {question}
             Student Answer: {student_answer}
             Correct Answer: {correct_answer}
-            
+
             Follow these rules in your evaluation:
             1. Start with exactly "Correct!" or "Incorrect."
             2. Explain why the answer is right or wrong
             3. Provide specific learning points
             4. Suggest related concepts to review
-            
+
             Keep the response clear and constructive.
             """
-            
+
             evaluation = await self._get_completion(prompt)
             is_correct = evaluation.lower().startswith('correct')
-            
+
             self._update_performance_tracking(is_correct)
             return is_correct, evaluation
-            
+
         except Exception as e:
             self.logger.error(f"Error evaluating answer: {str(e)}")
             raise
@@ -126,6 +126,8 @@ class MasteryAgent(MyConversableAgent):
         self.mastery_threshold = 0.8
         self.performance_history = {}
         self.adaptive_difficulty = 1.0
+        self.mastery_achieved = False
+        self.results = []
 
     def _init_topic_hierarchy(self):
         """Initialize topic hierarchy from taxonomy"""
@@ -135,6 +137,9 @@ class MasteryAgent(MyConversableAgent):
             'subtopics': subsub_topics,
             'subsubtopics': subsubsub_topics
         }
+        self.subtopics = topics_and_subtopics
+        self.subsubtopics = subsub_topics
+        self.subsubsubtopics = subsubsub_topics
 
     def _setup_logging(self):
         """Set up logging configuration"""
@@ -153,33 +158,30 @@ class MasteryAgent(MyConversableAgent):
         """Update performance tracking and adjust difficulty"""
         if is_correct:
             self.correct_answers += 1
-        
-        # Update performance history
+
         if self.current_topic not in self.performance_history:
             self.performance_history[self.current_topic] = {
                 'attempts': 0,
                 'correct': 0,
                 'recent_scores': []
             }
-            
+
         history = self.performance_history[self.current_topic]
         history['attempts'] += 1
         if is_correct:
             history['correct'] += 1
-            
-        # Update recent scores
+
         history['recent_scores'].append(1 if is_correct else 0)
         if len(history['recent_scores']) > 5:
             history['recent_scores'].pop(0)
-            
-        # Adjust difficulty if needed
+
         self._adjust_difficulty(history['recent_scores'])
 
     def _adjust_difficulty(self, recent_scores: list):
         """Adjust question difficulty based on recent performance"""
         if len(recent_scores) >= 3:
             recent_performance = sum(recent_scores[-3:]) / 3
-            
+
             if recent_performance > 0.8:  # Consistently good
                 self.adaptive_difficulty = min(1.5, self.adaptive_difficulty + 0.1)
             elif recent_performance < 0.6:  # Consistently struggling
@@ -202,7 +204,7 @@ class MasteryAgent(MyConversableAgent):
                 'current_mastery': 0,
                 'progress': 0
             }
-        
+
         correct_ratio = self.correct_answers / self.questions_asked
         return {
             'topic': self.current_topic,
@@ -220,3 +222,9 @@ class MasteryAgent(MyConversableAgent):
         self.questions_asked = 0
         self.correct_answers = 0
         self.adaptive_difficulty = 1.0
+        self.mastery_achieved = False
+
+    async def start_test(self, topic):
+        self.reset_for_new_topic()
+        return await self.ask_question(topic)
+
