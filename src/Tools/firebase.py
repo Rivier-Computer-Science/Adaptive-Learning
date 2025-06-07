@@ -1,11 +1,24 @@
-# File: src/Tools/firebase.py
-
+# File: src/Tools/firebase.py - updated to sync firestore and realtime DB
+import datetime
 import asyncio
 import aiohttp
 import os
 import firebase_admin
-from firebase_admin import credentials, db, auth
+from firebase_admin import credentials, auth, firestore, initialize_app, _apps, db
+from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
+
+load_dotenv()
+SERVICE_ACCOUNT_KEY_PATH = os.getenv('FIREBASE_SERVICE_ACCOUNT_KEY_PATH')
+FIREBASE_DATABASE_URL = os.getenv('FIREBASE_DATABASE_URL')
+
+if not firebase_admin._apps:
+    cred = credentials.Certificate(SERVICE_ACCOUNT_KEY_PATH)
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': FIREBASE_DATABASE_URL
+    })
+
+firestore_db = firestore.client()
 
 class Firebase:
     def __init__(self,
@@ -536,7 +549,7 @@ class Firebase:
             print(f'Score for user {user_id} on subject "{subject_id}", lesson "{lesson_id}" incremented by {increment}.')
         except Exception as e:
             print(f'Error incrementing score for user {user_id} on subject "{subject_id}", lesson "{lesson_id}": {e}')
-
+            
     # -----------------------
     # Cleanup Method
     # -----------------------
@@ -557,3 +570,127 @@ class Firebase:
 
     async def __aexit__(self, exc_type, exc, tb):
         await self.close()
+
+    # --------------------------------------------------------
+    # Firestore Integration for Session Sync - Author: Rakesh
+    # --------------------------------------------------------
+
+def get_firestore_client(service_account_key_path=None, database_url=None):
+    """
+    Returns a Firestore client, initializing the Firebase app if needed.
+    Uses the same parameter/env variable fallback pattern as the Firebase class.
+    """
+    # Fetch from arguments first, else from environment variables
+    service_account_key_path = service_account_key_path or os.getenv('FIREBASE_SERVICE_ACCOUNT_KEY_PATH')
+    database_url = database_url or os.getenv('FIREBASE_DATABASE_URL')
+
+    # DEBUG: Show what's being used (remove or comment)
+    #print("DEBUG: Firestore client init with service_account_key_path =", service_account_key_path)
+    #print("DEBUG: Firestore client init with database_url =", database_url)
+
+    if not service_account_key_path:
+        raise ValueError("Service account key path must be provided either as a parameter or via 'FIREBASE_SERVICE_ACCOUNT_KEY_PATH' environment variable.")
+    if not database_url:
+        raise ValueError("Database URL must be provided either as a parameter or via 'FIREBASE_DATABASE_URL' environment variable.")
+
+    # Initialize Firebase app if not already done
+    if not _apps:
+        cred = credentials.Certificate(service_account_key_path)
+        initialize_app(cred, {'databaseURL': database_url})
+
+    return firestore.client()
+
+    # ----------------------------------------------
+    # Save session to firebases  - Author: Rakesh
+    # ----------------------------------------------
+
+def save_session_to_firestore(session_data, user_uid):
+    """
+    Save the chat session data to Firestore under the user's UID.
+    """
+    user_id = user_uid or session_data.get('user_uid')
+    session_id = session_data.get('session_uid')
+    if not user_id or not session_id:
+        print("Missing user ID or session ID for Firestore save.")
+        print("DEBUG: user_id =", user_id)
+        print("DEBUG: session_id =", session_id)
+        print("DEBUG: session_data keys:", list(session_data.keys()))
+        return
+    try:
+        doc_ref = firestore_db.collection("users").document(user_id).collection("sessions").document(session_id)
+        doc_ref.set(session_data)
+        print(f"Session data saved to Firestore at users/{user_id}/sessions/{session_id}")
+    except Exception as e:
+        print(f"Error saving session to Firestore: {e}")
+
+
+# -------------------
+# Firestore: Add/Get User (for completeness)
+# -------------------
+
+def add_user_to_firestore(user_uid, user_data):
+    """
+    Add a user profile to Firestore.
+    """
+    try:
+        firestore_db.collection("users").document(user_uid).set(user_data)
+        print(f"User {user_uid} added to Firestore.")
+    except Exception as e:
+        print(f"Error adding user {user_uid} to Firestore: {e}")
+
+def get_user_from_firestore(user_uid):
+    """
+    Fetch a user profile from Firestore.
+    """
+    try:
+        doc = firestore_db.collection("users").document(user_uid).get()
+        if doc.exists:
+            print(f"User {user_uid} details fetched from Firestore.")
+            return doc.to_dict()
+        else:
+            print(f"No user found in Firestore for UID={user_uid}")
+            return None
+    except Exception as e:
+        print(f"Error retrieving user {user_uid} from Firestore: {e}")
+        return None
+
+
+# -------------------
+# Realtime Database: Add/Get User
+# -------------------
+
+def add_user_to_realtime_db(user_uid, user_data):
+    """
+    Add a user profile to the Realtime Database.
+    Args:
+        user_uid (str): The UID of the user.
+        user_data (dict): The user data to store.
+    """
+    try:
+        ref = db.reference(f'/users/{user_uid}')
+        if "created_at" not in user_data:
+            user_data["created_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        ref.set(user_data)
+        print(f"User {user_uid} added to Realtime Database.")
+    except Exception as e:
+        print(f"Error adding user {user_uid} to Realtime Database: {e}")
+
+def get_user_from_realtime_db(user_uid):
+    """
+    Fetch a user profile from the Realtime Database.
+    Args:
+        user_uid (str): The UID of the user to fetch.
+    Returns:
+        dict or None: The user data, or None if not found.
+    """
+    try:
+        ref = db.reference(f'/users/{user_uid}')
+        user_data = ref.get()
+        if user_data:
+            print(f"User {user_uid} details fetched from Realtime Database.")
+        else:
+            print(f"No user found in Realtime Database for UID={user_uid}")
+        return user_data
+    except Exception as e:
+        print(f"Error retrieving user {user_uid} from Realtime Database: {e}")
+        return None

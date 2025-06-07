@@ -1,20 +1,32 @@
 import asyncio
 import re
-
+import os
 import autogen as autogen
 import firebase_admin
 import panel as pn
 import param
 from cryptography.fernet import Fernet
 from firebase_admin import auth, credentials, firestore
-
+from src.Tools.firebase import get_firestore_client  # adjust path as needed
 import src.Agents.agents as agents
 from src import globals as globals
 from src.UI.avatar import avatar
+from dotenv import load_dotenv
+
+# Load from .env if using python-dotenv (optional but recommended)
+load_dotenv()  # This will auto-load .env vars into os.environ
+
+SERVICE_ACCOUNT_KEY_PATH = os.getenv('FIREBASE_SERVICE_ACCOUNT_KEY_PATH')
+if not SERVICE_ACCOUNT_KEY_PATH:
+    raise ValueError("Missing environment variable: FIREBASE_SERVICE_ACCOUNT_KEY_PATH in reactive_chat17")
+
+if not firebase_admin._apps:
+    cred = credentials.Certificate(SERVICE_ACCOUNT_KEY_PATH)
+    firebase_admin.initialize_app(cred)
 
 # Initialize Firebase
-cred = credentials.Certificate("ServiceAccountKey.json")
-firebase_admin.initialize_app(cred)
+#cred = credentials.Certificate("ServiceAccountKey.json")
+#firebase_admin.initialize_app(cred)
 
 # Firestore database reference
 db = firestore.client()
@@ -167,8 +179,9 @@ class UserAuth(param.Parameterized):
     gender = param.Selector(default="Male", objects=["Male", "Female", "Other"], label="Gender")
 
     is_login_page = param.Boolean(default=True)  # Toggle between login and signup
-    user_uid = None  # Track logged-in user session
-
+    #user_uid = None  # Track logged-in user session
+    user_uid = param.String(default=None, doc="Track logged-in user session")
+    
     # Encryption
     encryption_key = Fernet.generate_key()  # Generate encryption key
     cipher_suite = Fernet(encryption_key)
