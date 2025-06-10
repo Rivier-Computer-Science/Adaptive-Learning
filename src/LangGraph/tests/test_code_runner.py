@@ -1,8 +1,8 @@
-from src.LangGraph.agents.code_runner_agent import run, CodeExecutionInput
+from src.LangGraph.agents.code_runner_agent import run, CodeExecutionState
 from langgraph.graph import StateGraph
 
 # Define the graph node
-builder = StateGraph(CodeExecutionInput)
+builder = StateGraph(CodeExecutionState)
 builder.add_node("CodeRunnerAgent", run)
 builder.set_entry_point("CodeRunnerAgent")
 graph = builder.compile()
