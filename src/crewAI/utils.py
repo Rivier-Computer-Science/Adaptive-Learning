@@ -1,3 +1,5 @@
+import json
+
 # ANSI escape codes for colors
 class Colors:
     HEADER = '\033[95m'  # Magenta
@@ -11,3 +13,6 @@ class Colors:
     UNDERLINE = '\033[4m'
     INFO = '\033[94m' # Blue for general info
     DEBUG = '\033[90m' # Grey for debug
+
+def print_attributes(obj):
+    print("=============json.dumps(obj.__dict__, indent=4, default=str)", json.dumps(obj.__dict__, indent=4, default=str))

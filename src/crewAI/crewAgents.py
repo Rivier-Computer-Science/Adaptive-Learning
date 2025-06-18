@@ -15,7 +15,7 @@ greeter_agent = Agent(
     backstory='An assistant trained to warmly welcome users without revealing they are an AI.',
     verbose=True,
     llm=llm_config,
-    max_iter=2
+    max_iter=1
     # allow_delegation=True
 )
 
@@ -79,13 +79,14 @@ verifier = Agent(
     role="Answer Validator and Feedback Provider",
     goal=(
         "Evaluate the student’s response for accuracy, completeness, and conceptual understanding. "
-        "Provide constructive feedback, point out errors, and optionally give hints for improvement."
+        "Provide constructive feedback when the answer is incorrect, point out errors."
     ),
     backstory=(
         "SolutionVerifierAgent began its life grading international Olympiad exams. "
         "It is now committed to supporting learners by offering balanced, fair, and helpful evaluations. "
         "Its mission is to ensure every answer leads to deeper learning."
     ),
+    max_iter=2,
     llm=llm_config
 )
 
