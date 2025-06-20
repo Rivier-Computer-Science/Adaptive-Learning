@@ -455,3 +455,9 @@ def create_app():
 if __name__ == "__main__":
     app = create_app()
     pn.serve(app, callback_exception="verbose")
+
+career_tab = (
+    "Career",
+    create_app()
+)
+    
