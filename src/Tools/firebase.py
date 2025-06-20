@@ -694,3 +694,47 @@ def get_user_from_realtime_db(user_uid):
     except Exception as e:
         print(f"Error retrieving user {user_uid} from Realtime Database: {e}")
         return None
+
+def save_session(uid: str, session_json: dict, session_id: str = None) -> str:
+    """
+    Save a session for a user. If session_id not provided, generate one.
+    Returns the session_id used.
+    """
+    if session_id is None:
+        session_id = datetime.utcnow().strftime('%Y%m%dT%H%M%S') + "_" + str(uuid.uuid4())[:8]
+    session_json['timestamp'] = session_json.get('timestamp', datetime.utcnow().isoformat())
+    firestore_db.collection('users').document(uid).collection('sessions').document(session_id).set(session_json)
+    return session_id
+
+def get_sessions(uid: str):
+    """
+    Return a list of summaries for all user sessions newest first.
+    """
+    sessions_ref = firestore_db.collection('users').document(uid).collection('sessions')
+    docs = sessions_ref.order_by('timestamp', direction=firestore.Query.DESCENDING).stream()
+    summaries = []
+    for doc in docs:
+        d = doc.to_dict()
+        summaries.append({
+            'session_id': doc.id,
+            'topic': d.get('topic', 'N/A'),
+            'timestamp': d.get('timestamp', 'N/A'),
+            'steps_completed': d.get('steps_completed', []),
+            'suggestions': d.get('suggestions', ''),
+        })
+    return summaries
+
+def get_session_details(uid: str, session_id: str):
+    """
+    Get full session JSON for a specific session_id.
+    """
+    doc = firestore_db.collection('users').document(uid).collection('sessions').document(session_id).get()
+    if doc.exists:
+        return doc.to_dict()
+    return None
+
+def delete_session(uid: str, session_id: str):
+    """
+    Delete a specific session.
+    """
+    firestore_db.collection('users').document(uid).collection('sessions').document(session_id).delete()

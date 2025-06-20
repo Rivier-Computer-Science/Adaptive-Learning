@@ -1,3 +1,9 @@
+"""
+fsm_teach_me.py
+This module defines the finite state machine (FSM) for the TeachMe system.
+It manages the transitions between different states of the teaching process,
+including presenting lessons, awaiting problems, verifying answers, writing programs, running code, and adapting the learning level.    
+"""
 import logging
 from transitions import Machine
 from transitions.core import MachineError
@@ -181,6 +187,13 @@ class TeachMeFSM:
             after='set_teacher'
         )
 
+        # Transition to AWAITING_ANSWER from any state
+        self.machine.add_transition(
+            trigger='is_awaiting_answer',
+            source='*',
+            dest=FSMStates.AWAITING_ANSWER.value
+        )
+
 
 
     # State entry method
@@ -228,13 +241,50 @@ class TeachMeFSM:
             logging.error(f"Agent not found: {e}")
         self.on_enter_state()
 
+    # def set_solution_verifier(self):
+    #     try:
+    #         self.next_agent = self.agents[AgentKeys.SOLUTION_VERIFIER.value]
+    #         logging.debug(f"set_solution_verifier(): Next agent set to 'solution_verifier'")
+    #     except KeyError as e:
+    #         logging.error(f"Agent not found: {e}")
+    #     self.on_enter_state()
+    
     def set_solution_verifier(self):
         try:
+            # Grab pending_problem from the manager if exists
+            pending_problem = getattr(self.groupchat_manager, "pending_problem", None)
+            messages = self.groupchat_manager.groupchat.get_messages()
+            user_answer = None
+
+            # Find the most recent StudentAgent/TutorAgent message (the answer)
+            for msg in reversed(messages):
+                if msg.get("name") in ["StudentAgent", "TutorAgent"]:  # If your UI user is "TutorAgent"
+                    user_answer = msg
+                    break
+
+            # Only proceed if both question and answer are present
+            if pending_problem and user_answer:
+                # Compose a verification message
+                verification_prompt = (
+                    f"Given the original problem:\n"
+                    f"{pending_problem.get('content','')}\n\n"
+                    f"and the provided answer:\n"
+                    f"{user_answer.get('content','')}\n\n"
+                    f"Please verify if the answer solves the problem. Respond with verification and explanation."
+                )
+                # Directly append this message to the groupchat for SolutionVerifierAgent
+                self.groupchat_manager.groupchat.messages.append({
+                    "content": verification_prompt,
+                    "role": "user",
+                    "name": "SolutionVerifierAgent"
+                })
+
             self.next_agent = self.agents[AgentKeys.SOLUTION_VERIFIER.value]
             logging.debug(f"set_solution_verifier(): Next agent set to 'solution_verifier'")
         except KeyError as e:
             logging.error(f"Agent not found: {e}")
         self.on_enter_state()
+
 
     def set_programmer(self):
         try:
