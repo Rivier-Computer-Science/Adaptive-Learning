@@ -32,7 +32,6 @@ recognizer = sr.Recognizer()
 script_dir = os.path.dirname(os.path.abspath(__file__))
 progress_file_path = os.path.join(script_dir, '../../progress.json')
 
-
 class MathMasteryInterface:
     def __init__(self, mastery_agent):
         self.mastery_agent = mastery_agent
@@ -179,7 +178,6 @@ class MathMasteryInterface:
             self.feedback_display
         )
 
-
 def create_language_tab():
     language_selector = pn.widgets.Select(name="Choose a Language", options=["Telugu", "Spanish", "French"], value="Telugu")
     status_pane = pn.pane.Markdown("### 👇 Select your language and click Start")
@@ -225,8 +223,9 @@ def create_language_tab():
 
     return pn.Column(pn.Row(language_selector, start_button), status_pane, content_area)
 
-
+# ========== APP SETUP ==========#
 globals.input_future = None
+
 fsm = FSM(agents_dict)
 groupchat = CustomGroupChat(
     agents=list(agents_dict.values()),
