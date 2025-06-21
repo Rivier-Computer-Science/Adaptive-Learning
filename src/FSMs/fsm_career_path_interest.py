@@ -8,7 +8,6 @@ from src.UI.reactive_chat import ReactiveChat
 import src.UI.avatar as avatar
 import logging
 
-
 # Define the script directory and progress file path for chat persistence
 script_dir = os.path.dirname(os.path.abspath(__file__))
 progress_file_path = os.path.join(script_dir, "../../progress.json")
@@ -68,6 +67,7 @@ class AutogenCareerGenerationAgent(MyConversableAgent):
 class AIVisualizationAgent(MyConversableAgent):
     def __init__(self):
         super().__init__(name="AIVisualizationAgent")
+
 class CompetencyExtractionAgent(MyConversableAgent):
     def __init__(self):
         super().__init__(name="CompetencyExtractionAgent")
@@ -80,7 +80,6 @@ class CompetencyExtractionAgent(MyConversableAgent):
             request_reply=True
         ))
         return None  # Let async response take over
-
 
 # Instantiate AI Agents
 learner_model_agent = LearnerModelAgent()
@@ -104,7 +103,7 @@ class CareerFSM:
         self.current_speaker_index = 0
         self.groupchat_manager = None
 
-        self.states = ["start", "survey", "data_retrieval", "analysis", "career_matching", 
+        self.states = ["start", "survey", "data_retrieval", "analysis", "career_matching",
                        "refinement", "visualization", "final"]
         self.transitions = [
             {"trigger": "begin_survey", "source": "start", "dest": "survey"},
@@ -126,13 +125,8 @@ class CareerFSM:
     def register_groupchat_manager(self, manager):
         self.groupchat_manager = manager
 
-
-
 # Initialize FSM
 fsm = CareerFSM(agents_dict, groupchat_agents=list(agents_dict.values()))
-
-
-
 
 class CustomGroupChatManager(autogen.GroupChatManager):
     def __init__(self, groupchat, filename="chat_history.json", *args, **kwargs):
@@ -142,44 +136,43 @@ class CustomGroupChatManager(autogen.GroupChatManager):
 
     def get_messages_from_json(self):
         """Load previous chat messages from a JSON file."""
-        filename = self.filename  # Fix: Use `self.filename` inside the method
+        filename = self.filename
         try:
             print(f"Loading JSON file: {filename}")
             with open(filename, "r") as f:
                 messages = json.load(f)
-                if messages:
-                    # Remove termination message if it exists
-                    if messages[-1].get("content", "") == globals.IS_TERMINATION_MSG:
-                        messages.pop()
-                    # Append messages to the group chat
-                    for msg in messages:
-                        self.groupchat.append(message=msg, speaker=agents_dict_by_name[msg['name']])
+                if isinstance(messages, list) and len(messages) > 0 and isinstance(messages[-1], dict) and messages[-1].get("content", "") == globals.IS_TERMINATION_MSG:
+                    messages.pop()
+                # Append messages to the group chat
+                for msg in messages:
+                    if not isinstance(msg, dict):
+                        print(f"⚠️ Skipping invalid message (not a dict): {msg}")
+                        continue
+                    speaker_name = msg.get('name')
+                    if speaker_name in agents_dict_by_name:
+                        self.groupchat.append(message=msg, speaker=agents_dict_by_name[speaker_name])
+                    else:
+                        print(f"⚠️ Unknown speaker '{speaker_name}' — skipping message.")
                 return messages
         except FileNotFoundError:
             print("No previous chat history found. Starting fresh.")
             return []
 
     def save_messages_to_json(self):
-        """Save current chat messages to a JSON file."""
-        filename = self.filename  # Fix: Move `self.filename` inside the method
-
+        filename = self.filename
         if not self.groupchat.messages:
             print("No messages to save. Skipping chat history update.")
             return
-
         if os.path.exists(filename):
             os.remove(filename)
             print(f"Deleted existing chat history file: {filename}")
-
         chat_history = self.groupchat.messages
         with open(filename, "w") as f:
             json.dump(chat_history, f, indent=4)
         print(f"Chat history saved to: {filename}")
 
     def get_chat_history_and_initialize_chat(self, chat_interface=None):
-        """Retrieve and display chat history in the UI."""
         chat_history_messages = self.get_messages_from_json()
-
         if chat_interface:
             if chat_history_messages:
                 for message in chat_history_messages:
@@ -197,45 +190,44 @@ class CustomGroupChatManager(autogen.GroupChatManager):
 class CustomGroupChat(autogen.GroupChat):
     def __init__(self, agents, messages, max_round, send_introductions, speaker_selection_method):
         super().__init__(
-            agents=agents, 
-            messages=messages, 
+            agents=agents,
+            messages=messages,
             max_round=max_round,
             send_introductions=send_introductions,
             speaker_selection_method=speaker_selection_method
         )
 
     def get_messages(self):
-        """Return stored messages for chat history."""
-        return self.messages  # Fix: Return built-in stored messages
+        return self.messages
 
 # Initialize Group Chat
 groupchat = CustomGroupChat(
-    agents=list(agents_dict.values()), 
+    agents=list(agents_dict.values()),
     messages=[],
-    max_round=10,  # Customize max conversation rounds
+    max_round=10,
     send_introductions=True,
     speaker_selection_method=fsm.next_speaker_selector
 )
 
-# Initialize Group Chat Manager with history support
+# Initialize Group Chat Manager
 manager = CustomGroupChatManager(
-    groupchat=groupchat,  
+    groupchat=groupchat,
     filename=progress_file_path,
     is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0
 )
 
-# Initialize the `reactive_chat_career` UI for career-related discussions
+# Initialize UI
 reactive_chat_career = ReactiveChat(groupchat_manager=manager)
 
-# Assign group chat manager and reactive chat UI to agents
+# Assign manager and UI to agents
 for agent in groupchat.agents:
     agent.groupchat_manager = manager
     agent.reactive_chat_career = reactive_chat_career
     agent.register_reply([autogen.Agent, None], reply_func=agent.autogen_reply_func, config={"callback": None})
 
-# Load and display chat history at startup
+# Load chat history
 manager.get_chat_history_and_initialize_chat(chat_interface=reactive_chat_career.learn_tab_interface)
 
-# Update the UI dashboard
+# Update dashboard
 reactive_chat_career.update_dashboard()
 
