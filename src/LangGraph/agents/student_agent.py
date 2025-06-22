@@ -1,25 +1,38 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict
+from src.Models.student_models import StudentInput, StudentOutput
+from src.Models.code_models import CodeExecutionState
+from src.Models.code_models import CodeExecutionState
+from src.Models.langgraph_state import LangGraphState
+from src.Models.knowledge_tracer_models import KnowledgeTracerState
 
-class StudentInput(BaseModel):
-    goal_name: str
-    description: str
-    target_date: datetime
-    priority: str
-    category: str
-
-class StudentOutput(BaseModel):
-    message: str
-    goal_added: bool
-
-def run(input: StudentInput) -> StudentOutput:
-    # Simulate logic from add_goal()
-    if not input.goal_name:
+def handle_student_input(input: Optional[StudentInput]) -> StudentOutput:
+    if not input or not input.goal_name:
         return StudentOutput(message="Goal name is missing.", goal_added=False)
-    
-    # Imagine storing or processing this goal
+
     return StudentOutput(
         message=f"Goal '{input.goal_name}' with priority {input.priority} added.",
         goal_added=True
     )
+
+
+
+def run(state: LangGraphState) -> dict:
+    # Forward student_input
+    student_input = state.student_input
+
+    # Simulated tracer input — just for demo
+    dummy_tracer_input = KnowledgeTracerState(
+        concept="Python Loops",
+        correct_answers=8,
+        total_questions=10
+    )
+
+    return {
+        "student_input": student_input,
+        "tracer_input": dummy_tracer_input  
+
+    }
+
+
