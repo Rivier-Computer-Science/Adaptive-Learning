@@ -10,6 +10,7 @@ class LangGraphState(BaseModel):
     student_input: Optional[StudentInput] = None
     code_input: Optional[str] = None
     code_output: Optional[CodeExecutionState] = None
-    tracer_input: Optional[KnowledgeTracerState] = None  # ✅ Add this line
+    tracer_input: Optional[KnowledgeTracerState] = None  
     tracer_output: Optional[KnowledgeTracerOutput] = None
+    error: Optional[str] = None
 
