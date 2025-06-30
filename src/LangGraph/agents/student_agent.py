@@ -22,6 +22,8 @@ def run(state: LangGraphState) -> dict:
     # Forward student_input
     student_input = state.student_input
 
+    student_output = handle_student_input(student_input)
+
     # Simulated tracer input — just for demo
     dummy_tracer_input = KnowledgeTracerState(
         concept="Python Loops",
@@ -31,7 +33,8 @@ def run(state: LangGraphState) -> dict:
 
     return {
         "student_input": student_input,
-        "tracer_input": dummy_tracer_input  
+        "tracer_input": dummy_tracer_input, 
+        "student_output": student_output 
 
     }
 

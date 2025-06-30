@@ -24,6 +24,7 @@ submit_btn = pn.widgets.Button(name="Submit Goal", button_type="primary")
 # Step 2: Output Panel
 stdout_panel = pn.pane.Markdown("", name="Code Output")
 tracer_panel = pn.pane.Markdown("", name="Mastery Output")
+student_response_panel = pn.pane.Markdown("",name="Student Agent Response")
 
 def on_submit(event):
     if not code_input.value.strip():
@@ -40,18 +41,27 @@ def on_submit(event):
         },
         "code_input": code_input.value
     }
-
-    result = graph.invoke(user_input)
-    print("🔍 Result from LangGraph:", result)
-
+    try:
+        result = graph.invoke(user_input)
+        print("🔍 Result from LangGraph:", result)
+    except Exception as e:
+        stdout_panel.object = f"❗ LangGraph error:\n```\n{str(e)}\n```"
+        tracer_panel.object = ""
+        student_response_panel.object = ""
+        return
 
     code_output = result.get("code_output")
     tracer_output = result.get("tracer_output")
+    print("Available keys from LangGraph result:", result.keys())
+    student_response_output = result.get("student_output")
 
-    stdout = code_output.stdout if code_output else "No code output"
-    status = tracer_output.status if tracer_output else "N/A"
-    mastery = tracer_output.mastery_level if tracer_output else 0.0
-
+    stdout = getattr(code_output, 'stdout', 'No code output')
+    status = getattr(tracer_output, 'status', 'N/A')
+    mastery = getattr(tracer_output, 'mastery_level', 0.0)
+    
+    student_response = getattr(student_response_output, 'message', 'No response from Student')
+    print("message :", student_response)
+    student_response_panel.object = f"### Student Agent:\n```\n{student_response}\n```"
     stdout_panel.object = f"### Code Output:\n```\n{stdout}\n```"
     tracer_panel.object = f"### Mastery Result:\n- Status: **{status}**\n- Score: **{mastery}**"
 
@@ -69,6 +79,7 @@ layout = pn.Column(
     category,
     submit_btn,
     pn.layout.Divider(),
+    student_response_panel,
     stdout_panel,
     tracer_panel
 )
