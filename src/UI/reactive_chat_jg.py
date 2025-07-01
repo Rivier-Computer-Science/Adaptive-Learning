@@ -1,5 +1,8 @@
-
-
+"""
+reactive_chat_jg.py
+This module defines the ReactiveChat class, which provides a chat interface
+for interacting with agents in a learning environment. It includes tabs for learning, dashboard, progress tracking, and model management.
+"""
 import datetime
 import param
 import panel as pn
@@ -55,6 +58,8 @@ class ReactiveChat(param.Parameterized):
 
     ############ tab1: Learn interface
     async def a_learn_tab_callback(self, contents: str, user: str, instance: pn.chat.ChatInterface):
+        print("FSM STATE ON USER INPUT:", self.groupchat_manager.fsm.state)
+        print("LAST MSG:", self.groupchat_manager.groupchat.get_messages()[-1] if self.groupchat_manager.groupchat.get_messages() else "NO MESSAGES")
 
         # ---- Guard: only check messages if any exist ----
         messages = self.groupchat_manager.groupchat.get_messages()
@@ -79,6 +84,15 @@ class ReactiveChat(param.Parameterized):
                     "details": f"Attempted: {self.topic} | Answer: {contents}"
                 })
 
+                # Make step entry unique using question + answer
+                pending = getattr(self.groupchat_manager, "pending_problem", {})
+                question = pending.get("content", "Unknown Problem")
+                self.steps_completed.append({
+                    "step_id": len(self.steps_completed) + 1,
+                    "description": f"Solved: \"{question}\" → \"{contents}\"",
+                    "completed_at": datetime.now().isoformat()
+                })
+
         # --- Exit command handling ---
         if contents.strip().lower() == "exit":
             if hasattr(self, "groupchat_manager"):
@@ -86,7 +100,6 @@ class ReactiveChat(param.Parameterized):
                 self.groupchat_manager.steps_completed = self.steps_completed
                 self.groupchat_manager.suggestions = self.suggestions
                 self.groupchat_manager.status = "completed"
-
                 self.groupchat_manager.save_messages_to_json(self.groupchat_manager.filename)
             instance.send("**Session Ended. Thank you! Please close the tab now!**", user="System", respond=False)
 
@@ -99,11 +112,38 @@ class ReactiveChat(param.Parameterized):
             print(f"**Session Ended by the user**.")
             return
 
-        # existing logic:
-        self.groupchat_manager.chat_interface = instance
+        # === PATCH: Only StudentAgent should compose verification message, and only once per problem ===
+        answer = contents.strip()
+        pending_problem = getattr(self.groupchat_manager, "pending_problem", None)
+        is_awaiting_answer = getattr(self.groupchat_manager.fsm, "state", None) == "awaiting_answer"
+
+        # Decide agent BEFORE clearing pending_problem
+        if is_awaiting_answer and pending_problem:
+            verify_message = (
+                f"Given the original problem:\n{pending_problem['content']}\n\n"
+                f"and the provided answer:\n{answer}\n\n"
+                "Please verify if the answer solves the problem. Respond with verification and explanation."
+            )
+            contents = verify_message
+            selected_agent = self.agents_dict[AgentKeys.STUDENT.value]
+            #self.groupchat_manager.pending_problem = None  # Clear AFTER
+            # Delay clearing. Let update_progress read it first.
+            self.clear_pending_problem = True  # Add this as a temporary flag
+
+        else:
+            selected_agent = self.agents_dict[AgentKeys.TUTOR.value]
+
+        # ✅ Add user message before triggering agent
+        self.groupchat_manager.groupchat.messages.append({
+            "content": contents,
+            "role": "user",
+            "name": selected_agent.name
+        })
+
+        # Launch chat task
         if not globals.initiate_chat_task_created:
             asyncio.create_task(self.groupchat_manager.delayed_initiate_chat(
-                self.agents_dict[AgentKeys.TUTOR.value], self.groupchat_manager, contents))
+                selected_agent, self.groupchat_manager, contents))
         else:
             if globals.input_future and not globals.input_future.done():
                 globals.input_future.set_result(contents)
@@ -140,11 +180,17 @@ class ReactiveChat(param.Parameterized):
 
 
         if all(key in messages[-1] for key in ['name']):
+            role = messages[-1].get("role", "agent")
             self.learn_tab_interface.send(last_content, user=messages[-1]['name'],
-                                        avatar=self.avatars[messages[-1]['name']], respond=False)
+                                        avatar=self.avatars.get(messages[-1]['name']), respond=False)
         else:
             self.learn_tab_interface.send(last_content, user=recipient.name,
                                         avatar=self.avatars[recipient.name], respond=False)
+            
+        # If the last agent is ProblemGeneratorAgent, save the latest problem message
+        if last_agent == "ProblemGeneratorAgent":
+            # Save the latest problem message to groupchat_manager for persistence in JSON
+            self.groupchat_manager.pending_problem = messages[-1]
 
     ########## tab2: Dashboard
     def update_dashboard(self):
@@ -160,13 +206,27 @@ class ReactiveChat(param.Parameterized):
                print("################ CORRECT ANSWER #################")
                if self.progress < self.max_questions:  
                     self.progress += 1
+                    ## Added
+                    pending = getattr(self.groupchat_manager, "pending_problem", None)
+                    question = pending.get("content") if pending and isinstance(pending, dict) else "Unknown Problem"
+                    ##
                     self.steps_completed.append({
                         "step_id": len(self.steps_completed) + 1,
-                        "description": "Solved a problem correctly",
+                        "description": f"Solved: \"{question}\"",
                         "completed_at": datetime.now().isoformat()
                     })
+                    # self.steps_completed.append({
+                    #     "step_id": len(self.steps_completed) + 1,
+                    #     "description": "Solved a problem correctly",
+                    #     "completed_at": datetime.now().isoformat()
+                    # })
                     self.progress_bar.value = self.progress
                     self.progress_info.object = f"**{self.progress} out of {self.max_questions}**"
+
+                    # ✅ Clear pending_problem after logging it
+                    if getattr(self, "clear_pending_problem", False):
+                        self.groupchat_manager.pending_problem = None
+                        self.clear_pending_problem = False
 
             else:
                 print("################ WRONG ANSWER #################")
@@ -227,3 +287,41 @@ class ReactiveChat(param.Parameterized):
     @groupchat_manager.setter
     def groupchat_manager(self, groupchat_manager: autogen.GroupChatManager):
         self._groupchat_manager = groupchat_manager
+
+    def replay_session_to_agents(self, session_data):
+        """
+        Replay messages from a previous session so both UI and agents are restored as if the session just happened.
+        Ensures FSM and groupchat state are properly restored for continued dialog.
+        """
+        message_history = session_data.get("messages", [])
+        if not message_history:
+            return
+
+        # Optionally clear the current chat interface
+        if hasattr(self.learn_tab_interface, "clear"):
+            self.learn_tab_interface.clear()
+
+        # Restore the groupchat_manager's groupchat messages
+        self.groupchat_manager.groupchat.messages = message_history.copy()  # key: must use copy for safety!
+
+        # Set FSM state **before** new input
+        fsm_state = session_data.get("fsm_state")
+        if self.groupchat_manager.fsm and fsm_state:
+            if hasattr(self.groupchat_manager.fsm, "set_state"):
+                self.groupchat_manager.fsm.set_state(fsm_state)
+            else:
+                self.groupchat_manager.fsm.state = fsm_state
+
+        # Replay messages in UI (but DON'T re-trigger agents)
+        for msg in message_history:
+            if "content" in msg and "name" in msg:
+                self.learn_tab_interface.send(
+                    msg["content"],
+                    user=msg["name"],
+                    avatar=self.avatars.get(msg["name"], None),
+                    respond=False
+                )
+
+        self.update_dashboard()
+
+

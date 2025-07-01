@@ -1,7 +1,7 @@
 from crewai import Task
 from src.crewAI.crewAgents import *
 
-task1 = Task(
+select_math_topic = Task(
     description=(
         "Greet the user with a warm welcome. Ask them to select a math topic to start with. "
         "Don't mention you're an AI. List 2-3 example topics like Algebra, Geometry, or Calculus. "
@@ -10,24 +10,24 @@ task1 = Task(
     ),
     name="Select Math Topic",
     expected_output="Return a topic that the user has given through human feedback. Output format: Topic: <topic>",
-    agent=greeter_agent,
+    agent=teacher,
     human_input=True  # This enables console input from the user
 )
 
-task2 = Task(
+teach_math_topic = Task(
     description="Teach the selected math topic using a clear and structured explanation. Take the topic from the user's response in the previous task.",
     name="Teach Math Topic",
     agent=teacher,
-    context=[task1],
+    context=[select_math_topic],
     expected_output="Well-explained lesson on the selected topic.",
     human_input=False,
 )
 
-task3 = Task(
-    description="Generate a problem related to the recently taught topic for the student to solve. Take the topic from the user's response in the previous task.",
+generate_math_problem = Task(
+    description="Generate a problem related to the recently taught topic for the student to solve. Take the topic from the user's response in the previous task. Keep the maximum number of problems to 1. ",
     name="Generate Math Problem",
     agent=problem_gen,
-    context=[task1, task2],
+    context=[select_math_topic, teach_math_topic],
     expected_output="A single relevant math problem statement.",
     human_input=False,
 )
@@ -41,20 +41,20 @@ task3 = Task(
 #     human_input=True,
 # )
 
-task5 = Task(
+verify_math_problem = Task(
     description=(
-        "Verify the accuracy and correctness of the student's answer. "
-        "Take the student's answer from the previous task. If the student has not given an answer, Generate a nice prompt with the problem statement asking the student to solve the problem. Don't solve the problem yourself. "
-        "Just verify the answer. "
+        "Verify the accuracy and correctness of the student's answer based on the problem statement from the previous task. "
         "If the answer is correct, say 'Correct'. "
         "If the answer is incorrect, say 'Incorrect' "
     ),
     name="Verify Math Problem",
     agent=verifier,
-    context=[task1, task2, task3],
-    expected_output="Evaluation of the answer to correct or incorrect. Output format: Evaluation: <evaluation>",
+    context=[select_math_topic, teach_math_topic, generate_math_problem],
+    expected_output="Evaluation of the answer to correct or incorrect. *** Strictly follow this output format when the task is completed: Final_Evaluation: <evaluation> ***",
     human_input=True,
 )
+
+
 
 # task6 = Task(
 #     description="Based on the verified answer, write Python code that solves the problem programmatically.",
@@ -77,29 +77,29 @@ task5 = Task(
 #     human_input=False,
 # )
 
-task9 = Task(
+update_learner_model = Task(
     description="Update the internal learner model based on the current task outcome.",
     name="Update Learner Model",
     agent=learner,
-    context=[task1, task2, task3, task5],
+    context=[select_math_topic, teach_math_topic, generate_math_problem, verify_math_problem],
     expected_output="Updated learner profile reflecting current progress and weaknesses.",
     human_input=False,
 )
 
-task10 = Task(
+adjust_difficulty_level = Task(
     description="Adjust the difficulty level of future problems based on the learner model.",
     name="Adjust Difficulty Level",
     agent=level_adapter,
-    context=[task1, task2, task3, task5, task9],
+    context=[select_math_topic, teach_math_topic, generate_math_problem, verify_math_problem, update_learner_model],
     expected_output="Modified difficulty settings for the next learning iteration.",
     human_input=False,
 )
 
-task11 = Task(
+motivate_student = Task(
     description="Motivate the student by giving personalized encouragement and progress feedback.",
     name="Motivate Student",
     agent=motivator,
-    context=[task1, task2, task3, task5, task9, task10],
+    context=[select_math_topic, teach_math_topic, generate_math_problem, verify_math_problem, update_learner_model, adjust_difficulty_level],
     expected_output="Motivational message tailored to student performance.",
     human_input=False,
 )

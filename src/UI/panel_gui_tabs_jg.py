@@ -13,7 +13,7 @@ import logging, datetime
 from enum import Enum
 from dotenv import load_dotenv
 import requests
-from src.Tools.firebase import get_user_from_realtime_db
+from src.Tools.firebase import get_user_from_realtime_db, get_sessions, get_session_details, delete_session
 from src.Tools.firebase import add_user_to_realtime_db
 
 # --- Panel Auth Imports ---
@@ -21,6 +21,7 @@ import param
 import firebase_admin
 from firebase_admin import auth, credentials, firestore
 from cryptography.fernet import Fernet
+from datetime import datetime
 
 # --- Your original imports ---
 from src import globals
@@ -251,7 +252,7 @@ class UserAuth(param.Parameterized):
 # Adaptive Learning App - Build Only After Auth
 # --------------------------------------------------
 
-def build_main_app(user_uid):
+def build_main_app(user_uid, session_data=None):
     ###############################################
     # Your full app initialization logic here:
     ###############################################
@@ -385,27 +386,26 @@ def build_main_app(user_uid):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     progress_file_path = os.path.join(script_dir, '../../progress.json')
     fsm = TeachMeFSM(agents_dict)
+
+    # --- Smart logic for introductions: ---
+    if session_data is None:
+        send_introductions = True      # New session, show agent intros
+        initial_messages = []
+    else:
+        send_introductions = False     # Session restore, NO agent intros
+        initial_messages = session_data.get("messages", [])
+
     groupchat = CustomGroupChat(
         agents=list(agents_dict.values()),
-        messages=[],
+        messages=initial_messages,         # Populate previous messages if restoring
         max_round=globals.MAX_ROUNDS,
-        send_introductions=True,
+        send_introductions=send_introductions,     # <-- KEY LOGIC!
         speaker_selection_method=fsm.next_speaker_selector
     )
-        # --- Fetch/decrypt user name from Firestore for this user_uid ---
+
+    # --- Fetch/decrypt user name from Firestore for this user_uid ---
     user_ref = db.collection('users').document(user_uid)
     user_data = user_ref.get().to_dict()
-###
-    print("DEBUG user_data:", user_data)
-    print("DEBUG user_data['name']:", user_data.get('name'))
-    print("DEBUG Fernet key:", UserAuth.encryption_key)
-    try:
-        print("DEBUG decrypted_name:",
-            UserAuth.cipher_suite.decrypt(user_data['name'].encode('utf-8')).decode('utf-8'))
-    except Exception as e:
-        print("DEBUG decryption error:", e)
-###
-
     decrypted_name = "N/A"
     try:
         if user_data and 'name' in user_data:
@@ -418,32 +418,232 @@ def build_main_app(user_uid):
         filename=progress_file_path,
         is_termination_msg=lambda x: x.get("content", "").rstrip().find("TERMINATE") >= 0,
         user_uid=user_uid,
-        user_name=decrypted_name   # <-- Pass user_name
+        user_name=decrypted_name,
+        fsm=fsm,
     )
 
     fsm.register_groupchat_manager(manager)
+
+    # ---- Create the UI
     reactive_chat = ReactiveChat(
-        agents_dict=agents_dict, avatars=avatars, groupchat_manager=manager
+        agents_dict=agents_dict,
+        avatars=avatars,
+        groupchat_manager=manager
     )
+
+    # If session_data is passed from Firebase
+    if session_data is not None:
+        # Step 1: Inject messages ONLY if longer than current (avoids accidental overwrite)
+        if not manager.groupchat.messages or len(manager.groupchat.messages) < len(session_data.get("messages", [])):
+            manager.groupchat.messages = session_data.get("messages", [])
+
+        # Step 2: Restore FSM, steps, suggestions, progress
+        manager.restore_session_state(session_data)
+
+        # Step 3: Sync UI widgets like progress bar
+        num_steps = len(session_data.get("steps_completed", []))
+        if hasattr(reactive_chat, "progress"):
+            reactive_chat.progress = num_steps
+        if hasattr(reactive_chat, "progress_bar"):
+            reactive_chat.progress_bar.value = num_steps
+        if hasattr(reactive_chat, "progress_info"):
+            reactive_chat.progress_info.object = f"{num_steps} out of {reactive_chat.max_questions}"
+        if hasattr(reactive_chat, "topic"):
+            reactive_chat.topic = session_data.get("topic", "General")
+        if hasattr(reactive_chat, "suggestions"):
+            reactive_chat.suggestions = session_data.get("suggestions", [])
+
+        print(f"[DEBUG] chat_interface object: {reactive_chat.learn_tab_interface}")
+        print(f"[DEBUG] number of messages in manager.groupchat: {len(manager.groupchat.messages)}")
+
+        # Step 4: Initialize chat interface from in-memory state (skip file)
+        manager.get_chat_history_and_initialize_chat(
+            filename=None,
+            chat_interface=reactive_chat.learn_tab_interface
+        )
+
+        # Step 5: Prompt user if session is mid-problem
+        fsm_state = session_data.get("fsm_state", "awaiting_topic")
+        last_msg = manager.groupchat.messages[-1] if manager.groupchat.messages else None
+        if last_msg and fsm_state == "awaiting_answer":
+            if last_msg.get("name") == "ProblemGeneratorAgent":
+                manager.pending_problem = last_msg
+                reactive_chat.learn_tab_interface.send(
+                    "**Previous session has been restored.**\n\n" +
+                    last_msg["content"] +
+                    "\n\n(Replying as StudentAgent. Provide feedback to chat_manager. Press enter to skip and use auto-reply, or type 'exit' to end the conversation:)",
+                    user="System",
+                    respond=False
+                )
+    else:
+        # New session: start fresh, no file restore
+        manager.get_chat_history_and_initialize_chat(
+            filename=None,
+            chat_interface=reactive_chat.learn_tab_interface
+        )
+
+    # ---- Register agent reply logic
     for agent in groupchat.agents:
         agent.groupchat_manager = manager
         agent.reactive_chat = reactive_chat
         agent.register_reply([autogen.Agent, None], reply_func=agent.autogen_reply_func, config={"callback": None})
 
-    manager.get_chat_history_and_initialize_chat(filename=progress_file_path, chat_interface=reactive_chat.learn_tab_interface)
+    # ---- Update dashboard
     reactive_chat.update_dashboard()
-    return reactive_chat.draw_view()  # Your app
+
+    # CRITICAL: return the UI so it gets shown
+    return reactive_chat.draw_view()
+
+
+
+
 
 # --------------------------------------------------
 # Panel Layout: Switcher for Login or App
 # --------------------------------------------------
 
+# --------------------------------------------------
+# Panel Layout: Switcher for Login or App
+# --------------------------------------------------
+# --------------------------------------------------
+# [CHANGE LOG / COMMENT]
+# Major update: Introduced session picker UI after user login.
+#
+# Why:
+# - To allow users to resume any previous learning session, delete past sessions, or start new ones.
+# - To make use of new session management logic in firebase.py supporting multiple sessions per user.
+# - To enhance user experience by summarizing past progress and enabling true continuity of learning.
+#
+# What changed:
+# - Replaced the old login/app switcher with a new workflow:
+#     • On login, fetches all sessions for the user from Firebase.
+#     • Shows a session picker modal where user can "Continue", "Delete", or "Start New Session".
+#     • On selection, loads the appropriate session or a fresh start.
+# - Prepares for agent replay logic so agents can restore prior context for “Continue”.
+#
+# This makes the app more robust, user-friendly, and ready for advanced personalized learning features.
+# --------------------------------------------------
+
 user_auth = UserAuth()
 main_panel = pn.Column()
 
+class SessionPicker(param.Parameterized):
+    sessions = param.List()
+    uid = param.String()
+    on_continue = param.Callable()
+    on_new = param.Callable()
+    on_delete = param.Callable(default=None)
+    selected_session_id = param.String(default=None)
+    
+    def view(self):
+        if not self.sessions:
+            new_btn = pn.widgets.Button(name="Start New Session", button_type="primary", width=200)
+            new_btn.on_click(lambda event: self.on_new())
+            return pn.Column(
+                pn.pane.Markdown("### No previous sessions found."),
+                new_btn
+            )
+        session_panels = []
+        for s in self.sessions:
+            ts = s.get("timestamp", "")
+            try:
+                ts_fmt = datetime.fromisoformat(ts).strftime("%Y-%m-%d %H:%M")
+            except Exception:
+                ts_fmt = ts
+            summary = f"**Topic:** {s.get('topic','N/A')}  \n" \
+                      f"**Completed:** {len(s.get('steps_completed',[]))} steps  \n" \
+                      f"**Suggestions:** {s.get('suggestions','')[:100]}  \n" \
+                      f"**Timestamp:** {ts_fmt}"
+            continue_btn = pn.widgets.Button(name="Continue", button_type="success", width=100)
+            delete_btn = pn.widgets.Button(name="Delete", button_type="danger", width=70)
+            
+            def _on_continue(event, sid=s['session_id']):
+                self.selected_session_id = sid
+                if self.on_continue:
+                    self.on_continue(sid)
+            continue_btn.on_click(_on_continue)
+            
+            def _on_delete(event, sid=s['session_id']):
+                if self.on_delete:
+                    self.on_delete(sid)
+            delete_btn.on_click(_on_delete)
+            
+            row = pn.Row(
+                pn.pane.Markdown(summary, width=350), 
+                continue_btn, 
+                delete_btn
+            )
+            session_panels.append(row)
+        new_btn = pn.widgets.Button(name="New Session", button_type="primary", width=200)
+        new_btn.on_click(lambda event: self.on_new())
+        return pn.Column(
+            pn.pane.Markdown("#### Restore Previous Session?\nChoose a session to continue, or start a new one."),
+            *session_panels,
+            pn.layout.Divider(),
+            new_btn
+        )
+
+
+def on_continue_session(uid, session_id):
+    import json
+
+    # Step 1: Fetch session from Firebase
+    session_data = get_session_details(uid, session_id)
+
+    # Step 2: Prepare file path for progress.json
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    progress_file_path = os.path.join(script_dir, '../../progress.json')
+
+    # Step 3: Delete any old progress.json to avoid mix-up
+    if os.path.exists(progress_file_path):
+        os.remove(progress_file_path)
+        print("!--------- Deleted old progress.json ---------! ")
+
+    # Step 4: Save Firebase session locally for verification/debug
+    with open(progress_file_path, "w") as f:
+        json.dump(session_data, f, indent=2)
+        print(f"**---------  Wrote session_data to local progress.json: {progress_file_path} --------- **")
+
+    # Step 5: Load UI with restored session
+    main_panel[:] = [build_main_app(uid, session_data=session_data)]
+
+
+
+
+def on_new_session(uid):
+        # --- Reset progress file for clean new session ---
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    progress_file_path = os.path.join(script_dir, '../../progress.json')
+    if os.path.exists(progress_file_path):
+        os.remove(progress_file_path)
+    # -----------------------------------------------
+    main_panel[:] = [build_main_app(uid)]
+
+def on_delete_session(uid, session_id):
+    delete_session(uid, session_id)
+    # After deletion, re-fetch sessions and refresh picker UI
+    sessions = get_sessions(uid)
+    picker = SessionPicker(
+        sessions=sessions,
+        uid=uid,
+        on_continue=lambda sid: on_continue_session(uid, sid),
+        on_new=lambda: on_new_session(uid),
+        on_delete=lambda sid: on_delete_session(uid, sid)
+    )
+    main_panel[:] = [picker.view()]
+
 def on_login_change(*events):
     if user_auth.user_uid:
-        main_panel[:] = [build_main_app(user_auth.user_uid)]
+        uid = user_auth.user_uid
+        sessions = get_sessions(uid)
+        picker = SessionPicker(
+            sessions=sessions,
+            uid=uid,
+            on_continue=lambda sid: on_continue_session(uid, sid),
+            on_new=lambda: on_new_session(uid),
+            on_delete=lambda sid: on_delete_session(uid, sid)
+        )
+        main_panel[:] = [picker.view()]
     else:
         main_panel[:] = [user_auth.draw_view()]
 

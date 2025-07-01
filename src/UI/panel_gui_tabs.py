@@ -21,6 +21,10 @@ from src.UI.reactive_chat16 import ReactiveChat
 from src.UI.avatar import avatar
 from src.KnowledgeGraphs.math_taxonomy import topic_colors
 
+# Import new tabs
+from src.UI.language_tab import create_app as create_language_tab
+from src.UI.career_tab import create_app as create_career_tab
+
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
 recognizer = sr.Recognizer()
 
@@ -78,7 +82,6 @@ class MathMasteryInterface:
             return
 
         self.question_display.object = f"**Question:** {question_text}"
-        print(f"[DEBUG] Setting question_display.object:\n{self.question_display.object}")
         self.question_display.param.trigger('object')
         print(f"[DEBUG] Triggered param update on question_display")
 
@@ -167,7 +170,7 @@ class MathMasteryInterface:
             self.progress_history,
             pn.Spacer(height=20),
             pn.pane.Markdown("### 📋 Question", styles={'font-size': '16px', 'color': '#333'}),
-            self.question_display,  # <== use directly
+            self.question_display,
             pn.Spacer(height=10),
             pn.pane.Markdown("### ✍️ Your Answer", styles={'font-size': '16px'}),
             self.answer_input,
@@ -175,7 +178,6 @@ class MathMasteryInterface:
             pn.Spacer(height=20),
             self.feedback_display
         )
-
 
 # ========== APP SETUP ==========#
 
@@ -210,18 +212,20 @@ for agent in groupchat.agents:
 manager.get_chat_history_and_initialize_chat(filename=progress_file_path, chat_interface=reactive_chat.learn_tab_interface)
 reactive_chat.update_dashboard()
 
+# === UNIFIED UI ===
+
 template = pn.template.BootstrapTemplate(
-    title="Adaptive Learning - Math Mastery",
+    title="Adaptive Learning Unified App",
     main=[
         pn.Tabs(
             ("Learning Assistant", reactive_chat.draw_view()),
-            ("Math Mastery", math_mastery_interface.create_layout())
+            ("Math Mastery", math_mastery_interface.create_layout()),
+            ("Career", create_career_tab()),
+            ("Language", create_language_tab())
         )
     ]
 )
 
 if __name__ == "__main__":
-    import panel as pn
-    pn.extension()
     pn.serve(template, show=True, autoreload=True)
 

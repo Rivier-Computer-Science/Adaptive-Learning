@@ -187,8 +187,12 @@ Note: for Windows use *set* instead of *export*
 - **Firebase Firestore Integration**
   - Session data now writes to Firestore for persistent storage.
   - Includes a user migration script using CSV import format.
-Add comment
 
+- **Session Replay Enhancement**
+  - Restored sessions from Firebase now resume seamlessly with correct state.
+  - Fixed FSM transition and agent routing bugs during replay.
+  - Ensures the learning flow continues from the previous point without duplication or loss.
+  - Preserves pending_problem and maintains proper chat sequence.
 
 
 # Agents
