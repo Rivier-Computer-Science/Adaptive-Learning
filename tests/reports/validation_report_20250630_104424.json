@@ -1,0 +1,587 @@
+{
+  "timestamp": "20250630_104424",
+  "stats": {
+    "total_users": 7,
+    "users_with_sessions": 5,
+    "users_without_sessions": 2,
+    "total_sessions": 30,
+    "valid_sessions": 13,
+    "invalid_sessions": 17,
+    "users_with_invalid_sessions": [
+      "1PLBppXyzWVJ6nMQMU483MYtDsG3",
+      "eAXVhIJaK5h7uCEhWm33VKMQ0xr2",
+      "sXIcbEDwb0TKOFerbmw8IHbZT1O2"
+    ]
+  },
+  "users": {
+    "1PLBppXyzWVJ6nMQMU483MYtDsG3": {
+      "total_sessions": 1,
+      "sessions": [
+        {
+          "session_id": "dae63eef0e934a14927e3d4abbe29dd7",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: fsm_state"
+          ]
+        }
+      ]
+    },
+    "M8t6fSVBnlTCCIC0385I7PxSzjp1": {
+      "total_sessions": 4,
+      "sessions": [
+        {
+          "session_id": "28552839edf84902b338dc7b0df9fae5",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        },
+        {
+          "session_id": "29a87aa031c04927ad69910ef6e78709",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        },
+        {
+          "session_id": "4d965b3d881740c28260e79a0c8be4d3",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        },
+        {
+          "session_id": "e9e9b57562e14ef1939f5c12a7c9a158",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        }
+      ]
+    },
+    "Z3pQaa3mNHTgue4mOOn4P36cx9E2": {
+      "total_sessions": 9,
+      "sessions": [
+        {
+          "session_id": "03bdf774d8e94f99aadfd26742cda311",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        },
+        {
+          "session_id": "1ec00ef515ed468aab164e893c056613",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        },
+        {
+          "session_id": "33c9820fe6dd45be8f548d56083be8af",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        },
+        {
+          "session_id": "4916bdb1f7ed465683800aa425c2d004",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        },
+        {
+          "session_id": "67b04e974365497b89a778611f9494c9",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        },
+        {
+          "session_id": "6d56c7800de74df4a85da72e58eabac9",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        },
+        {
+          "session_id": "761678c024f84d9991a15aaf7f8442c8",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        },
+        {
+          "session_id": "7add83e5fa0041dc9490680afe12b06d",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        },
+        {
+          "session_id": "96e75321938a447bb99f1a8a5cdd8c20",
+          "status": "valid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "OK",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Valid",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": null
+        }
+      ]
+    },
+    "eAXVhIJaK5h7uCEhWm33VKMQ0xr2": {
+      "total_sessions": 15,
+      "sessions": [
+        {
+          "session_id": "0de28d016db743ebb30ac2c916031afe",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: fsm_state"
+          ]
+        },
+        {
+          "session_id": "1bc7bfd4d16543c1b05e45870f1d8c29",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "Missing",
+            "user_uid": "Missing",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "Missing",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: session_uid",
+            "Missing field: user_uid",
+            "Missing field: fsm_state",
+            "Missing field: actions"
+          ]
+        },
+        {
+          "session_id": "283c9ca7c2b141fda56bd178945a636d",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "Missing",
+            "user_uid": "Missing",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "Missing",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: session_uid",
+            "Missing field: user_uid",
+            "Missing field: fsm_state",
+            "Missing field: actions"
+          ]
+        },
+        {
+          "session_id": "31ce67d1e3734c19a971f96c9cfc31ba",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "Missing",
+            "user_uid": "Missing",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "Missing",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: session_uid",
+            "Missing field: user_uid",
+            "Missing field: fsm_state",
+            "Missing field: actions"
+          ]
+        },
+        {
+          "session_id": "447ea556758e42fd9642ef2471a952bc",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: fsm_state"
+          ]
+        },
+        {
+          "session_id": "58e4692163244925b35383893dc8871c",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: fsm_state"
+          ]
+        },
+        {
+          "session_id": "66e06585d72044b0ab394c941bb0ee9e",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "Missing",
+            "user_uid": "Missing",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "Missing",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: session_uid",
+            "Missing field: user_uid",
+            "Missing field: fsm_state",
+            "Missing field: actions"
+          ]
+        },
+        {
+          "session_id": "7287cb0ace444ed6b3c2db7cb32c45e6",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "Missing",
+            "user_uid": "Missing",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "Missing",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: session_uid",
+            "Missing field: user_uid",
+            "Missing field: fsm_state",
+            "Missing field: actions"
+          ]
+        },
+        {
+          "session_id": "87d51e284f92407cb6b07a8f14dd2349",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "Missing",
+            "user_uid": "Missing",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "Missing",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: session_uid",
+            "Missing field: user_uid",
+            "Missing field: fsm_state",
+            "Missing field: actions"
+          ]
+        },
+        {
+          "session_id": "8d3a3594864440978436ccad4b8365ca",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: fsm_state"
+          ]
+        },
+        {
+          "session_id": "936d16b8d0644f6ba32197f92a6ecb96",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: fsm_state"
+          ]
+        },
+        {
+          "session_id": "a398b9e085d44564a42e2b6af085345d",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: fsm_state"
+          ]
+        },
+        {
+          "session_id": "a76e4a6fb48a444ba5ca3dd55379b8e7",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "Missing",
+            "user_uid": "Missing",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "Missing",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: session_uid",
+            "Missing field: user_uid",
+            "Missing field: fsm_state",
+            "Missing field: actions"
+          ]
+        },
+        {
+          "session_id": "b74676629ee44251a473f3e9d1e7c93f",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "Missing",
+            "user_uid": "Missing",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "Missing",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: session_uid",
+            "Missing field: user_uid",
+            "Missing field: fsm_state",
+            "Missing field: actions"
+          ]
+        },
+        {
+          "session_id": "e8690346bbb047eb99a42ee67d9b79b8",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: fsm_state"
+          ]
+        }
+      ]
+    },
+    "hO03rwGEEea3lE39zyNu8dRgets2": {
+      "note": "No session data found for this user"
+    },
+    "hbziL9bxEdhwIrfgyj6836Cw44F2": {
+      "note": "No session data found for this user"
+    },
+    "sXIcbEDwb0TKOFerbmw8IHbZT1O2": {
+      "total_sessions": 1,
+      "sessions": [
+        {
+          "session_id": "dd43fe0385ea4b369f0935d613645633",
+          "status": "invalid",
+          "fields_status": {
+            "session_uid": "OK",
+            "user_uid": "OK",
+            "fsm_state": "Missing",
+            "messages": "OK",
+            "actions": "OK",
+            "suggestions": "OK",
+            "fsm_state_validity": "Invalid (fsm_state field is missing)",
+            "messages_type": "Valid",
+            "suggestions_format": "Valid"
+          },
+          "errors": [
+            "Missing field: fsm_state"
+          ]
+        }
+      ]
+    }
+  }
+}

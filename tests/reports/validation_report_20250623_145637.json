@@ -1,0 +1,21 @@
+{
+    "total_files": 2,
+    "valid_files": 1,
+    "invalid_files": 1,
+    "files": [
+        {
+            "file": "M8t6fSVBnlTCCIC0385I7PxSzjp1__4d6304e1dfdb43978beb5b4d8b01d663.json",
+            "status": "invalid"
+        },
+        {
+            "file": "Z3pQaa3mNHTgue4mOOn4P36cx9E2__f6b9ea82b8ec4669985cf1774425eb9c.json",
+            "status": "valid"
+        }
+    ],
+    "invalid_details": [
+        {
+            "file": "M8t6fSVBnlTCCIC0385I7PxSzjp1__4d6304e1dfdb43978beb5b4d8b01d663.json",
+            "error": "Missing fields: ['fsm_state']"
+        }
+    ]
+}

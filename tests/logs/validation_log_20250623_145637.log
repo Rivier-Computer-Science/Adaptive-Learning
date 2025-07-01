@@ -1,0 +1,5 @@
+2025-06-23 14:56:37,540 - INFO - ********** JSON Session Validation Script Started **********
+2025-06-23 14:56:37,540 - WARNING - xxxxxxxxxxxx Missing fields: ['fsm_state'] in M8t6fSVBnlTCCIC0385I7PxSzjp1__4d6304e1dfdb43978beb5b4d8b01d663.json xxxxxxxxxxxxxx
+2025-06-23 14:56:37,541 - INFO - ********** Validated: Z3pQaa3mNHTgue4mOOn4P36cx9E2__f6b9ea82b8ec4669985cf1774425eb9c.json **********
+2025-06-23 14:56:37,541 - INFO - ********** Validation complete. Report saved to validation_report_20250623_145637.json **********
+2025-06-23 14:56:37,541 - INFO - ********** Script Finished **********
