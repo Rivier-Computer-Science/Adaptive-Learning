@@ -29,41 +29,53 @@ student_response_panel = pn.pane.Markdown("",name="Student Agent Response")
 def on_submit(event):
     if not code_input.value.strip():
         stdout_panel.object = "❗ Please enter valid Python code before submitting."
-        return
-
-    user_input = {
-        "student_input": {
-            "goal_name": goal_name.value,
-            "description": description.value,
-            "target_date": target_date.value.isoformat(),
-            "priority": priority.value,
-            "category": category.value
-        },
-        "code_input": code_input.value
-    }
-    try:
-        result = graph.invoke(user_input)
-        print("🔍 Result from LangGraph:", result)
-    except Exception as e:
-        stdout_panel.object = f"❗ LangGraph error:\n```\n{str(e)}\n```"
         tracer_panel.object = ""
         student_response_panel.object = ""
         return
 
-    code_output = result.get("code_output")
-    tracer_output = result.get("tracer_output")
-    print("Available keys from LangGraph result:", result.keys())
-    student_response_output = result.get("student_output")
+    # Immediately update UI to show processing
+    stdout_panel.object = "🔄 Running code..."
+    tracer_panel.object = ""
+    student_response_panel.object = ""
 
-    stdout = getattr(code_output, 'stdout', 'No code output')
-    status = getattr(tracer_output, 'status', 'N/A')
-    mastery = getattr(tracer_output, 'mastery_level', 0.0)
-    
-    student_response = getattr(student_response_output, 'message', 'No response from Student')
-    print("message :", student_response)
-    student_response_panel.object = f"### Student Agent:\n```\n{student_response}\n```"
-    stdout_panel.object = f"### Code Output:\n```\n{stdout}\n```"
-    tracer_panel.object = f"### Mastery Result:\n- Status: **{status}**\n- Score: **{mastery}**"
+    # Define async-safe execution in next tick
+    def execute():
+        user_input = {
+            "student_input": {
+                "goal_name": goal_name.value,
+                "description": description.value,
+                "target_date": target_date.value.isoformat(),
+                "priority": priority.value,
+                "category": category.value
+            },
+            "code_input": code_input.value
+        }
+
+        try:
+            result = graph.invoke(user_input)
+            print("🔍 Result from LangGraph:", result)
+        except Exception as e:
+            stdout_panel.object = f"❗ LangGraph error:\n```\n{str(e)}\n```"
+            tracer_panel.object = ""
+            student_response_panel.object = ""
+            return
+
+        code_output = result.get("code_output")
+        tracer_output = result.get("tracer_output")
+        student_response_output = result.get("student_output")
+
+        stdout = getattr(code_output, 'stdout', 'No code output')
+        status = getattr(tracer_output, 'status', 'N/A')
+        mastery = getattr(tracer_output, 'mastery_level', 0.0)
+        student_response = getattr(student_response_output, 'message', 'No response from Student')
+
+        student_response_panel.object = f"### Student Agent:\n```\n{student_response}\n```"
+        stdout_panel.object = f"### Code Output:\n```\n{stdout}\n```"
+        tracer_panel.object = f"### Mastery Result:\n- Status: **{status}**\n- Score: **{mastery}**"
+
+    # Ensure UI renders "Running..." before processing starts
+    pn.state.curdoc.add_next_tick_callback(execute)
+
 
 
 submit_btn.on_click(on_submit)
