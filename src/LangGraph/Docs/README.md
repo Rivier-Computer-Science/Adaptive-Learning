@@ -6,3 +6,5 @@
 - [Knowledge Tracer Agent](src/LangGraph/Docs/knowledge_tracer_agent.md)
 - [State Graph](src/LangGraph/Docs/state_graph.md)
 - [UI Integration](src/LangGraph/Docs/UI_Integration.md)
+- [Langgraph workflow diagram](src/LangGraph/Docs/Langraph_WorkFlow_Diagram.drawio)
+
