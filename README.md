@@ -194,6 +194,32 @@ Note: for Windows use *set* instead of *export*
   - Ensures the learning flow continues from the previous point without duplication or loss.
   - Preserves pending_problem and maintains proper chat sequence.
 
+- **Testing and Validation**
+  - This tool validates session JSON files exported from Firebase to ensure structural correctness and data integrity.
+  
+  **Directory Structure**
+    - `tests/test_data/` — Place input JSON files here(optional for manual testing)
+    - `tests/logs/` — Validation logs are saved here
+    - `tests/reports/` — JSON summary reports are saved here
+    - `tests/archive/<timestamp>/` — All processed files are moved here automatically
+
+  **Validation Features**
+    - Checks for required fields like `session_uid`, `user_uid`, `fsm_state`, `messages`, `actions`, and `suggestions`
+    - Supports multiple `suggestions` formats:  
+      - `agent + content` (chat style)  
+      - `topic + confidence` (learning path style)  
+      - `text + suggestion_id + agent + created_at` (custom app schema)
+    - Logs parsing issues, missing fields, and schema mismatches
+    - Generates structured summary reports
+
+  **Command to run the Script**
+  For more commands open the files and check the docstring
+    `python src/Tools/test_firebase_session_json.py` - code run for local JSON testing
+    `python src/Tools/test_firebase_user_session.py --save-json` - code run for automation testing Validate all users and save session files
+    `python src/Tools/test_firebase_user_session.py --user=<USER_UID>` - Validate a specific user
+    `python src/Tools/test_firebase_user_session.py --user=<USER_UID> --save-json` - Validate a specific user and save session files
+
+
 
 # Agents
 
