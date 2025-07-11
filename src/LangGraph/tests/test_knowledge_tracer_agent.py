@@ -1,75 +1,60 @@
-from pydantic import BaseModel, Field, ValidationError
-from typing import Optional
-from langgraph.graph import StateGraph
+# src/LangGraph/tests/test_knowledge_tracer_agent.py
 
-# --- Define output schema
-class KnowledgeTracerOutput(BaseModel):
-    concept: str
-    mastery_level: float
-    status: str  # "mastered", "intermediate", "beginner"
+import unittest
+from src.Models.knowledge_tracer_models import KnowledgeTracerState, KnowledgeTracerOutput
+from src.Models.langgraph_state import LangGraphState
+from src.LangGraph.agents.knowledge_tracer_agent import run
 
-# --- Define agent state
-class KnowledgeTracerState(BaseModel):
-    correct_answers: int = Field(..., ge=0)
-    total_questions: int = Field(..., gt=0)
-    concept: str
-    output: Optional[KnowledgeTracerOutput] = None
 
-# --- KnowledgeTracerAgent logic
-def run(state: KnowledgeTracerState) -> dict:
-    accuracy = state.correct_answers / state.total_questions
-    if accuracy >= 0.8:
-        status = "mastered"
-    elif accuracy >= 0.5:
-        status = "intermediate"
-    else:
-        status = "beginner"
-    output = KnowledgeTracerOutput(
-        concept=state.concept,
-        mastery_level=round(accuracy, 2),
-        status=status
-    )
-    return {"output": output}
+class TestKnowledgeTracerAgent(unittest.TestCase):
 
-# --- Unit Tests
-def test_knowledge_tracer():
-    test_cases = [
-        {"correct_answers": 8, "total_questions": 10, "concept": "Algebra", "expected_status": "mastered"},
-        {"correct_answers": 5, "total_questions": 10, "concept": "Geometry", "expected_status": "intermediate"},
-        {"correct_answers": 2, "total_questions": 10, "concept": "Calculus", "expected_status": "beginner"},
-        {"correct_answers": 0, "total_questions": 10, "concept": "Trigonometry", "expected_status": "beginner"},
-        {"correct_answers": 10, "total_questions": 10, "concept": "Statistics", "expected_status": "mastered"}
-    ]
-
-    for case in test_cases:
-        state = KnowledgeTracerState(**{k: case[k] for k in ["correct_answers", "total_questions", "concept"]})
+    def test_mastered_level(self):
+        state = LangGraphState(
+            tracer_input=KnowledgeTracerState(
+                correct_answers=9,
+                total_questions=10,
+                concept="Algebra"
+            )
+        )
         result = run(state)
-        output = result["output"]
-        assert isinstance(output, KnowledgeTracerOutput), "Output must match schema"
-        assert output.status == case["expected_status"], f"Expected {case['expected_status']} but got {output.status}"
-        print(f"Passed for {case['concept']} -> {output.status} with mastery level {output.mastery_level}")
+        output: KnowledgeTracerOutput = result["tracer_output"]
+        self.assertEqual(output.status, "mastered")
+        self.assertAlmostEqual(output.mastery_level, 0.9)
+        self.assertEqual(output.concept, "Algebra")
 
-# --- Integration Test using LangGraph
-def test_langgraph_integration():
-    builder = StateGraph(KnowledgeTracerState)
-    builder.add_node("KnowledgeTracerAgent", run)
-    builder.set_entry_point("KnowledgeTracerAgent")
-    graph = builder.compile()
+    def test_intermediate_level(self):
+        state = LangGraphState(
+            tracer_input=KnowledgeTracerState(
+                correct_answers=5,
+                total_questions=10,
+                concept="Geometry"
+            )
+        )
+        result = run(state)
+        output: KnowledgeTracerOutput = result["tracer_output"]
+        self.assertEqual(output.status, "intermediate")
+        self.assertAlmostEqual(output.mastery_level, 0.5)
+        self.assertEqual(output.concept, "Geometry")
 
-    sample_input = {
-        "correct_answers": 6,
-        "total_questions": 10,
-        "concept": "Fractions"
-    }
+    def test_beginner_level(self):
+        state = LangGraphState(
+            tracer_input=KnowledgeTracerState(
+                correct_answers=3,
+                total_questions=10,
+                concept="Fractions"
+            )
+        )
+        result = run(state)
+        output: KnowledgeTracerOutput = result["tracer_output"]
+        self.assertEqual(output.status, "beginner")
+        self.assertAlmostEqual(output.mastery_level, 0.3)
+        self.assertEqual(output.concept, "Fractions")
 
-    result = graph.invoke(sample_input)
-    output = result.get("output")
-    assert output.status == "intermediate"
-    print("LangGraph integration test passed:", output)
+    def test_no_input(self):
+        state = LangGraphState(tracer_input=None)
+        result = run(state)
+        self.assertIsNone(result["tracer_output"])
 
-# --- Run all tests
-if __name__ == "__main__":
-    print("Running unit tests...")
-    test_knowledge_tracer()
-    print("\nRunning integration test...")
-    test_langgraph_integration()
+
+if __name__ == '__main__':
+    unittest.main()
