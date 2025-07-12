@@ -219,7 +219,22 @@ Note: for Windows use *set* instead of *export*
     `python src/Tools/test_firebase_user_session.py --user=<USER_UID>` - Validate a specific user
     `python src/Tools/test_firebase_user_session.py --user=<USER_UID> --save-json` - Validate a specific user and save session files
 
+- **Firebase Security Rules**
+  - Check the folder Emulator-Testing/ for more info.
+  - Added security rules to restrict access to user session data.
+    - Users can only read/write their own `/users/<uid>/sessions/...`
+    - Anonymous and cross-user writes are denied.
 
+  **Files**
+  - `firestore.rules`
+  - `fetchUsers.js`, `firestore.loop.test.js`
+
+  **Steps to Test**
+  Run below commands in the terminal :
+  ```bash
+  firebase emulators:start
+  node firestore.loop.test.js
+  ```
 
 # Agents
 
