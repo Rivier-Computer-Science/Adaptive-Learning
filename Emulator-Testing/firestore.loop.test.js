@@ -2,7 +2,7 @@ const fs = require("fs");
 const { initializeTestEnvironment } = require("@firebase/rules-unit-testing");
 const { getAllUsers } = require("./fetchUsers");
 
-// 🔁 Dynamically load projectId from .firebaserc
+// Dynamically load projectId from .firebaserc
 const FIREBASERC = JSON.parse(fs.readFileSync(".firebaserc", "utf8"));
 const PROJECT_ID = FIREBASERC.projects.default;
 const RULES_FILE = "firestore.rules";
