@@ -11,7 +11,7 @@ async function run() {
   const users = await getAllUsers();
 
   if (users.length < 2) {
-    console.error("❗ Need at least 2 users in Auth Emulator to test properly.");
+    console.error(" Need at least 2 users in Auth Emulator to test properly.");
     return;
   }
 
@@ -27,42 +27,42 @@ async function run() {
   const anon = testEnv.unauthenticatedContext();
   const anonDb = anon.firestore();
 
-  console.log(`\n📋 Found ${users.length} users in Emulator`);
-  console.log(users.map(u => `🧑‍💻 ${u.email} (${u.uid})`).join("\n"));
+  console.log(`\nFound ${users.length} users in Emulator`);
+  console.log(users.map(u => `${u.email} (${u.uid})`).join("\n"));
 
   for (const user of users) {
     const { uid, email } = user;
     const userCtx = testEnv.authenticatedContext(uid);
     const userDb = userCtx.firestore();
 
-    // ✅ Should write to their own path
+    // Should write to their own path
     try {
       await userDb.collection("users").doc(uid).collection("sessions").add({ test: "own path" });
-      console.log(`✅ ${email} can write to /users/${uid} (expected)`);
+      console.log(`${email} can write to /users/${uid} (expected)`);
     } catch {
-      console.log(`❌ ${email} was blocked from own path (unexpected)`);
+      console.log(`${email} was blocked from own path (unexpected)`);
     }
 
-    // ❌ Should NOT write to other users' paths
+    // Should NOT write to other users' paths
     for (const other of users) {
       if (other.uid === uid) continue;
 
       try {
         await userDb.collection("users").doc(other.uid).collection("sessions").add({ test: "wrong path" });
-        console.log(`❌ ${email} wrote to /users/${other.uid} — SHOULD BE BLOCKED`);
+        console.log(`${email} wrote to /users/${other.uid} — SHOULD BE BLOCKED`);
       } catch {
-        console.log(`✅ ${email} was blocked from /users/${other.uid} (expected)`);
+        console.log(`${email} was blocked from /users/${other.uid} (expected)`);
       }
     }
   }
 
-  // ❌ Anonymous test
+  // Anonymous test
   try {
     const victim = users[0];
     await anonDb.collection("users").doc(victim.uid).collection("sessions").add({ test: "anon access" });
-    console.log(`❌ Anonymous write succeeded for ${victim.uid} — SHOULD BE BLOCKED`);
+    console.log(`Anonymous write succeeded for ${victim.uid} — SHOULD BE BLOCKED`);
   } catch {
-    console.log(`✅ Anonymous write was blocked (expected)`);
+    console.log(`Anonymous write was blocked (expected)`);
   }
 
   await testEnv.cleanup();
