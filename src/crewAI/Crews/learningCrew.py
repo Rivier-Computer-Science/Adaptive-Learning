@@ -1,6 +1,6 @@
 from crewai import Agent, Task, Crew, Process
 from src.crewAI.Tasks.learningTasks import *
-from src.crewAI.crewAgents import *
+from src.crewAI.Agents.learningMathAgents import *
 from langchain_openai import ChatOpenAI
 import os
 from crewai.agents.agent_builder.base_agent_executor_mixin import CrewAgentExecutorMixin
@@ -68,7 +68,7 @@ def initialize_task_events(learn_math_manager_instance):
     def on_crew_kickoff_completed(source, event: CrewKickoffCompletedEvent):
         print(f"=========================Messages========================={Colors.ENDC}", json.dumps(learn_math_manager_instance.messages, indent=4, default=str))
         learn_math_manager_instance.reactive_chat_instance.update_progress()
-        globals.kickoff_initiated = False
+        globals.kickoff_initiated = None
 
     @crewai_event_bus.on(LLMCallCompletedEvent)
     def on_llm_call_completed(source, event: LLMCallCompletedEvent):
@@ -277,8 +277,6 @@ crew = Crew(
     tasks=task_list,
     verbose=True,
     max_iterations=10,
-    # manager_agent=crew_manager,
-    # process=Process.hierarchical
     process=processType,
     step_callback=step_callback
 )
