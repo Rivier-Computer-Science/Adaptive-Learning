@@ -26,6 +26,8 @@ stdout_panel = pn.pane.Markdown("", name="Code Output")
 tracer_panel = pn.pane.Markdown("", name="Mastery Output")
 student_response_panel = pn.pane.Markdown("",name="Student Agent Response")
 error_panel = pn.pane.Markdown("", name="Error Output")
+fallback_panel = pn.pane.Markdown("", name="Fallback Output")
+
 
 
 def on_submit(event):
@@ -34,6 +36,15 @@ def on_submit(event):
         tracer_panel.object = ""
         student_response_panel.object = ""
         return
+        
+        
+    # Clear all outputs
+    stdout_panel.object = ""
+    tracer_panel.object = ""
+    student_response_panel.object = ""
+    fallback_panel.object = ""
+    error_panel.object = ""
+
 
     # Immediately update UI to show processing
     stdout_panel.object = "🔄 Running code..."
@@ -55,8 +66,14 @@ def on_submit(event):
 
         try:
             result = graph.invoke(user_input)
-            error_msg = result.get("error", None)
-            error_panel.object = f"### ⚠️ Error:\n```\n{error_msg}\n```" if error_msg else ""
+            error = result.get("error", None)
+            if error:
+                error_panel.object = f"### ⚠️ Error:\n```\n{error}\n```"
+                fallback_panel.object = f"⚠️ Fallback Triggered:\n```\n{error}\n```"
+            else:
+                error_panel.object = ""
+                fallback_panel.object = ""
+
 
             print("🔍 Result from LangGraph:", result)
         except Exception as e:
@@ -70,13 +87,29 @@ def on_submit(event):
         student_response_output = result.get("student_output")
 
         stdout = getattr(code_output, 'stdout', 'No code output')
-        status = getattr(tracer_output, 'status', 'N/A')
-        mastery = getattr(tracer_output, 'mastery_level', 0.0)
+        #status = getattr(tracer_output, 'status', 'N/A')
+        #mastery = getattr(tracer_output, 'mastery_level', 0.0)
         student_response = getattr(student_response_output, 'message', 'No response from Student')
 
         student_response_panel.object = f"### Student Agent:\n```\n{student_response}\n```"
-        stdout_panel.object = f"### Code Output:\n```\n{stdout}\n```"
-        tracer_panel.object = f"### Mastery Result:\n- Status: **{status}**\n- Score: **{mastery}**"
+        #stdout_panel.object = f"### Code Output:\n```\n{stdout}\n```"
+        if code_output and code_output.success:
+            stdout_panel.object = f"✅ **Success:**\n```\n{stdout}\n```"
+        else:
+            stderr = getattr(code_output, 'stderr', 'Unknown Error')
+            stdout_panel.object = f"❌ **Error:**\n```\n{stderr}\n```"
+        if tracer_output:
+            status = tracer_output.status
+            mastery = tracer_output.mastery_level
+            tracer_panel.object = f"### Mastery Result:\n- Status: **{status}**\n- Score: **{mastery}**"
+        else:
+            tracer_panel.object = "❗ No mastery data available (fallback triggered)"
+        
+        
+
+
+
+        #tracer_panel.object = f"### Mastery Result:\n- Status: **{status}**\n- Score: **{mastery}**"
 
     # Ensure UI renders "Running..." before processing starts
     pn.state.curdoc.add_next_tick_callback(execute)
@@ -96,6 +129,7 @@ layout = pn.Column(
     category,
     submit_btn,
     pn.layout.Divider(),
+    fallback_panel,
     student_response_panel,
     stdout_panel,
     tracer_panel, 
