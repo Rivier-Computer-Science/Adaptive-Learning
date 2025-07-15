@@ -6,5 +6,5 @@ def run(state: LangGraphState) -> dict:
         "tracer_output": None,
         "code_output": None,
         "student_input": state.student_input,
-        "error_message": "Fallback: invalid input or failed code execution"
+        "error": "Fallback: invalid input or failed code execution"
     }

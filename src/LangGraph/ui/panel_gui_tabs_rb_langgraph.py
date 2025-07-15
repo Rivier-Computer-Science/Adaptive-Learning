@@ -25,6 +25,8 @@ submit_btn = pn.widgets.Button(name="Submit Goal", button_type="primary")
 stdout_panel = pn.pane.Markdown("", name="Code Output")
 tracer_panel = pn.pane.Markdown("", name="Mastery Output")
 student_response_panel = pn.pane.Markdown("",name="Student Agent Response")
+error_panel = pn.pane.Markdown("", name="Error Output")
+
 
 def on_submit(event):
     if not code_input.value.strip():
@@ -53,6 +55,9 @@ def on_submit(event):
 
         try:
             result = graph.invoke(user_input)
+            error_msg = result.get("error", None)
+            error_panel.object = f"### ⚠️ Error:\n```\n{error_msg}\n```" if error_msg else ""
+
             print("🔍 Result from LangGraph:", result)
         except Exception as e:
             stdout_panel.object = f"❗ LangGraph error:\n```\n{str(e)}\n```"
@@ -93,7 +98,8 @@ layout = pn.Column(
     pn.layout.Divider(),
     student_response_panel,
     stdout_panel,
-    tracer_panel
+    tracer_panel, 
+    error_panel
 )
 
 # Step 5: Serve or Export
