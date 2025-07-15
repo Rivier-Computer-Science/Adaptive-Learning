@@ -1,0 +1,99 @@
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % firebase emulators:start
+(node:32549) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+i  emulators: Starting emulators: auth, firestore
+⚠  firestore: Cloud Firestore Emulator does not support multiple databases yet.
+⚠  firestore: Did not find a Cloud Firestore rules file specified in a firebase.json config file.
+⚠  firestore: The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration.
+i  firestore: Firestore Emulator logging to firestore-debug.log
+✔  firestore: Firestore Emulator UI websocket is running on 9150.
+
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────────┬────────────────┬─────────────────────────────────┐
+│ Emulator       │ Host:Port      │ View in Emulator UI             │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4000/auth      │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Firestore      │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore │
+└────────────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500, 9150
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+
+--
+
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % npm install firebase-admin
+
+added 129 packages, and audited 217 packages in 5s
+
+19 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % node firestore.loop.test.js
+(node:28457) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ Failed to fetch users: Credential implementation provided to initializeApp() via the "credential" property failed to fetch a valid Google OAuth2 access token with the following error: "Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.".
+ Need at least 2 users in Auth Emulator to test properly.
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % 
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % 
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % 
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % 
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % node firestore.loop.test.js
+(node:29487) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ Need at least 2 users in Auth Emulator to test properly.
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % 
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % 
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % 
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % 
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % 
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 % node firestore.loop.test.js
+(node:36131) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+Found 3 users in Emulator
+jj@gmail.com (e6nTuiTOp6S8PDkzeILlsizn0cdt)
+john@outlook.com (kcIidtirHNXtHx3dOtXjkTHefdjl)
+jashua@gmail.com (o8zwT0PV6oR7t65kT9HhRmF2s5Jk)
+jj@gmail.com can write to /users/e6nTuiTOp6S8PDkzeILlsizn0cdt (expected)
+[2025-07-08T18:18:52.048Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2428d8ad error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L6, false for 'create' @ L9
+jj@gmail.com was blocked from /users/kcIidtirHNXtHx3dOtXjkTHefdjl (expected)
+[2025-07-08T18:18:52.062Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2428d8ae error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L6, false for 'create' @ L9
+jj@gmail.com was blocked from /users/o8zwT0PV6oR7t65kT9HhRmF2s5Jk (expected)
+john@outlook.com can write to /users/kcIidtirHNXtHx3dOtXjkTHefdjl (expected)
+[2025-07-08T18:18:52.098Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2428d8af error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L6, false for 'create' @ L9
+john@outlook.com was blocked from /users/e6nTuiTOp6S8PDkzeILlsizn0cdt (expected)
+[2025-07-08T18:18:52.110Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2428d8b0 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L6, false for 'create' @ L9
+john@outlook.com was blocked from /users/o8zwT0PV6oR7t65kT9HhRmF2s5Jk (expected)
+jashua@gmail.com can write to /users/o8zwT0PV6oR7t65kT9HhRmF2s5Jk (expected)
+[2025-07-08T18:18:52.139Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2428d8b1 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L6, false for 'create' @ L9
+jashua@gmail.com was blocked from /users/e6nTuiTOp6S8PDkzeILlsizn0cdt (expected)
+[2025-07-08T18:18:52.150Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2428d8b2 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L6, false for 'create' @ L9
+jashua@gmail.com was blocked from /users/kcIidtirHNXtHx3dOtXjkTHefdjl (expected)
+[2025-07-08T18:18:52.176Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2428d8b3 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L6, false for 'create' @ L9
+Anonymous write was blocked (expected)
+(base) rakeshmadikanti@Rakeshs-MacBook-Air Adaptive-Learning-TASK3 %
+¸^C 
+i  emulators: Received SIGINT (Ctrl-C) for the first time. Starting a clean shutdown.
+i  emulators: Please wait for a clean shutdown or send the SIGINT (Ctrl-C) signal again to stop right now.
+i  emulators: Shutting down emulators.
+i  ui: Stopping Emulator UI
+i  firestore: Stopping Firestore Emulator
+i  auth: Stopping Authentication Emulator
+i  hub: Stopping emulator hub
+i  logging: Stopping Logging Emulator
+
