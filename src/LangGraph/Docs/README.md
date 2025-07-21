@@ -8,3 +8,6 @@
 - [UI Integration](src/LangGraph/Docs/UI_Integration.md)
 - [Langgraph workflow diagram](src/LangGraph/Docs/Langraph_WorkFlow_Diagram.drawio)
 
+## Documentation
+- [Edge Case Handling Guide](Docs/edge_cases_notes.md)
+
