@@ -1,5 +1,5 @@
 from crewai import Task
-from src.crewAI.crewAgents import *
+from src.crewAI.Agents.learningMathAgents import *
 
 select_math_topic = Task(
     description=(

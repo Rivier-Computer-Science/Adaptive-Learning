@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 import asyncio
 import panel as pn
-import speech_recognition as sr
+#import speech_recognition as sr
 import pandas as pd
 
 pn.extension()
@@ -24,9 +24,9 @@ from src.KnowledgeGraphs.math_taxonomy import topic_colors
 # Import new tabs
 from src.UI.language_tab import create_app as create_language_tab
 from src.UI.career_tab import create_app as create_career_tab
-
+from src.UI.panel_gui_tabs19_priya import create_quiz_tab
 os.environ["AUTOGEN_USE_DOCKER"] = "False"
-recognizer = sr.Recognizer()
+#recognizer = sr.Recognizer()
 
 #==========Math Mastery===========#
 
@@ -221,7 +221,8 @@ template = pn.template.BootstrapTemplate(
             ("Learning Assistant", reactive_chat.draw_view()),
             ("Math Mastery", math_mastery_interface.create_layout()),
             ("Career", create_career_tab()),
-            ("Language", create_language_tab())
+            ("Language", create_language_tab()),
+            ("Quiz", create_quiz_tab())
         )
     ]
 )

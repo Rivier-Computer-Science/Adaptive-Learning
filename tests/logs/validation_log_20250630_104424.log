@@ -1,0 +1,47 @@
+2025-06-30 10:44:24,860 - INFO - Firebase Users Session Validation Script Started
+2025-06-30 10:44:25,548 - INFO - 👤 Processing user: 1PLBppXyzWVJ6nMQMU483MYtDsG3
+2025-06-30 10:44:25,770 - WARNING - 1PLBppXyzWVJ6nMQMU483MYtDsG3/dae63eef0e934a14927e3d4abbe29dd7 - Errors: ['Missing field: fsm_state']
+2025-06-30 10:44:25,770 - INFO - 1 sessions validated for 1PLBppXyzWVJ6nMQMU483MYtDsG3
+2025-06-30 10:44:25,770 - INFO - 👤 Processing user: M8t6fSVBnlTCCIC0385I7PxSzjp1
+2025-06-30 10:44:25,994 - INFO - M8t6fSVBnlTCCIC0385I7PxSzjp1/28552839edf84902b338dc7b0df9fae5 validated
+2025-06-30 10:44:25,995 - INFO - M8t6fSVBnlTCCIC0385I7PxSzjp1/29a87aa031c04927ad69910ef6e78709 validated
+2025-06-30 10:44:25,996 - INFO - M8t6fSVBnlTCCIC0385I7PxSzjp1/4d965b3d881740c28260e79a0c8be4d3 validated
+2025-06-30 10:44:25,997 - INFO - M8t6fSVBnlTCCIC0385I7PxSzjp1/e9e9b57562e14ef1939f5c12a7c9a158 validated
+2025-06-30 10:44:25,997 - INFO - 4 sessions validated for M8t6fSVBnlTCCIC0385I7PxSzjp1
+2025-06-30 10:44:25,997 - INFO - 👤 Processing user: Z3pQaa3mNHTgue4mOOn4P36cx9E2
+2025-06-30 10:44:26,210 - INFO - Z3pQaa3mNHTgue4mOOn4P36cx9E2/03bdf774d8e94f99aadfd26742cda311 validated
+2025-06-30 10:44:26,211 - INFO - Z3pQaa3mNHTgue4mOOn4P36cx9E2/1ec00ef515ed468aab164e893c056613 validated
+2025-06-30 10:44:26,213 - INFO - Z3pQaa3mNHTgue4mOOn4P36cx9E2/33c9820fe6dd45be8f548d56083be8af validated
+2025-06-30 10:44:26,214 - INFO - Z3pQaa3mNHTgue4mOOn4P36cx9E2/4916bdb1f7ed465683800aa425c2d004 validated
+2025-06-30 10:44:26,216 - INFO - Z3pQaa3mNHTgue4mOOn4P36cx9E2/67b04e974365497b89a778611f9494c9 validated
+2025-06-30 10:44:26,216 - INFO - Z3pQaa3mNHTgue4mOOn4P36cx9E2/6d56c7800de74df4a85da72e58eabac9 validated
+2025-06-30 10:44:26,218 - INFO - Z3pQaa3mNHTgue4mOOn4P36cx9E2/761678c024f84d9991a15aaf7f8442c8 validated
+2025-06-30 10:44:26,218 - INFO - Z3pQaa3mNHTgue4mOOn4P36cx9E2/7add83e5fa0041dc9490680afe12b06d validated
+2025-06-30 10:44:26,219 - INFO - Z3pQaa3mNHTgue4mOOn4P36cx9E2/96e75321938a447bb99f1a8a5cdd8c20 validated
+2025-06-30 10:44:26,219 - INFO - 9 sessions validated for Z3pQaa3mNHTgue4mOOn4P36cx9E2
+2025-06-30 10:44:26,220 - INFO - 👤 Processing user: eAXVhIJaK5h7uCEhWm33VKMQ0xr2
+2025-06-30 10:44:26,424 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/0de28d016db743ebb30ac2c916031afe - Errors: ['Missing field: fsm_state']
+2025-06-30 10:44:26,425 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/1bc7bfd4d16543c1b05e45870f1d8c29 - Errors: ['Missing field: session_uid', 'Missing field: user_uid', 'Missing field: fsm_state', 'Missing field: actions']
+2025-06-30 10:44:26,426 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/283c9ca7c2b141fda56bd178945a636d - Errors: ['Missing field: session_uid', 'Missing field: user_uid', 'Missing field: fsm_state', 'Missing field: actions']
+2025-06-30 10:44:26,428 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/31ce67d1e3734c19a971f96c9cfc31ba - Errors: ['Missing field: session_uid', 'Missing field: user_uid', 'Missing field: fsm_state', 'Missing field: actions']
+2025-06-30 10:44:26,428 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/447ea556758e42fd9642ef2471a952bc - Errors: ['Missing field: fsm_state']
+2025-06-30 10:44:26,429 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/58e4692163244925b35383893dc8871c - Errors: ['Missing field: fsm_state']
+2025-06-30 10:44:26,430 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/66e06585d72044b0ab394c941bb0ee9e - Errors: ['Missing field: session_uid', 'Missing field: user_uid', 'Missing field: fsm_state', 'Missing field: actions']
+2025-06-30 10:44:26,431 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/7287cb0ace444ed6b3c2db7cb32c45e6 - Errors: ['Missing field: session_uid', 'Missing field: user_uid', 'Missing field: fsm_state', 'Missing field: actions']
+2025-06-30 10:44:26,431 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/87d51e284f92407cb6b07a8f14dd2349 - Errors: ['Missing field: session_uid', 'Missing field: user_uid', 'Missing field: fsm_state', 'Missing field: actions']
+2025-06-30 10:44:26,432 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/8d3a3594864440978436ccad4b8365ca - Errors: ['Missing field: fsm_state']
+2025-06-30 10:44:26,433 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/936d16b8d0644f6ba32197f92a6ecb96 - Errors: ['Missing field: fsm_state']
+2025-06-30 10:44:26,434 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/a398b9e085d44564a42e2b6af085345d - Errors: ['Missing field: fsm_state']
+2025-06-30 10:44:26,434 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/a76e4a6fb48a444ba5ca3dd55379b8e7 - Errors: ['Missing field: session_uid', 'Missing field: user_uid', 'Missing field: fsm_state', 'Missing field: actions']
+2025-06-30 10:44:26,435 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/b74676629ee44251a473f3e9d1e7c93f - Errors: ['Missing field: session_uid', 'Missing field: user_uid', 'Missing field: fsm_state', 'Missing field: actions']
+2025-06-30 10:44:26,436 - WARNING - eAXVhIJaK5h7uCEhWm33VKMQ0xr2/e8690346bbb047eb99a42ee67d9b79b8 - Errors: ['Missing field: fsm_state']
+2025-06-30 10:44:26,436 - INFO - 15 sessions validated for eAXVhIJaK5h7uCEhWm33VKMQ0xr2
+2025-06-30 10:44:26,437 - INFO - 👤 Processing user: hO03rwGEEea3lE39zyNu8dRgets2
+2025-06-30 10:44:26,536 - INFO - ------- 0 sessions validated for hO03rwGEEea3lE39zyNu8dRgets2 -------
+2025-06-30 10:44:26,536 - INFO - 👤 Processing user: hbziL9bxEdhwIrfgyj6836Cw44F2
+2025-06-30 10:44:26,694 - INFO - ------- 0 sessions validated for hbziL9bxEdhwIrfgyj6836Cw44F2 -------
+2025-06-30 10:44:26,695 - INFO - 👤 Processing user: sXIcbEDwb0TKOFerbmw8IHbZT1O2
+2025-06-30 10:44:26,840 - WARNING - sXIcbEDwb0TKOFerbmw8IHbZT1O2/dd43fe0385ea4b369f0935d613645633 - Errors: ['Missing field: fsm_state']
+2025-06-30 10:44:26,840 - INFO - 1 sessions validated for sXIcbEDwb0TKOFerbmw8IHbZT1O2
+2025-06-30 10:44:26,843 - INFO - Script validation complete.
+2025-06-30 10:44:26,843 - INFO - 📄 Summary Report: validation_report_20250630_104424.json
