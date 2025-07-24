@@ -16,7 +16,6 @@ from datetime import datetime
 
 #from src.UI.reactive_chat23 import StudentChat
 
-
 class ReactiveChat(param.Parameterized):
     def __init__(self, agents_dict,  avatars=None, groupchat_manager=None, **params):
         super().__init__(**params)
@@ -259,26 +258,96 @@ class ReactiveChat(param.Parameterized):
             self.learn_tab_interface.send(response, user=self.agents_dict[AgentKeys.LEARNER_MODEL.value].name,avatar=self.avatars[self.agents_dict[AgentKeys.LEARNER_MODEL.value].name])
     
 
-    ########## Create the "windows" and draw the tabs
-    def draw_view(self):         
-        tabs = pn.Tabs(  
-            ("Learn", pn.Column(self.learn_tab_interface)
-                    ),
-            ("Dashboard", pn.Column(self.dashboard_view)
-                    ),
-            ("Progress", pn.Column(
-                    self.progress_text,
-                    pn.Row(                        
-                        self.progress_bar,
-                        self.progress_info))
-                    ),
-            ("Model", pn.Column(
-                      pn.Row(self.button_update_learner_model),
-                      pn.Row(self.model_tab_interface))
-                    ),     
+    ######### Create the "windows" and draw the tabs
+    def draw_view(self):
+        pn.extension()
 
+        # Tabs
+        tabs = pn.Tabs(
+            ("Learn", pn.Column(self.learn_tab_interface)),
+            ("Dashboard", pn.Column(self.dashboard_view)),
+            ("Progress", pn.Column(
+                self.progress_text,
+                pn.Row(self.progress_bar, self.progress_info)
+            )),
+            ("Model", pn.Column(
+                pn.Row(self.button_update_learner_model),
+                pn.Row(self.model_tab_interface)
+            )),
+            sizing_mode='stretch_both'
         )
-        return tabs
+
+        # Export icon
+        export_icon = pn.widgets.Button(
+            name="",
+            icon="download",
+            button_type="primary",
+            width=36,
+            height=36,
+            sizing_mode="fixed"
+        )
+
+        # Close button
+        close_button = pn.widgets.Button(
+            name="✖",
+            width=30,
+            button_type="default",
+            sizing_mode="fixed"
+        )
+
+        # Format popup (styled like ChatGPT)
+        format_popup = pn.Column(
+            pn.Row(pn.pane.Markdown("**Export As:**"), close_button),
+            pn.Row(
+                pn.widgets.Button(name=".json", button_type="primary", width=70),
+                pn.widgets.Button(name=".pdf", button_type="primary", width=70),
+                pn.widgets.Button(name=".txt", button_type="primary", width=70),
+                pn.widgets.Button(name=".csv", button_type="primary", width=70),
+            ),
+            visible=False,
+            margin=(10, 10),
+            width=350,
+            height=120,
+            styles={"background": "white", "box-shadow": "0px 4px 16px rgba(0, 0, 0, 0.1)", "border-radius": "10px"}
+        )
+
+        # Show/hide logic
+        def export_chat_click(event):
+            format_popup.visible = True
+
+        def close_popup(event):
+            format_popup.visible = False
+
+        export_icon.on_click(export_chat_click)
+        close_button.on_click(close_popup)
+
+        def export_as(format_type):
+            print(f"Exporting as {format_type}")
+            format_popup.visible = False
+
+        format_popup[1][0].on_click(lambda event: export_as("json"))
+        format_popup[1][1].on_click(lambda event: export_as("pdf"))
+        format_popup[1][2].on_click(lambda event: export_as("txt"))
+        format_popup[1][3].on_click(lambda event: export_as("csv"))
+
+        # Layout
+        header_row = pn.Row(
+            pn.Column(tabs, sizing_mode='stretch_both'),
+            pn.Column(export_icon, format_popup),
+            sizing_mode='stretch_width',
+            height=60,
+            margin=(0, 20, 0, 20)
+        )
+
+        layout = pn.Column(
+            header_row,
+            sizing_mode='stretch_both',
+            width_policy='max'
+        )
+
+        return layout
+
+
 
     @property
     def groupchat_manager(self) ->  autogen.GroupChatManager:
