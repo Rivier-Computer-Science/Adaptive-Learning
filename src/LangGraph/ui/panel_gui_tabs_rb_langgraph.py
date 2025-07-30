@@ -2,33 +2,29 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
 
-
 import panel as pn
 from datetime import datetime
 from src.LangGraph.workflow.langgraph_main import graph
 
-
-
 pn.extension()
 
 # Step 1: Define UI Widgets
-goal_name = pn.widgets.TextInput(name="Goal Name", placeholder="e.g., Learn Python")
-description = pn.widgets.TextAreaInput(name="Description", placeholder="What is the goal about?")
-target_date = pn.widgets.DatePicker(name="Target Date", value=datetime.today())
-code_input = pn.widgets.TextAreaInput(name="Code", placeholder="Enter Python code here", height=100)
-priority = pn.widgets.Select(name="Priority", options=["Low", "Medium", "High"])
-category = pn.widgets.Select(name="Category", options=["Programming", "Math", "Science"])
+goal_name = pn.widgets.TextInput(name="Goal Name", placeholder="e.g., Learn Python", sizing_mode="stretch_width")
+description = pn.widgets.TextAreaInput(name="Description", placeholder="What is the goal about?", sizing_mode="stretch_width")
+target_date = pn.widgets.DatePicker(name="Target Date", value=datetime.today(), sizing_mode="stretch_width")
+code_input = pn.widgets.TextAreaInput(name="Code", placeholder="Enter Python code here", height=120, sizing_mode="stretch_width")
+priority = pn.widgets.Select(name="Priority", options=["Low", "Medium", "High"], sizing_mode="stretch_width")
+category = pn.widgets.Select(name="Category", options=["Programming", "Math", "Science"], sizing_mode="stretch_width")
 
 submit_btn = pn.widgets.Button(name="Submit Goal", button_type="primary")
+test_run_btn = pn.widgets.Button(name="Run Sample Goal", button_type="success")  # New test run button
 
-# Step 2: Output Panel
-stdout_panel = pn.pane.Markdown("", name="Code Output")
-tracer_panel = pn.pane.Markdown("", name="Mastery Output")
-student_response_panel = pn.pane.Markdown("",name="Student Agent Response")
-error_panel = pn.pane.Markdown("", name="Error Output")
-fallback_panel = pn.pane.Markdown("", name="Fallback Output")
-
-
+# Step 2: Output Panels
+stdout_panel = pn.pane.Markdown("", name="Code Output", height=150, sizing_mode="stretch_width")
+tracer_panel = pn.pane.Markdown("", name="Mastery Output", height=120, sizing_mode="stretch_width")
+student_response_panel = pn.pane.Markdown("", name="Student Agent Response", height=100, sizing_mode="stretch_width")
+error_panel = pn.pane.Markdown("", name="Error Output", height=80, sizing_mode="stretch_width")
+fallback_panel = pn.pane.Markdown("", name="Fallback Output", height=80, sizing_mode="stretch_width")
 
 def on_submit(event):
     if not code_input.value.strip():
@@ -36,8 +32,7 @@ def on_submit(event):
         tracer_panel.object = ""
         student_response_panel.object = ""
         return
-        
-        
+
     # Clear all outputs
     stdout_panel.object = ""
     tracer_panel.object = ""
@@ -45,13 +40,11 @@ def on_submit(event):
     fallback_panel.object = ""
     error_panel.object = ""
 
-
-    # Immediately update UI to show processing
+    # Show processing
     stdout_panel.object = "🔄 Running code..."
     tracer_panel.object = ""
     student_response_panel.object = ""
 
-    # Define async-safe execution in next tick
     def execute():
         user_input = {
             "student_input": {
@@ -74,8 +67,8 @@ def on_submit(event):
                 error_panel.object = ""
                 fallback_panel.object = ""
 
-
             print("🔍 Result from LangGraph:", result)
+
         except Exception as e:
             stdout_panel.object = f"❗ LangGraph error:\n```\n{str(e)}\n```"
             tracer_panel.object = ""
@@ -87,54 +80,60 @@ def on_submit(event):
         student_response_output = result.get("student_output")
 
         stdout = getattr(code_output, 'stdout', 'No code output')
-        #status = getattr(tracer_output, 'status', 'N/A')
-        #mastery = getattr(tracer_output, 'mastery_level', 0.0)
         student_response = getattr(student_response_output, 'message', 'No response from Student')
 
         student_response_panel.object = f"### Student Agent:\n```\n{student_response}\n```"
-        #stdout_panel.object = f"### Code Output:\n```\n{stdout}\n```"
+
         if code_output and code_output.success:
             stdout_panel.object = f"✅ **Success:**\n```\n{stdout}\n```"
         else:
             stderr = getattr(code_output, 'stderr', 'Unknown Error')
             stdout_panel.object = f"❌ **Error:**\n```\n{stderr}\n```"
+
         if tracer_output:
             status = tracer_output.status
             mastery = tracer_output.mastery_level
             tracer_panel.object = f"### Mastery Result:\n- Status: **{status}**\n- Score: **{mastery}**"
         else:
             tracer_panel.object = "❗ No mastery data available (fallback triggered)"
-        
-        
 
-
-
-        #tracer_panel.object = f"### Mastery Result:\n- Status: **{status}**\n- Score: **{mastery}**"
-
-    # Ensure UI renders "Running..." before processing starts
     pn.state.curdoc.add_next_tick_callback(execute)
-
-
 
 submit_btn.on_click(on_submit)
 
+# New callback for test run
+def on_test_run(event):
+    goal_name.value = "Learn Loops"
+    description.value = "Understand for-loops in Python"
+    target_date.value = datetime.today()
+    priority.value = "High"
+    category.value = "Programming"
+    code_input.value = "for i in range(5): print(i)"
+    on_submit(None)
+
+test_run_btn.on_click(on_test_run)
+
+
+
 # Step 4: Layout
 layout = pn.Column(
-    pn.pane.Markdown("# LangGraph Learning Goal Form"),
+    pn.pane.Markdown("## 🧠 Adaptive Learning – LangGraph Goal Submission", sizing_mode="stretch_width"),
+    pn.pane.Markdown("### 🎯 Goal Details"),
     goal_name,
     description,
     target_date,
     code_input,
     priority,
     category,
-    submit_btn,
+    pn.Row(submit_btn, test_run_btn),  # Submit + Test buttons side-by-side
     pn.layout.Divider(),
+    pn.pane.Markdown("### 📤 Output Results"),
     fallback_panel,
     student_response_panel,
     stdout_panel,
-    tracer_panel, 
+    tracer_panel,
     error_panel
 )
 
-# Step 5: Serve or Export
+# Step 5: Serve
 layout.servable()
