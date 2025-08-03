@@ -1,4 +1,4 @@
-# group_chat_manager_agent.py
+# group_chat_manager_agent.py changes
 """This module defines a custom group chat manager that extends the functionality of autogen.GroupChatManager.
 It manages group chat sessions, handles message saving/loading, and integrates with Firebase Firestore for data persistence.
 """
