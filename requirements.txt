@@ -16,3 +16,5 @@ requests
 scikit-learn
 scipy
 transitions
+autogen
+reportlab
