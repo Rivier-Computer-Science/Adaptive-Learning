@@ -13,6 +13,9 @@ import autogen as autogen
 from src import globals as globals
 from src.Agents.agents import AgentKeys
 from datetime import datetime
+from src.UI.export import get_export_data
+from src.Agents.group_chat_manager_agent import group_chat_manager_agent
+from io import BytesIO, StringIO
 
 #from src.UI.reactive_chat23 import StudentChat
 
@@ -132,7 +135,7 @@ class ReactiveChat(param.Parameterized):
         else:
             selected_agent = self.agents_dict[AgentKeys.TUTOR.value]
 
-        # ✅ Add user message before triggering agent
+        # Add user message before triggering agent
         self.groupchat_manager.groupchat.messages.append({
             "content": contents,
             "role": "user",
@@ -222,7 +225,7 @@ class ReactiveChat(param.Parameterized):
                     self.progress_bar.value = self.progress
                     self.progress_info.object = f"**{self.progress} out of {self.max_questions}**"
 
-                    # ✅ Clear pending_problem after logging it
+                    # Clear pending_problem after logging it
                     if getattr(self, "clear_pending_problem", False):
                         self.groupchat_manager.pending_problem = None
                         self.clear_pending_problem = False
@@ -262,7 +265,7 @@ class ReactiveChat(param.Parameterized):
     def draw_view(self):
         pn.extension()
 
-        # Tabs
+        # Tabs section
         tabs = pn.Tabs(
             ("Learn", pn.Column(self.learn_tab_interface)),
             ("Dashboard", pn.Column(self.dashboard_view)),
@@ -277,7 +280,7 @@ class ReactiveChat(param.Parameterized):
             sizing_mode='stretch_both'
         )
 
-        # Export icon
+        # Export icon button (acts like ChatGPT download icon)
         export_icon = pn.widgets.Button(
             name="",
             icon="download",
@@ -287,50 +290,81 @@ class ReactiveChat(param.Parameterized):
             sizing_mode="fixed"
         )
 
-        # Close button
+        # Close popup button
         close_button = pn.widgets.Button(
             name="✖",
             width=30,
             button_type="default",
             sizing_mode="fixed"
         )
+        def make_download_widget(format_type, chat_history):
+            def callback():
+                from datetime import datetime
+                # Add timestamp if missing
+                for row in chat_history:
+                    if "timestamp" not in row:
+                        row["timestamp"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                # Extract topic from the first user message that starts with "Teach me "
+                topic = self.topic
+                print(f"Exporting chat history with topic: {topic}")
+                result = get_export_data(chat_history, format_type, topic=topic)
 
-        # Format popup (styled like ChatGPT)
+                if isinstance(result, tuple) and len(result) == 2:
+                    content, _ = result
+                else:
+                    content = result
+                if isinstance(content, bytes):
+                    return BytesIO(content)
+                elif isinstance(content, str):
+                    return StringIO(content)
+                else:
+                    raise ValueError(f"Unsupported content type: {type(content)}")
+            button_type = "primary"
+
+            return pn.widgets.FileDownload(
+                label=f".{format_type}",
+                button_type=button_type,
+                width=70,
+                callback=callback,
+                filename=f"chat_export.{format_type}"
+            )
+
+
+        # Get chat history from groupchat_manager
+        chat_history = self.groupchat_manager.groupchat.get_messages()
+
+        # Build all download format buttons
+        file_downloads = {
+            ext: make_download_widget(ext, chat_history)
+            for ext in ["json", "pdf", "txt", "csv"]
+        }
+
+        # Download popup styled like ChatGPT
         format_popup = pn.Column(
             pn.Row(pn.pane.Markdown("**Export As:**"), close_button),
             pn.Row(
-                pn.widgets.Button(name=".json", button_type="primary", width=70),
-                pn.widgets.Button(name=".pdf", button_type="primary", width=70),
-                pn.widgets.Button(name=".txt", button_type="primary", width=70),
-                pn.widgets.Button(name=".csv", button_type="primary", width=70),
+                file_downloads["json"],
+                file_downloads["pdf"],
+                file_downloads["txt"],
+                file_downloads["csv"]
             ),
             visible=False,
             margin=(10, 10),
             width=350,
             height=120,
-            styles={"background": "white", "box-shadow": "0px 4px 16px rgba(0, 0, 0, 0.1)", "border-radius": "10px"}
+            styles={
+                "background": "white",
+                "box-shadow": "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                "border-radius": "10px"
+            }
         )
 
-        # Show/hide logic
-        def export_chat_click(event):
-            format_popup.visible = True
+        # Toggle popup visibility
+        export_icon.on_click(lambda event: setattr(format_popup, 'visible', True))
+        close_button.on_click(lambda event: setattr(format_popup, 'visible', False))
 
-        def close_popup(event):
-            format_popup.visible = False
 
-        export_icon.on_click(export_chat_click)
-        close_button.on_click(close_popup)
-
-        def export_as(format_type):
-            print(f"Exporting as {format_type}")
-            format_popup.visible = False
-
-        format_popup[1][0].on_click(lambda event: export_as("json"))
-        format_popup[1][1].on_click(lambda event: export_as("pdf"))
-        format_popup[1][2].on_click(lambda event: export_as("txt"))
-        format_popup[1][3].on_click(lambda event: export_as("csv"))
-
-        # Layout
+        # Header layout
         header_row = pn.Row(
             pn.Column(tabs, sizing_mode='stretch_both'),
             pn.Column(export_icon, format_popup),
@@ -339,20 +373,26 @@ class ReactiveChat(param.Parameterized):
             margin=(0, 20, 0, 20)
         )
 
+       # Full layout
         layout = pn.Column(
             header_row,
             sizing_mode='stretch_both',
             width_policy='max'
         )
 
-        return layout
+        # Wrap the entire UI in a Panel layout that can be exported
+        self.chat_ui_layout = pn.Column(
+            layout,  # your existing full layout (header + tabs + buttons)
+            sizing_mode='stretch_both'
+        )
+        return self.chat_ui_layout
 
 
 
     @property
     def groupchat_manager(self) ->  autogen.GroupChatManager:
         return self._groupchat_manager
-    
+
     @groupchat_manager.setter
     def groupchat_manager(self, groupchat_manager: autogen.GroupChatManager):
         self._groupchat_manager = groupchat_manager
