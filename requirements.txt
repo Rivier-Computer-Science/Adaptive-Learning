@@ -15,6 +15,7 @@ regex
 requests
 scikit-learn
 scipy
-transitions
 autogen
+transitions
 reportlab
+requests
