@@ -179,7 +179,7 @@ Note: for Windows use *set* instead of *export*
 
 
 ### SU25
-
+  - Issue Link `(https://github.com/Rivier-Computer-Science/Adaptive-Learning/issues/399)`
 - **Enhanced Autogen JSON Output**
   - Added structured fields: `topic`, `timestamp`, `steps_completed`, `suggestions`.
   - Improved clarity and consistency of session JSON data.
@@ -197,13 +197,13 @@ Note: for Windows use *set* instead of *export*
 - **Testing and Validation**
   - This tool validates session JSON files exported from Firebase to ensure structural correctness and data integrity.
   
-  **Directory Structure**
+  - **Directory Structure**
     - `tests/test_data/` — Place input JSON files here(optional for manual testing)
     - `tests/logs/` — Validation logs are saved here
     - `tests/reports/` — JSON summary reports are saved here
     - `tests/archive/<timestamp>/` — All processed files are moved here automatically
 
-  **Validation Features**
+  - **Validation Features**
     - Checks for required fields like `session_uid`, `user_uid`, `fsm_state`, `messages`, `actions`, and `suggestions`
     - Supports multiple `suggestions` formats:  
       - `agent + content` (chat style)  
@@ -212,12 +212,12 @@ Note: for Windows use *set* instead of *export*
     - Logs parsing issues, missing fields, and schema mismatches
     - Generates structured summary reports
 
-  **Command to run the Script**
-  For more commands open the files and check the docstring
-    `python src/Tools/test_firebase_session_json.py` - code run for local JSON testing
-    `python src/Tools/test_firebase_user_session.py --save-json` - code run for automation testing Validate all users and save session files
-    `python src/Tools/test_firebase_user_session.py --user=<USER_UID>` - Validate a specific user
-    `python src/Tools/test_firebase_user_session.py --user=<USER_UID> --save-json` - Validate a specific user and save session files
+  - **Command to run the Script**
+    - For more commands open the files and check the docstring
+        `python src/Tools/test_firebase_session_json.py` - code run for local JSON testing
+        `python src/Tools/test_firebase_user_session.py --save-json` - code run for automation testing Validate all users and save session files
+        `python src/Tools/test_firebase_user_session.py --user=<USER_UID>` - Validate a specific user
+        `python src/Tools/test_firebase_user_session.py --user=<USER_UID> --save-json` - Validate a specific user and save session files
 
 - **Firebase Security Rules**
   - Check the folder Emulator-Testing/ for more info.
@@ -235,6 +235,35 @@ Note: for Windows use *set* instead of *export*
   firebase emulators:start
   node firestore.loop.test.js
   ```
+
+- **Exporting Chat Session History**
+  - Issue Link `(https://github.com/Rivier-Computer-Science/Adaptive-Learning/issues/460)`
+  - This feature helps users to **export their full chat session history** in PDF, CSV, TXT and JSON file formats.
+
+## How to Use the Export Feature
+
+- Click the **Export** button.
+- Choose your desired format: `.json`, `.csv`, `.txt`, or `.pdf`.
+- Your chat session will download as a file containing:
+    - Every chat message (with Topic, timestamp, role, and content)
+    - The **lesson topic** (included via `self.topic`)
+
+## Export Format Details
+- For output docs generated check them in `Export_Docs/` folder
+
+| Format | How Topic Is Included         | Format Structure                                   |
+|--------|------------------------------|----------------------------------------------------|
+| JSON   | Top-level `"topic"` field    | `{ "topic": ..., "messages": [...] }`              |
+| CSV    | "topic" column, 1st row only | `topic,timestamp,role,content` (topic in 1st row)  |
+| TXT    | `Topic: ...` header at top   | Human-readable transcript                          |
+| PDF    | Topic heading at top         | Transcript-style document (simple text, not styled) |
+
+## Requirements for Export
+- Included in `requirements.txt` file
+- [reportlab](https://pypi.org/project/reportlab/) (for PDF export)
+  - Install via: `pip install reportlab`
+
+
 
 # Agents
 
@@ -274,3 +303,5 @@ The Model tab interacts with the LearnerModel agent and provides an assessment o
 
 ![learner_model](~/../pics/learner_model.png)
 
+Export icon added to the UI for chat export feature
+![export_button](~/../pics/Export_Icon_file_formats.png)
