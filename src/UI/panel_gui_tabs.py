@@ -9,10 +9,11 @@ import pandas as pd
 
 pn.extension()
 
-import autogen
 import openai
 import traceback
 
+import autogen
+from src.UI.idea_generator_tab import create_app as create_idea_generator_tab
 from src import globals
 from src.Agents.agents import *
 from src.Agents.chat_manager_fsms import FSM
@@ -222,7 +223,8 @@ template = pn.template.BootstrapTemplate(
             ("Math Mastery", math_mastery_interface.create_layout()),
             ("Career", create_career_tab()),
             ("Language", create_language_tab()),
-            ("Quiz", create_quiz_tab())
+            ("Quiz", create_quiz_tab()),
+            ("Idea Generator", create_idea_generator_tab())
         )
     ]
 )
